@@ -1,0 +1,134 @@
+.login-card {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    width: 420px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.home-icon {
+    color: #4682b4;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.login-title {
+    font-size: 32px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #1a1a1a;
+}
+
+.form-control {
+    padding: 12px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.form-control:focus {
+    border-color: #4682b4;
+    box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.1);
+}
+
+.remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    margin-bottom: 24px;
+    font-size: 14px;
+}
+
+.form-check-label {
+    color: #374151;
+}
+
+.forgot-link {
+    color: #4682b4;
+    text-decoration: none;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+.btn-signin {
+    width: 100%;
+    padding: 12px;
+    background-color: #5f9ea0;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    transition: background-color 0.2s;
+}
+
+.btn-signin:hover {
+    background-color: #4a7c7e;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 24px 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.divider span {
+    padding: 0 16px;
+}
+
+.btn-google {
+    width: 100%;
+    padding: 12px;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    color: #374151;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    transition: background-color 0.2s;
+}
+
+.btn-google:hover {
+    background-color: #f9fafb;
+}
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.signup-text {
+    text-align: center;
+    font-size: 14px;
+    color: #374151;
+}
+
+.signup-link {
+    color: #4682b4;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.signup-link:hover {
+    text-decoration: underline;
+}
