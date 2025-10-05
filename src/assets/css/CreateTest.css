@@ -1,0 +1,81 @@
+﻿/* CreateTest.css */
+
+/* General form styling */
+form#newTestForm {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Section heading */
+h2 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Form input styles */
+.form-label {
+    font-weight: 500;
+    color: #333;
+}
+
+input[type="text"],
+input[type="datetime-local"],
+textarea {
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+}
+
+textarea {
+    resize: none;
+}
+
+    input[type="text"]:focus,
+    input[type="datetime-local"]:focus,
+    textarea:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+    }
+
+/* Button styles */
+button.custom-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+    button.custom-btn:hover {
+        background-color: #0056b3;
+    }
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    form#newTestForm {
+        padding: 15px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    button.custom-btn {
+        padding: 8px 15px;
+    }
+}

@@ -1,0 +1,50 @@
+﻿.custom-btn {
+    background-color: #007bff; /* Blue background */
+    color: white; /* White text */
+    border: groove; /* No border */
+    padding: 10px 20px; /* Add padding */
+    font-size: 1rem; /* Font size */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+    .custom-btn:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+
+/* Adjust the test box size */
+.test-card {
+    width: 300px; /* Set a smaller width for each test box */
+    margin: 10px; /* Add margin between the test boxes */
+    display: inline-block; /* Allow test boxes to be displayed next to each other */
+    vertical-align: top; /* Align the test boxes to the top */
+}
+
+    .test-card .card-body {
+        padding: 15px; /* Add some padding inside the test card */
+    }
+
+    .test-card h5 {
+        font-size: 1.2rem; /* Slightly smaller title font */
+    }
+
+.test-list-container {
+    text-align: center; /* Center-align the container */
+}
+
+    .test-list-container .row {
+        justify-content: center; /* Center-align the row */
+    }
+
+.test-card .card-body .d-flex {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Allow wrapping if necessary */
+}
+
+.test-card .card-body .btn {
+    flex: 1 1 calc(33.33% - 10px); /* Ensure each button takes up 1/3 of the available width */
+    margin: 5px; /* Add some margin between buttons */
+    text-align: center; /* Center text within the button */
+}

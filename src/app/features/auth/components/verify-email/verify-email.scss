@@ -1,0 +1,90 @@
+.verify-card {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    width: 420px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.home-icon {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #2c5f6f;
+    font-size: 20px;
+    text-decoration: none;
+}
+
+.home-icon:hover {
+    color: #1a3a44;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.form-control {
+    padding: 12px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+.form-control:focus {
+    border-color: #5f9ea0;
+    box-shadow: 0 0 0 3px rgba(95, 158, 160, 0.1);
+}
+
+.btn-verify {
+    width: 100%;
+    padding: 12px;
+    background-color: #5f9ea0;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 20px;
+}
+
+.btn-verify:hover {
+    background-color: #4a7c7e;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+    color: #6b7280;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.sign-in-text {
+    text-align: center;
+    color: #4b5563;
+    font-size: 14px;
+}
+
+.sign-in-text a {
+    color: #2c5f6f;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.sign-in-text a:hover {
+    text-decoration: underline;
+}

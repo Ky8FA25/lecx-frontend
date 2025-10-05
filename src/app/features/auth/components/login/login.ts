@@ -23,6 +23,7 @@ export class Login {
     password: new FormControl('', [Validators.required, Validators.minLength(6)])
   });
 
+
   onLoginSubmit() {
     if (this.loginform.valid) {
       const formData = this.loginform.value;
