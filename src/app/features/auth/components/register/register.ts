@@ -16,10 +16,11 @@ export class Register {
   private router = inject(Router);
 
   signupform: FormGroup = new FormGroup({
-    username: new FormControl('', [Validators.required]),
+    /// username: new FormControl('', [Validators.required]),
     firstname: new FormControl('', [Validators.required]),
     lastname: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
+    phoneNumber: new FormControl('', [Validators.minLength(10)]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     confirmPassword: new FormControl('', [Validators.required,])
   });
@@ -35,13 +36,16 @@ export class Register {
       .subscribe({
         next: (response: any) => {
           console.log('✅ Registration successful:', response);
-          this.router.navigate(['/auth/login']);
-        
+          this.genericService.showSuccess('Sign Up successfully! Please check your email to final your register')
+          this.router.navigate(['/auth/signin']);
+
         },
         error: (err) => {
           alert('Registration failed! Please try again.');
         }
-       
+
       });
-    }
+  }
+
+
 }

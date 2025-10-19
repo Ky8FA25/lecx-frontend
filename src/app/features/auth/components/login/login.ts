@@ -19,7 +19,6 @@ export class Login {
 
   private router = inject(Router);
   private genericService = inject(GenericServices);
-  private toastr = inject(ToastrService);
 
 
   loginform: FormGroup = new FormGroup({
@@ -41,7 +40,7 @@ export class Login {
       .subscribe({
         next: (response: any) => {
           console.log('✅ Login successful:', response);
-          this.toastr.success('Đăng nhập thành công!', 'Thành công');
+          this.genericService.showSuccess('Login successful');
           
           localStorage.setItem('access_token', response.accessToken);
           localStorage.setItem('refresh_token', response.refreshToken);

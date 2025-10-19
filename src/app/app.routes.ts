@@ -13,6 +13,8 @@ import { Courselayout } from './layouts/courselayout/courselayout';
 import { Assignmentlist } from './features/assignment/components/assignmentlist/assignmentlist';
 import { Userprofile } from './features/user/components/userprofile/userprofile';
 import { authGuard } from './core/guards/auth-guard';
+import { InstructorCourse } from './features/courses/components/instructor-course/instructor-course';
+import { UserChangePassword } from './features/user/components/user-change-password/user-change-password';
 
 export const routes: Routes = [
   {
@@ -50,20 +52,24 @@ export const routes: Routes = [
     ]
   },
   {
-  path: 'course',
+  path: 'courses',
   component: Mainlayout,
   children: [
     {
-      path: 'detail',
+      path: 'detail/:courseId',
         component: Coursedetail
     },
     {
-      path: 'list',
+      path: 'all',
       component:Courselist
     },
     {
       path: 'mycourse',
       component: Mycourse
+    },
+    {
+      path: 'list',
+      component: InstructorCourse
     }
   ]
 },
@@ -85,6 +91,10 @@ export const routes: Routes = [
     {
       path: 'profile',
       component: Userprofile
+    },
+    {
+      path: 'change-password',
+      component: UserChangePassword
     }
   ]
 }

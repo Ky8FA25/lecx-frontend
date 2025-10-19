@@ -18,6 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans&display=swap"
         rel="stylesheet">
     <link href="/src/assets/css/templatemo-topic-listing.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
 </head>
 
@@ -46,7 +47,7 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link click-scroll" routerLink="/course/list">Courses</a>
+                            <a class="nav-link click-scroll" routerLink="/courses/all">Courses</a>
                         </li>
 
                         <li class="nav-item">
@@ -75,55 +76,57 @@
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ms-3" style="margin-right: 50px;">
-                        @if (isAuthenticated == true)
-                        {
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="dropdown-toggle d-flex align-items-center" asp-action="UserProfile"
-                                asp-controller="Profile" id="userDropdown" role="button" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">
-                                <img src="" class="rounded-circle"
-                                    style="width: 46px; height: 46px;" alt="">                        
+                        <ng-container *ngIf="isAuthenticated(); else notLoggedIn">
+
+                            <li class="nav-item dropdown no-arrow">
+                                <a class="dropdown-toggle d-flex align-items-center" id="userDropdown" role="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img src="" class="rounded-circle" style="width: 46px; height: 46px;" alt="">
+                                    <i class="fa fa-angle-down ms-1"></i>
+                                </a>
+                                <!-- Dropdown - User Information -->
+                                <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-action="Index" asp-controller="Chat" asp-area="">
+                                            <i class="fa fa-envelope fa-sm fa-fw me-2 text-gray-400"></i>Message
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" routerLink="/user/profile">
+                                            <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>Your Profile
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-action="RequestWithdraw"
+                                            asp-controller="Payment">
+                                            <i
+                                                class="fas fas fa-exchange-alt fa-sm fa-fw me-2 text-gray-400"></i>Request
+                                            A
+                                            Transfer
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-action="ListRequest"
+                                            asp-controller="Payment">
+                                            <i class="fas fas fa-history fa-sm fa-fw me-2 text-gray-400"></i>History
+                                            Payment
+                                        </a>
+                                    </li>
+                                    <li class="dropdown-divider"></li>
+                                    <li>
+                                        <button class="dropdown-item" (click)="logout()">
+                                            <i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>Logout
+                                        </button>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ng-container>
+                        <ng-template #notLoggedIn>
+                            <a routerLink="/auth/signin" class="btn custom-btn" style="background-color: darkgrey;">
+                                <i class="fas fa-user me-2"></i> Sign in
                             </a>
-                            <!-- Dropdown - User Information -->
-                            <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-                                <li>
-                                    <a class="dropdown-item" asp-action="Index" asp-controller="Chat" asp-area="">
-                                        <i class="fa fa-envelope fa-sm fa-fw me-2 text-gray-400"></i>Message
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item"routerLink="/user/profile" >
-                                        <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>Your Profile
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-action="RequestWithdraw"
-                                        asp-controller="Payment">
-                                        <i class="fas fas fa-exchange-alt fa-sm fa-fw me-2 text-gray-400"></i>Request A
-                                        Transfer
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-action="ListRequest"
-                                        asp-controller="Payment">
-                                        <i class="fas fas fa-history fa-sm fa-fw me-2 text-gray-400"></i>History Payment
-                                    </a>
-                                </li>
-                                <li class="dropdown-divider"></li>
-                                <li>
-                                    <button class="dropdown-item" (click)="logout()">
-                                        <i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>Logout
-                                    </button>
-                                </li>
-                            </ul>
-                        </li>
-                        }
-                        @else
-                        {
-                        <a routerLink="/auth/signin" class="btn custom-btn" style="background-color: darkgrey;">
-                            <i class="fas fa-user me-2"></i> Sign in
-                        </a>
-                        }
+                        </ng-template>
+
                     </ul>
                 </div>
             </div>

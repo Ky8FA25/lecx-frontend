@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 
@@ -10,8 +10,12 @@ export class Authservice {
   private baseUrl = environment.apiUrl; // API backend
   private accessTokenKey = 'access_token';
   private refreshTokenKey = 'refresh_token';
+  isAuthenticated = signal<boolean>(false);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    const tok = localStorage.getItem(this.accessTokenKey);
+    this.isAuthenticated.set(!!tok);
+  }
 
   login(email: string, password: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/login`, { email, password }).pipe(
@@ -29,6 +33,7 @@ export class Authservice {
   storeTokens(tokens: any) {
     localStorage.setItem(this.accessTokenKey, tokens.accessToken);
     localStorage.setItem(this.refreshTokenKey, tokens.refreshToken);
+    this.isAuthenticated.set(true);
   }
 
   getAccessToken(): string | null {
@@ -38,5 +43,6 @@ export class Authservice {
   logout() {
     localStorage.removeItem(this.accessTokenKey);
     localStorage.removeItem(this.refreshTokenKey);
+    this.isAuthenticated.set(false);
   }
 }

@@ -2,16 +2,16 @@
 <header class="site-header d-flex flex-column justify-content-center align-items-center">
     <div class="container">
         <div class="row justify-content-center align-items-center">
-
+            <ng-container *ngIf="course()">
             <div class="col-lg-5 col-12 mb-5">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Homepage</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">@Model.Course.Title</li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ course()?.title }}</li>
                     </ol>
                 </nav>
-                <h2 class="text-white"> @Model.Course.Title</h2>
-                <h6>@Model.Course.Level</h6>
+                <h2 class="text-white">{{ course()?.title }}</h2>
+                <h6>{{ course()?.level }}</h6>
                 <div class="d-flex align-items-center">
                    
                         <!-- <h7 class="text-whit text-white-50 me-2">(No reviews yet)</h7>
@@ -29,7 +29,7 @@
                     
                     <!-- <h7 class="text-white">@Model.Course.NumberOfStudents students</h7>                 -->
                 </div>
-                <h4 class="text-white">@(Model.Course.Price > 0 ? Model.Course.Price.ToString("N0") + " VNĐ" : "Free")</h4>
+                <h4 class="text-white">{{ course()?.price }} VND</h4>
                 <!-- <h7 class="text-white">Create by: <a class="text-white-50" asp-area="" asp-action="ViewUserProfile" asp-controller="Profile" asp-route-id="@Model.Course.InstructorID"> @Model.Course.Instructor?.AppUser?.FirstName @Model.Course.Instructor?.AppUser?.LastName</a></h7>
                 <h7 class="text-white d-flex mt-2 me-2">
                     Last Update: @Model.Course.LastUpdate.ToString("dd/MM/yyyy")
@@ -67,6 +67,7 @@
                     <img src="@Model.Course.CoverImagePath" class="topics-detail-block-image img-fluid">
                 </div>
             </div>
+            </ng-container>
         </div>
     </div>
 </header>
@@ -77,8 +78,8 @@
         <div class="row">
 
             <div class="col-lg-8 col-12 m-auto">
-                <h3 class="mb-4">Introduction to @Model.Course.Title</h3>
-                <p>@Model.Course.Description</p>
+                <h3 class="mb-4">Introduction to {{ course()?.title }}</h3>
+                <p>{{ course()?.description }}</p>
                 <p>So how can you stand out, do something unique and interesting, build an online business, and get paid enough to change life. Please visit TemplateMo website to download free website templates.</p>
 
                 <p><strong>There are so many ways to make money online</strong>. Below are several platforms you can use to find success. Keep in mind that there is no one path everyone can take. If that were the case, everyone would have a million dollars.</p>
@@ -89,11 +90,11 @@
 
                 <div class="row my-4">
                     <div class="col-lg-6 col-md-6 col-12">
-                        <img src="~/Images/rear-view-young-college-student.jpg" class="topics-detail-block-image img-fluid">
+                        <img src="assets/images/rear-view-young-college-student.jpg" class="topics-detail-block-image img-fluid">
                     </div>
 
                     <div class="col-lg-6 col-md-6 col-12 mt-4 mt-lg-0 mt-md-0">
-                        <img src="~/Images/colleagues-working-cozy-office-medium-shot.jpg" class="topics-detail-block-image img-fluid">
+                        <img src="assets/images/colleagues-working-cozy-office-medium-shot.jpg" class="topics-detail-block-image img-fluid">
                     </div>
                 </div>
 

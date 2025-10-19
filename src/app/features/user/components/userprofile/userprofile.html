@@ -24,26 +24,24 @@
                     <div class="col-md-3">
                     </div>
                     <div class="col-md-5">
-                        <p>{{ user }}</p>
-                        @if(isAuthenticated == true)
-                        {
-                        <h3 class="mt-2 mb-4">{{user?.firstName}} {{ user?.lastName }}</h3>
-                        <p>Username: {{user?.username}}</p>
-                        <p>Email: {{user?.email}}</p>
-                        <p>Address: {{user?.address}}</p>
-                        <p>Date of birth: {{user?.dob}}</p>
-                        <p>Cash: {{user?.walletUser.ToString("N0")}} VNĐ</p>
+                        
+                        <h3 class="mt-2 mb-4">{{user()?.firstName}} {{ user()?.lastName }}</h3>
+                        <p>Username: {{user()?.username}}</p>
+                        <p>Email: {{user()?.email}}</p>
+                        <p>Address: {{user()?.address}}</p>
+                        <p>Date of birth: {{user()?.dob}}</p>
+                        <p>Cash: {{ user()?.walletUser | number:'1.0-0' }} VNĐ</p>
                         <p>
                             Gender
                            
                         </p>
-                    }
+                    
                     </div>
                     <div class="col-md-4 row d-flex align-items-center">
                         <div class="col-md-8">
 
                             <a asp-action="Edit" asp-controller="Profile" style="background-color: yellow;" class="btn custom-btn w-100 mb-3">Edit Profile</a>
-                            <a asp-action="Changepass" asp-controller="Profile" class="btn custom-btn w-100 mb-3">Change Password</a>
+                            <a routerLink="/user/change-password" class="btn custom-btn w-100 mb-3">Change Password</a>
                         </div>
                     </div>
                 </div>

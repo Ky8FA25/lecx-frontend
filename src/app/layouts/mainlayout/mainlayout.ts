@@ -1,15 +1,15 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import "../../../assets/css/templatemo-topic-listing.css";
 import { Authservice } from '../../core/services/authservice';
-import { SlicePipe } from '@angular/common';
 import { GenericServices } from '../../core/services/GenericServices';
 import { ToastrService } from 'ngx-toastr';
-import { HttpClient } from '@angular/common/http';
+import { userDto } from '../../features/user/models/userDto';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-mainlayout',
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink, CommonModule],
   templateUrl: './mainlayout.html',
   styleUrl: './mainlayout.scss'
 })
@@ -19,26 +19,24 @@ export class Mainlayout implements OnInit {
   private router = inject(Router);
   private toastr = inject(ToastrService);
   private genericservice = inject(GenericServices);
-  private http = inject(HttpClient);
-
-  isAuthenticated = false;
-  user: any = null;
+  isAuthenticated = signal(false);
+  user = signal<userDto | any>(null);
 
   constructor() { }
 
   ngOnInit() {
     const token = this.authService.getAccessToken();
-    this.isAuthenticated = !!token;
 
-    if (this.isAuthenticated) {
-     // this.loadUserProfile();
+    if (token) {
+      this.isAuthenticated.set(true)
+      this.loadUserProfile();
     }
   }
 
   loadUserProfile() {
     this.genericservice.get('api/profile/me').subscribe({
       next: (data) => {
-        this.user = data;
+        this.user.set(data);
         console.log('✅ User profile loaded:', this.user);
       },
       error: (err) => {
@@ -51,8 +49,8 @@ export class Mainlayout implements OnInit {
 
   logout() {
     this.authService.logout();
-    this.isAuthenticated = false;
-    this.user = null;
+    this.isAuthenticated.set(false);
+    this.user.set(null);
     this.router.navigate(['/auth/signin']);
   }
   
