@@ -1,0 +1,125 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f9f9f9;
+    background-image: url('/Images/cute-wallet-with-money-cartoon-icon-illustration-finance-object-concept-isolated-premium-flat-cartoon-style-vector.jpg');
+    background-size: 50%; /* Điều chỉnh kích thước ảnh nền */
+    background-repeat: no-repeat; /* Không lặp lại ảnh nền */
+    background-position: right top; /* Di chuyển ảnh nền sang bên phải */
+}
+
+header {
+    background-color: lightseagreen;
+    color: #fff;
+    padding: 20px;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+}
+
+    header h1 {
+        margin: 0;
+        font-size: 24px;
+    }
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-size: 16px;
+    color: black;
+    align-content: start;
+}
+
+input[type="text"], input[type="number"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 250px;
+    font-size: 16px;
+}
+
+input[type="submit"] {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+    input[type="submit"]:hover {
+        background-color: #3e8e41;
+    }
+
+.denomination-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+    .denomination-buttons button {
+        margin: 10px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #f0f0f0;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 16px;
+        color: #333;
+    }
+
+        .denomination-buttons button:hover {
+            background-color: #ccc;
+        }
+
+        .denomination-buttons button[value="other"] {
+            background-color: #ffff99;
+        }
+
+h2#balance {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+    h2#balance span {
+        font-size: 24px;
+        color: #333;
+    }
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+footer {
+    background-color: lightseagreen;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    clear: both;
+    border-top: 1px solid #ccc;
+}

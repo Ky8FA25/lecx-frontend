@@ -1,0 +1,29 @@
+﻿/* Container and Row Adjustments */
+.align-items-start {
+    margin-top: 2rem;
+}
+
+/* Card Styling */
+.bg-white {
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+    .bg-white:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+/* Button Styling */
+.btn-success, .btn-primary, .btn-info {
+    font-weight: 500;
+    transition: transform 0.2s ease;
+}
+
+    .btn-success:hover, .btn-primary:hover, .btn-info:hover {
+        transform: scale(1.02);
+    }
+
+.btn i {
+    margin-right: 5px;
+}

@@ -1,13 +1,13 @@
 <div class="login-card">
         <div class="home-icon">
-            <i class="bi bi-house-fill"></i>
+            <i class="bi bi-house-fill" routerLink="/home/main"></i>
         </div>
         
         <h1 class="login-title">Login</h1>
         
         <form [formGroup]="loginform" (ngSubmit)="onLoginSubmit()">
             <div class="mb-3">
-                <input type="text" class="form-control" formControlName="email" placeholder="Username" required>
+                <input type="text" class="form-control" formControlName="EmailOrUserName" placeholder="Username" required>
             </div>
             
             <div class="mb-3">
@@ -21,7 +21,7 @@
                         Remember Me?
                     </label>
                 </div>
-                <a href="#" class="forgot-link">Forgot Password</a>
+                <a routerLink="/auth/enterotp" class="forgot-link">Forgot Password</a>
             </div>
             
             <button type="submit" class="btn btn-signin">Sign In</button>

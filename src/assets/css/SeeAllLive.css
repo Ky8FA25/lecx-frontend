@@ -1,0 +1,100 @@
+﻿/* General Card Styling */
+.card {
+    max-width: 600px;
+    margin: auto;
+    background-color: #1c1c1c;
+    color: #eaeaea;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-weight: bold;
+    color: #3498db;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+}
+
+.text-muted {
+    color: #a9a9a9 !important;
+}
+
+/* Flashing red dot for active streams */
+.active-dot {
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    margin-left: 8px;
+    animation: flash 1s infinite;
+}
+
+@keyframes flash {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+/* Thumbnail Image */
+.img-thumbnail {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* Button Group Styling */
+.btn {
+    margin: 3px 5px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 5px 10px;
+}
+
+.btn-sm {
+    padding: 0.3rem 0.75rem;
+    border-radius: 5px;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    border: none;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    border: none;
+}
+
+.btn-warning {
+    background-color: #f39c12;
+    border: none;
+}
+
+.btn-info {
+    background-color: #1abc9c;
+    border: none;
+}
+
+.btn-success {
+    background-color: #2ecc71;
+    border: none;
+}
+
+/* Warning Message Styling */
+.text-warning {
+    color: #f1c40f;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}

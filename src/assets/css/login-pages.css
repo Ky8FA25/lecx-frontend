@@ -1,0 +1,151 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    background-image: linear-gradient(15deg, #13547a 0%, #80d0c7 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 320px;
+}
+
+.login-form h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: black; /* Make all labels black */
+    font-size: 14px;
+}
+
+.login-form input[type="text"],
+.login-form input[type="email"],
+.login-form input[type="password"] {
+    width: 93%; /* Ensure full width */
+    padding: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    border: 1px solid #5a8a8b;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.login-form button {
+    background-image: linear-gradient(15deg, #458D9D 0%, #5099A5 100%);
+    color: white;
+    border: 1px solid #5a8a8b;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    width: 100%;
+    margin-top: 10px;
+}
+
+    .login-form button:hover {
+        background-image: linear-gradient(15deg, #13547a 0%, #458D9D 100%);
+    }
+
+.login-form a {
+    text-decoration: none;
+    color: #13547a; /* Apply theme color to links */
+    font-size: 14px;
+}
+
+.login-form .separator {
+    text-align: center;
+    margin: 15px 0;
+    position: relative;
+}
+
+    .login-form .separator span {
+        background-color: #fff;
+        padding: 0 10px;
+        color: black; /* Span text color black */
+        position: relative;
+        z-index: 1;
+    }
+
+    .login-form .separator::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: #ccc;
+        z-index: 0;
+    }
+
+.login-form .social-login a {
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #13547a; /* Apply theme color to social login */
+    background-color: white;
+    border: 1px solid #5a8a8b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+    .login-form .social-login a i {
+        margin-right: 8px;
+    }
+
+.login-form .separator .signup-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+
+
+.remember-me-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 11px;
+}
+
+    .remember-me-container label {
+        font-weight: normal;
+        color: black; /* Make the "Remember Me" label black */
+        display: flex;
+        align-items: center;
+    }
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+}
+
+.loading {
+    font-size: 20px;
+    color: black;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
