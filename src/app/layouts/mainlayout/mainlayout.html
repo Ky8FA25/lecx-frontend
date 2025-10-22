@@ -81,7 +81,7 @@
                             <li class="nav-item dropdown no-arrow">
                                 <a class="dropdown-toggle d-flex align-items-center" id="userDropdown" role="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img src="" class="rounded-circle" style="width: 46px; height: 46px;" alt="">
+                                    <img [src]="user()?.profileImagePath || 'assets/images/default.jpg'" class="rounded-circle" style="width: 48px; height: 46px;" alt="">
                                     <i class="fa fa-angle-down ms-1"></i>
                                 </a>
                                 <!-- Dropdown - User Information -->
