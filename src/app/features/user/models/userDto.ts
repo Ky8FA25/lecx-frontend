@@ -5,4 +5,5 @@ export interface userDto {
     avatarUrl: string;
     firstname: string;
     lastname: string;
+    profileImagePath: string;
 }

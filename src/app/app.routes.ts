@@ -2,10 +2,8 @@ import { Routes } from '@angular/router';
 import { Login } from './features/auth/components/login/login';
 import { AuthLayout } from './layouts/auth-layout/auth-layout';
 import { Register } from './features/auth/components/register/register';
-import { VerifyEmail } from './features/auth/components/verify-email/verify-email';
 import { Mainlayout } from './layouts/mainlayout/mainlayout';
 import { Home } from './features/home/components/home/home';
-import { Component } from '@angular/core';
 import { Coursedetail } from './features/courses/components/coursedetail/coursedetail';
 import { Courselist } from './features/courses/components/courselist/courselist';
 import { Mycourse } from './features/courses/components/mycourse/mycourse';
@@ -15,6 +13,9 @@ import { Userprofile } from './features/user/components/userprofile/userprofile'
 import { authGuard } from './core/guards/auth-guard';
 import { InstructorCourse } from './features/courses/components/instructor-course/instructor-course';
 import { UserChangePassword } from './features/user/components/user-change-password/user-change-password';
+import { EditUserProfile } from './features/user/components/edit-user-profile/edit-user-profile';
+import { ForgotPassword } from './features/auth/components/forgot-password/forgot-password';
+import { ResetPassword } from './features/auth/components/reset-password/reset-password';
 
 export const routes: Routes = [
   {
@@ -36,8 +37,12 @@ export const routes: Routes = [
         component: Register
       },
       {
-        path: 'enterotp',
-        component: VerifyEmail
+        path: 'forgot-password',
+        component: ForgotPassword
+      },
+      {
+        path: 'reset-password',
+        component: ResetPassword
       }
     ]  
   },
@@ -95,6 +100,10 @@ export const routes: Routes = [
     {
       path: 'change-password',
       component: UserChangePassword
+    },
+    {
+      path: 'edit-user',
+      component: EditUserProfile
     }
   ]
 }
