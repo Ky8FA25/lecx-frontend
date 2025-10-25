@@ -3,6 +3,7 @@ import { inject, Injectable } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { environment } from "../../../environments/environment.development";
 import { ToastrService } from "ngx-toastr";
+import { Title } from "@angular/platform-browser";
 @Injectable({
   providedIn: 'root'
 })
@@ -11,7 +12,7 @@ export class GenericServices {
     private http = inject(HttpClient);
   private baseUrl = environment.apiUrl; 
   private subscriptions = new Subscription();
-
+  private titleService = inject(Title);
 
   getWithHeaders(url: string, headers: any) {
   return this.http.get(`${environment.apiUrl}/${url}`, { headers });
@@ -53,5 +54,10 @@ export class GenericServices {
   }
   DeleteSubscription() {
     this.subscriptions.unsubscribe();
+  }
+
+  // set title
+  SetTitle(param : string) {
+    this.titleService.setTitle(param);
   }
 }
