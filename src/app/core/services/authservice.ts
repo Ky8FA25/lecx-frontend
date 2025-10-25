@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
+import { Role } from '../enums/enums';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,11 @@ export class Authservice {
     this.isAuthenticated.set(!!tok);
   }
 
+  getRole(): Role {
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
+    return userData.role as Role;
+  }
+  
   login(email: string, password: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/login`, { email, password }).pipe(
       tap((tokens: any) => {

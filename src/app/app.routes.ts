@@ -21,8 +21,10 @@ import { Mainlayout } from './layouts/main-layout/main-layout';
 import { CourseLayout } from './layouts/course-layout/course-layout';
 import { Coursedetail } from './features/courses/components/course-detail/course-detail';
 import { Courselist } from './features/courses/components/course-list/course-list';
+import { NotFound } from './features/not-found/not-found';
 
 export const routes: Routes = [
+  
   {
     path: '',
     redirectTo: 'home/main',
@@ -143,5 +145,14 @@ export const routes: Routes = [
       component:DoTest
     }
   ]
-}
+},
+{
+    path: 'unauthorized',
+    component: NotFound
+  },
+  // ⚠️ Đặt cuối cùng để bắt tất cả route sai
+  {
+    path: '**',
+    component: NotFound
+  }
 ];

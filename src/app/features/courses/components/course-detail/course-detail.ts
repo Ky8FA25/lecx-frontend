@@ -7,7 +7,7 @@ import { SharedModule } from '../../../../core/shared/sharedModule';
 
 @Component({
   selector: 'app-coursedetail',
-  imports: [CurrencyPipe, SharedModule],
+  imports: [SharedModule],
   templateUrl: './course-detail.html',
   styleUrl: './course-detail.scss'
 })
