@@ -1,0 +1,93 @@
+.test-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.question-nav {
+    width: 25%;
+    padding-right: 15px;
+    border-right: 2px solid #e9ecef;
+}
+
+.question-content {
+    width: 70%;
+}
+
+.question-box {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.question-nav-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+    .question-nav-buttons button {
+        width: 100%;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        text-align: center;
+        font-weight: bold;
+        color: #495057;
+        cursor: pointer;
+    }
+
+        .question-nav-buttons button.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+.timer {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    color: #343a40;
+}
+
+.answer-options {
+    margin-left: 20px;
+}
+
+.form-check-label {
+    margin-left: 10px;
+}
+
+.next-button {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    text-align: center;
+}
+
+.modal button {
+    margin: 5px;
+}

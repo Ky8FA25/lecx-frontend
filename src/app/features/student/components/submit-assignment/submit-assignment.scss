@@ -1,0 +1,116 @@
+/* Toàn bộ trang */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* canh giữa theo chiều dọc */
+  background-color: #f7f9fc; /* nền xám nhạt */
+}
+
+/* Form box */
+.modal-dialog {
+  width: 500px;
+}
+
+.modal-content {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+/* Header */
+.modal-header {
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+
+  h4 {
+    font-weight: 600;
+    font-size: 22px;
+    margin: 0;
+  }
+
+  a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 14px;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #0056b3;
+    }
+
+    i {
+      margin-right: 4px;
+    }
+  }
+}
+
+/* Body */
+.modal-body {
+  padding: 20px 24px;
+}
+
+/* Label & Inputs */
+.form-label {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 6px;
+  display: block;
+}
+
+input[type='radio'] {
+  margin-right: 6px;
+  cursor: pointer;
+}
+
+input[type='url'],
+input[type='file'] {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px 10px;
+  width: 100%;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #8ad0c6;
+    box-shadow: 0 0 0 2px rgba(138, 208, 198, 0.2);
+  }
+}
+
+/* Nút submit */
+button[type='submit'] {
+  background-color: #8ad0c6;
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 10px;
+  width: 100%;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #78c2b7;
+  }
+
+  &:disabled {
+    background-color: #c3e7e2;
+    cursor: not-allowed;
+  }
+}
+
+/* Radio group */
+.mb-3 {
+  margin-bottom: 20px;
+}
+
+/* Optional: hiệu ứng fade cho phần ẩn/hiện */
+[hidden] {
+  display: none !important;
+}

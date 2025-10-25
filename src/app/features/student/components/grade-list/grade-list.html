@@ -1,0 +1,93 @@
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Student's Grade List</h1>
+    <p class="mb-4">
+    To pass this course,
+    you must complete all the lectures
+    and have an average score of 5 or above.
+    </p>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Assignment</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Grade</th>
+                            <th>Submit at</th>        
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- @if (Model.scoreAssignments.Any())
+                        {
+                            @foreach (var item in Model.scoreAssignments)
+                            {
+                                var submission = Model.submissions.FirstOrDefault(p => p.AssignmentID == item.AssignmentID); -->
+                                <tr>
+                                    <td>@item.Assignment.Title</td>
+                                    <td>@item.Score</td>
+                                    <td>@submission.SubmissionDate</td>                 
+                                </tr>
+                            <!-- }
+                        }
+                        else
+                        { -->
+                            <tr>
+                                <td colspan="3" style="text-align: center;">You haven't done any assignments.</td>
+                            </tr>
+                        <!-- } -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Test</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            
+                            <th>Grade</th>
+                            <th>Done At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- @if (Model.scoretests.Any())
+{
+                        @foreach (var item in Model.scoretests)
+                        { -->
+                            <tr>
+                                <td>@item.Test.Title</td>
+                                <td>@item.Score</td>
+                                <td>@item.DoTestAt</td>
+
+                            </tr>
+                        <!-- }
+
+
+                        }
+                        else
+                        { -->
+                            <tr>
+                                <td colspan="3" style="text-align: center;">You haven't done any test.</td>
+                            </tr>
+                        <!-- } -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

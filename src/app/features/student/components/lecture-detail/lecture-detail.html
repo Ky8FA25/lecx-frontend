@@ -1,0 +1,230 @@
+<div class="container-fluid">
+
+  <!-- Page Heading -->
+  <h1 class="h3 mb-2 text-gray-800 d-flex align-items-center">
+    Lecture Title
+    <i class="ml-2 fas"></i>
+
+    <div class="dropdown ml-auto">
+      <button
+        class="btn"
+        type="button"
+        id="dropdownMenuButton"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <i class="fas fa-cog"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+        <li class="mb-2">
+          <button class="dropdown-item">Mark as completed</button>
+        </li>
+        <li>
+          <a
+            class="dropdown-item text-danger"
+            data-bs-toggle="modal"
+            data-bs-target="#reportLectureModal"
+            >Report Lecture <i class="far fa-flag ms-2"></i
+          ></a>
+        </li>
+      </ul>
+    </div>
+  </h1>
+
+  <p class="mb-4">
+    Lecture description goes here.
+  </p>
+
+  <div class="row">
+    <div class="col-xl-8 col-lg-7">
+      <div class="card shadow mb-4">
+        <div class="position-relative">
+          <video class="card-img-top" controls style="height: 100%; width: 100%">
+            <source src="assets/videos/sample.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+
+        <div class="m-3">
+          <h5>Documents</h5>
+
+          <div class="position-relative mb-2">
+            <i class="fas fa-file-alt me-2 ms-2"></i>
+            <a href="#" class="btn-link" target="_blank">
+              Example_Document_Name.pdf
+            </a>
+          </div>
+
+          <div class="position-relative m-1">
+            <p>No documents yet.</p>
+          </div>
+
+          <button class="btn btn-completed p-3 m-2 ml-auto">
+            Mark as completed <i class="fas fa-check-circle ml-1"></i>
+          </button>
+
+          <button class="btn btn-outline-black p-3 m-2 ml-auto">
+            Go to next lecture
+          </button>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between mt-3 mb-5">
+        <button class="btn btn-outline-black">
+          <i class="fas fa-chevron-left mr-2"></i>Previous
+        </button>
+
+        <button class="btn btn-outline-black">
+          Next <i class="fas fa-chevron-right ml-1"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Discussion -->
+    <div class="col-xl-4 col-lg-5">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-info">Discussion</h6>
+        </div>
+
+        <div class="card-body position-relative" style="height: 400px; overflow-y: auto">
+          <!-- Comment list -->
+          <div class="comment-list">
+            <!-- example comments -->
+            <p>User 1: Great lecture!</p>
+            <p>User 2: Thanks for sharing.</p>
+          </div>
+
+          <!-- Comment input -->
+          <div
+            class="border-top p-2 bg-white w-100"
+            style="position: absolute; bottom: 0px; z-index: 1; left: 0"
+          >
+            <form class="input-group d-flex align-items-end">
+              <label
+                for="file-upload"
+                class="btn btn-info mr-2 m-0 d-flex align-items-center"
+                style="border-radius: 20px; height: 40px"
+                ><i class="bi bi-plus-lg"></i
+              ></label>
+              <input
+                type="file"
+                id="file-upload"
+                class="d-none"
+                accept=".pdf,.doc,.docx,.ppt,.pptx, image/*"
+                multiple
+              />
+
+              <textarea
+                class="form-control"
+                placeholder="Write your comment"
+                rows="1"
+                style="border-radius: 20px; resize: none"
+                required
+              ></textarea>
+
+              <button
+                type="submit"
+                class="btn btn-info ml-2"
+                style="border-radius: 20px; height: 40px"
+              >
+                <i class="bi bi-send-fill"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Report Modal -->
+<div
+  class="modal fade"
+  id="reportLectureModal"
+  tabindex="-1"
+  aria-labelledby="reportCourseModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Report Lecture</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <p>Please select the reason for reporting this lecture:</p>
+
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="Reason"
+              id="reason1"
+              value="Inappropriate content"
+              required
+            />
+            <label class="form-check-label" for="reason1">Inappropriate content</label>
+          </div>
+
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="Reason"
+              id="reason2"
+              value="Misleading information"
+              required
+            />
+            <label class="form-check-label" for="reason2">Misleading information</label>
+          </div>
+
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="Reason"
+              id="reason3"
+              value="Copyright infringement"
+              required
+            />
+            <label class="form-check-label" for="reason3">Copyright infringement</label>
+          </div>
+
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="Reason"
+              id="otherReason"
+              value="Other"
+              required
+            />
+            <label class="form-check-label" for="otherReason">Other</label>
+          </div>
+
+          <div class="mt-3">
+            <label for="otherReasonText" class="form-label">Please specify:</label>
+            <textarea
+              class="form-control"
+              name="OtherReason"
+              id="otherReasonText"
+              rows="3"
+              readonly
+              required
+            ></textarea>
+          </div>
+
+          <div class="mt-3 text-end">
+            <button type="button" class="btn custom-btn me-1" data-bs-dismiss="modal">
+              Cancel
+            </button>
+            <button type="submit" class="btn custom-btn">Submit Report</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
