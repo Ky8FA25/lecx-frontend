@@ -11,11 +11,13 @@ import { Courselayout } from './layouts/courselayout/courselayout';
 import { Assignmentlist } from './features/assignment/components/assignmentlist/assignmentlist';
 import { Userprofile } from './features/user/components/userprofile/userprofile';
 import { authGuard } from './core/guards/auth-guard';
-import { InstructorCourse } from './features/courses/components/instructor-course/instructor-course';
 import { UserChangePassword } from './features/user/components/user-change-password/user-change-password';
 import { EditUserProfile } from './features/user/components/edit-user-profile/edit-user-profile';
 import { ForgotPassword } from './features/auth/components/forgot-password/forgot-password';
 import { ResetPassword } from './features/auth/components/reset-password/reset-password';
+import { InstructorMyCourseComponent } from './features/instructor/components/mycourse/instructor-mycourse';
+import { CourseDetailComponent } from './features/instructor/components/course-detail/course-detail.component';
+
 
 export const routes: Routes = [
   {
@@ -71,11 +73,7 @@ export const routes: Routes = [
     {
       path: 'mycourse',
       component: Mycourse
-    },
-    {
-      path: 'list',
-      component: InstructorCourse
-    }
+    }   
   ]
 },
 {
@@ -105,6 +103,20 @@ export const routes: Routes = [
       path: 'edit-user',
       component: EditUserProfile
     }
+  ]
+},
+{
+  path: 'instructor',
+  component: Mainlayout,
+  children: [
+    {
+      path: 'courses',
+      component: InstructorMyCourseComponent
+    },
+    {
+  path: 'courses/detail/:courseId',
+  component: CourseDetailComponent
+}
   ]
 }
 ];

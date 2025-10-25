@@ -1,0 +1,134 @@
+<header class="site-header d-flex flex-column justify-content-center align-items-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-5 col-12">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a routerLink="/">Homepage</a></li>
+            <li class="breadcrumb-item active" aria-current="page">My Courses</li>
+          </ol>
+        </nav>
+        <h2 class="text-white">My Courses</h2>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="topics-section">
+  <div class="button-group d-flex justify-content-between align-items-center">
+    <div>
+      <button class="btn custom-btn active" (click)="openCreateModal()">
+        <i class="fas fa-plus new-icon"></i> Create new course
+      </button>
+    </div>
+    <div>
+      <select class="filter-select me-2" [(ngModel)]="category" (change)="filterByCategory()">
+        <option value="">All Category</option>
+        <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
+      </select>
+      <select class="filter-select" [(ngModel)]="level" (change)="filterByCategory()">
+        <option value="">All Level</option>
+        <option value="beginner">Beginner</option>
+        <option value="intermediate">Intermediate</option>
+        <option value="advanced">Advanced</option>
+      </select>
+    </div>
+  </div>
+
+  <ng-container *ngIf="courses.length > 0; else noCourses">
+    <div *ngFor="let course of courses" class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
+      <div class="row">
+        <div class="col-md-2">
+          <img [src]="course.coverImagePath" class="custom-block-image rounded img-fluid ms-3" alt="">
+        </div>
+
+        <div class="col-md-9 row custom-block-topics-listing-info">
+          <div class="col-md-11 ms-3">
+            <div class="d-flex">
+              <h4 class="mb-2">
+                {{ course.title }}
+                <span class="dot" [ngClass]="course.status ? 'text-danger' : 'text-muted'">&#9679;</span>
+              </h4>
+            </div>
+            <h6>{{ course.level | titlecase }}</h6>
+            <p>Instructor: {{ course.instructor.appUser.firstName }} {{ course.instructor.appUser.lastName }}</p>
+            <div class="row progress-group d-flex justify-content-between">
+              <div class="col-md-3">
+                <a [routerLink]="['/participation', course.courseID]" class="btn custom-btn mt-auto mt-lg-4">Go to course</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-1 d-flex justify-content-end align-items-start">
+          <div class="dropdown">
+            <button class="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" [routerLink]="['/instructor/courses/detail', course.courseID]">Course Detail</a>
+              <li><a class="dropdown-item" (click)="openUpdateModal(course)">Update Course</a></li>
+              <li>
+                <a class="dropdown-item" [ngClass]="{ 'text-danger': course.status }"
+                  (click)="toggleStatus(course)">
+                  {{ course.status ? 'Disable Course' : 'Enable Course' }}
+                </a>
+              </li>
+              <li *ngIf="!course.status">
+                <a class="dropdown-item text-danger" (click)="deleteCourse(course)">Delete Course</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #noCourses>
+    <div class="col-lg-12 col-12 text-center">
+      <h6 class="text-secondary" style="padding: 80px;">no course available</h6>
+    </div>
+  </ng-template>
+</section>
+
+<section class="section-padding section-bg">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 col-12">
+        <h3 class="mb-4">Trending Topics</h3>
+      </div>
+
+      <div class="col-lg-6 col-md-6 col-12 mt-3 mb-4 mb-lg-0">
+        <div class="custom-block bg-white shadow-lg">
+          <a routerLink="/course/category/1">
+            <div class="d-flex">
+              <div>
+                <h5 class="mb-2">Programming</h5>
+                <p class="mb-0">Courses related to programming and software development</p>
+              </div>
+              <span class="badge bg-music rounded-pill ms-auto">30</span>
+            </div>
+            <img src="assets/images/topics/undraw_Podcast_audience_re_4i5q.png" class="custom-block-image img-fluid" alt="">
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-md-6 col-12 mt-lg-3">
+        <div class="custom-block custom-block-overlay">
+          <div class="d-flex flex-column h-100">
+            <img src="assets/images/businesswoman-using-tablet-analysis.jpg" class="custom-block-image img-fluid" alt="">
+            <div class="custom-block-overlay-text d-flex">
+              <div>
+                <h5 class="text-white mb-2">Finance</h5>
+                <p class="text-white">Courses focused on data analysis and machine learning.</p>
+                <a routerLink="/course/category/2" class="btn custom-btn mt-2 mt-lg-3">Learn More</a>
+              </div>
+              <span class="badge bg-graphic rounded-pill ms-auto">25</span>
+            </div>
+            <div class="section-overlay"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

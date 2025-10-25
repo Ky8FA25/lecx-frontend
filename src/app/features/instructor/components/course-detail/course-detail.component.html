@@ -1,0 +1,115 @@
+<header class="site-header d-flex flex-column justify-content-center align-items-center">
+  <div class="container">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-lg-5 col-12 mb-5">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a routerLink="/home/main">Homepage</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ course?.title }}</li>
+          </ol>
+        </nav>
+        <h2 class="text-white">{{ course?.title }}</h2>
+        <h6>{{ course?.level }}</h6>
+
+        <div class="d-flex align-items-center">
+          <ng-container *ngIf="course?.numberOfRate === 0; else rated">
+            <h6 class="text-white-50 me-2">(No reviews yet)</h6>
+          </ng-container>
+          <ng-template #rated>
+            <h6 class="text-white me-2">{{ course.rating }}</h6>
+            <div class="stars me-2 mb-1">
+              <ng-container *ngFor="let star of [1,2,3,4,5]">
+                <span class="star" [innerHTML]="star <= course.rating ? '&#9733;' : '&#9734;'"></span>
+              </ng-container>
+            </div>
+            <h6 class="text-white-50 me-3">({{ course.numberOfRate }} rates)</h6>
+          </ng-template>
+          <h6 class="text-white">{{ course.numberOfStudents }} students</h6>
+        </div>
+
+        <h4 class="text-white">
+          {{ course.price > 0 ? (course.price | number) + ' VNĐ' : 'Free' }}
+        </h4>
+
+        <h6 class="text-white">
+          Created by: {{ course?.instructor?.appUser?.firstName }} {{ course?.instructor?.appUser?.lastName }}
+        </h6>
+        <h6 class="text-white d-flex mt-2 me-2">
+          Last Update: {{ course?.lastUpdate }}
+        </h6>
+
+        <!-- <div class="d-flex align-items-center mt-4">
+          <a class="btn custom-btn smoothscroll me-4" [routerLink]="['/participation', course.courseID]">Go to course</a>
+        </div> -->
+      </div>
+
+      <div class="col-lg-5 col-12">
+        <div class="topics-detail-block bg-white shadow-lg">
+          <img [src]="course.coverImagePath" class="topics-detail-block-image img-fluid">
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="topics-detail-section section-padding" id="topics-detail">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-12 m-auto">
+        <h3 class="mb-4">Introduction to {{ course.title }}</h3>
+        <p>{{ course.description }}</p>
+        <!-- static dummy text -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="comments" class="section-padding bg-light">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-12">
+        <h3 class="mb-4 text-center">Student Reviews</h3>
+
+        <div *ngIf="yourReview" class="card mb-4 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="d-flex align-items-center">
+                <img [src]="yourReview.user.profileImagePath" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                <div>
+                  <h5 class="mb-0">Me</h5>
+                  <div id="my-review-rating">
+                    <ng-container *ngFor="let star of [1,2,3,4,5]">
+                      <span [ngClass]="{'text-warning': star <= yourReview.rating, 'text-muted': star > yourReview.rating}">
+                        &#9733;
+                      </span>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="card-text" id="my-review-text">{{ yourReview.comment }}</p>
+          </div>
+        </div>
+
+        <div *ngFor="let review of reviews" class="card mb-4 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-3">
+              <img [src]="review.user.profileImagePath" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+              <div>
+                <h5 class="mb-0">{{ review.user.firstName }} {{ review.user.lastName }}</h5>
+                <div>
+                  <ng-container *ngFor="let star of [1,2,3,4,5]">
+                    <span [ngClass]="{'text-warning': star <= review.rating, 'text-muted': star > review.rating}">
+                      &#9733;
+                    </span>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <p class="card-text">{{ review.comment }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

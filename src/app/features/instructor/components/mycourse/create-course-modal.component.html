@@ -1,0 +1,67 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ courseData ? 'Update' : 'Create' }} Course</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body">
+  <form>
+    <div class="mb-3">
+      <label class="form-label">Course Code</label>
+      <input class="form-control" [(ngModel)]="course.courseCode" name="courseCode" required />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Title</label>
+      <input class="form-control" [(ngModel)]="course.title" name="title" required />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea class="form-control" [(ngModel)]="course.description" name="description" rows="3" required></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Category</label>
+      <select class="form-select" [(ngModel)]="course.categoryId" name="categoryId">
+        <option value="1">Programming</option>
+        <option value="2">Finance</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Level</label>
+      <select class="form-select" [(ngModel)]="course.level" name="level">
+        <option value="beginner">Beginner</option>
+        <option value="intermediate">Intermediate</option>
+        <option value="advanced">Advanced</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Price</label>
+      <input type="number" class="form-control" [(ngModel)]="course.price" name="price" min="0" step="1000" />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Cover Image</label>
+      <input type="file" class="form-control" (change)="onFileChange($event, 'cover')" />
+      
+      <!-- Ảnh preview -->
+      <div *ngIf="previewImageUrl" class="mt-2 text-center">
+        <img [src]="previewImageUrl" alt="Preview" class="img-fluid rounded shadow-sm" style="max-height: 200px;">
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Course Materials</label>
+      <input type="file" class="form-control" (change)="onFileChange($event, 'materials')" multiple />
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
+  <button class="btn btn-primary" (click)="saveCourse()">
+    {{ courseData ? 'Update' : 'Create' }} Course
+  </button>
+</div>
