@@ -1,0 +1,48 @@
+
+<div class="container-fluid">
+    
+
+        <div class="card shadow row m-3">
+            <div class="m-3">
+                <h4>Material</h4>
+            </div>
+            <!-- @if(Model != null && Model.Any()){
+            @foreach (var mateial in Model)
+            {
+            
+                        string iconClass = "";
+
+                        switch (mateial.fileExtension.ToLower())
+                        {
+                            case ".pdf":
+                                iconClass = "fas fa-file-pdf text-danger";
+                                break;
+                            case ".pptx":
+                                iconClass = "fas fa-file-powerpoint text-warning";
+                                break;
+                            case ".docx":
+                                iconClass = "fas fa-file-word text-primary";
+                                break;
+                            case ".xlsx":
+                                iconClass = "fas fa-file-excel text-success";
+                                break;
+                            default:
+                                iconClass = "fas fa-file";
+                                break;
+                        } -->
+                        <div class="position-relative mb-2 px-4 mb-3">
+                            <i class="@iconClass me-2 ms-2 fs-3"></i>
+                    <a href="@mateial.MaterialsLink" class="btn-link" target="_blank">@mateial.FIleName</a>
+                        </div>
+                    
+                <!-- }
+            }
+        else
+        { -->
+            <div class="d-flex align-items-center justify-content-center mb-5" style="height: 60vh;">
+                <h5 class="text-muted">No materials available</h5>
+            </div>
+
+        <!-- } -->
+        </div>
+</div>

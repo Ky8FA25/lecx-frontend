@@ -1,0 +1,52 @@
+
+<section class="hero-section d-flex justify-content-center align-items-center" id="section_1">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</section>
+
+<section class="featured-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-3 col-12 mb-4 mb-lg-0 d-flex justify-content-end">
+                <div class="custom-block shadow-lg rounded-circle" style="width: 250px; height: 250px; margin-top: -30px;">
+                    <div class="profile-img">
+                        <img  [src]="user()?.profileImagePath || 'assets/images/default.jpg'" alt="Profile Image" style="margin-top: -30px; margin-left: -30px">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 col-12">
+            </div>
+            <div class="container emp-profile" style="height: 100%; margin-top: -120px">
+                <div class="row">
+                    <div class="col-md-3">
+                    </div>
+                    <div class="col-md-5">
+                        
+                        <h3 class="mt-2 mb-4">{{user()?.firstName}} {{ user()?.lastName }}</h3>
+                        <p>Email: {{user()?.email}}</p>
+                        <p>Address: {{user()?.address}}</p>
+                        <p>Date of birth: {{user()?.dob}}</p>
+                        <p>Phone: {{user()?.phoneNumber}}</p>                    
+                        <p>Cash: {{ user()?.walletUser | number:'1.0-0' }} VNĐ</p>
+                        <p>
+                           Gender: {{ user()?.gender === 0 ? 'Male' : 'Female' }}
+                           
+                        </p>
+                    
+                    </div>
+                    <div class="col-md-4 row d-flex align-items-center">
+                        <div class="col-md-8">
+
+                            <a routerLink="/user/edit-user" style="background-color: #80d0c7; " class="btn custom-btn w-100 mb-3">Edit Profile</a>
+                            <a routerLink="/user/change-password" style="background-color: #80d0c7;" class="btn custom-btn w-100 mb-3">Change Password</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+

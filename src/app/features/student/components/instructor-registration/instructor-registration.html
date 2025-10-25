@@ -1,0 +1,73 @@
+<header class="site-header d-flex flex-column justify-content-center align-items-center">
+    <div class="container">
+        <div class="row align-items-center">
+
+            <div class="col-lg-5 col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Homepage</a></li>
+
+                        <li class="breadcrumb-item active" aria-current="page">Teaching</li>
+                    </ol>
+                </nav>
+
+                <h2 class="text-white">Join with us</h2>
+            </div>
+
+        </div>
+    </div>
+</header>
+<section class="section-padding section-bg">
+    <div class="container">
+        <div class="row">
+
+            <!-- Phần bên trái -->
+            <div class="col-lg-6 col-12">
+                <h3 class="mb-4 pb-2">Become an instructor today!</h3>
+                <ul>
+                    <li>Imparting knowledge to students</li>
+                    <li>Develop communication and leadership skills</li>
+                    <li>Learn from students and colleagues</li>
+                    <li>Join the education community</li>
+                </ul>
+                    <div>
+                    <button type="button" class="btn custom-btn mt-3" data-bs-toggle="modal" data-bs-target="#joinNowModal" style="background-color: #80d0c7; border-radius: 50px;">JOIN NOW!</button>
+                    </div>
+            </div>
+
+            <!-- Phần bên phải -->
+            <div class="col-lg-6 col-12 text-center">
+                <img src="assets/images/joinus.png" alt="Teacher Image" class="img-fluid rounded">
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="joinNowModal" tabindex="-1" aria-labelledby="joinNowModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="joinNowModalLabel">Join as Instructor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="InstructorRegistration" asp-controller="Student" asp-area="Student" method="post" enctype="multipart/form-data">
+            <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="fileUpload" class="form-label">Upload your CV (PDF)</label>
+                        <input type="file" class="form-control" id="fileUpload" name="Filepdf" accept=".pdf" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea class="form-control" id="message" name="Description" placeholder="Tell us about yourself" minlength="20" rows="3" required></textarea>
+                    </div>
+              
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn custom-btn active" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn custom-btn">Submit</button>
+            </div>
+              </form>
+        </div>
+    </div>
+</div>

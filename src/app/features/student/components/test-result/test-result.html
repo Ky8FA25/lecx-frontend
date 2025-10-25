@@ -1,0 +1,91 @@
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Test Result</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Custom CSS -->
+</head>
+
+        <div class="container mt-5">
+            <div class="text-center mb-4">
+                <h1>Test Result</h1>
+                <p><strong>Course:</strong> @Model.CourseName</p>
+                <p><strong>Test ID:</strong> @Model.TestID</p>
+                <p><strong>Score:</strong>@Model.Score</p>
+                <p><strong>Time: </strong> @Model.DoneAt.ToString("yyyy-MM-dd HH:mm")</p>
+                <p><strong>You got: </strong> <mark>@Model.NumberOfAttemptLeft</mark> <strong>Attempts Left</strong> </p>
+            </div>
+
+            <!-- Score progress bar -->
+            <div class="progress mb-4">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style=""></div>
+            </div>
+
+            <h3 class="mb-4">Question Breakdown</h3>
+            <div class="list-group">
+                
+                    <div class="list-group-item">
+                        <h5><strong>Question @questionNumber:</strong></h5>
+                    <p>@Model.CorrectAnswers[questionId][0]</p>
+                        <!-- Check if Answers contain this questionId -->
+                        
+                            <p><strong>Your Answer:</strong> @Model.CorrectAnswers[questionId][3]</p>
+                       
+                            <p><strong>Your Answer:</strong> N/A</p>
+                        
+                        <p><strong>Correct Answer: @Model.CorrectAnswers[questionId][2]</strong></p>
+                       
+                            <p><strong>Correct Answer:</strong> N/A</p>
+                        
+
+                        
+                           
+                                <p class="text-success"><i class="fas fa-check-circle"></i> Correct</p>
+                            
+                                <p class="text-danger"><i class="fas fa-times-circle"></i> Incorrect</p>
+                       
+                    <!-- Response display area -->
+                    <div id="displayText-@questionNumber"></div>
+
+                    <!-- Include necessary libraries -->
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+                    <script>
+                        // Configure marked to use highlight.js
+                        marked.setOptions({
+                            highlight: function (code, language) {
+                                return hljs.highlight(code, { language: language }).value;
+                            }
+                        });
+                    </script>
+
+                    <input hidden readonly type="text" class="user-input" id="userInput-@questionNumber"
+                           value="Explain why this question '@Model.CorrectAnswers[questionId][0]' has this answer: '@Model.CorrectAnswers[questionId][2]'" />
+                    <button class="btn btn-primary ai-button" id="myButton-@questionNumber" data-question="@questionNumber">Explain by AI</button>
+
+                    <!-- Include the external JavaScript file -->
+                    <script src="~/js/AIjs.js"></script>
+                    </div>
+                    questionNumber++;
+                
+                
+            </div>
+
+            <div class="mt-5 text-center">
+                <a href="" class="btn btn-primary">Go back</a>
+            </div>
+        </div>
+
+
+    <h1>You are not allowed</h1>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
