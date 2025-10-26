@@ -23,16 +23,16 @@
         <form [formGroup]="formModel" style="margin-top: 80px;" (submit)="onSubmit()" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-md-4">
-                    <div class="profile-img mt-5">
-                        <img class="shadow-lg" alt="Profile Image" />
-                        <input type="hidden" name="ExistingProfileImagePath" value="@Model.ExistingProfileImagePath" />
-                        <div class="file btn btn-lg btn-primary">
+                    <div class="profile-img mt-5 text-center">
+                        <img [src]="uploadedImageUrl || 'assets/default-avatar.png'" class="shadow-lg rounded-circle"
+                             style="width: 300px; height: 265px; object-fit: cover; transform: translateY(-25px);" />
+                        <div class="file btn btn-lg btn-primary mt-3">
                             Change Photo
-                            <input type="file" asp-for="ProfileImage" accept=".jpg,.jpeg,.png,.gif,.bmp" />
+                            <input type="file" accept=".jpg,.jpeg,.png,.gif" (change)="onFileSelected($event)" />
                         </div>
-
                     </div>
                 </div>
+
                 <div class="col-md-8">
                     <div class="form-group">
                         <label for="UserName">Username:</label>
@@ -82,9 +82,8 @@
                             <textarea type="text" class="form-control" name="Introduction" id="instructorIntro">@(introdution != null ? introdution : "")</textarea>
                     </div>
                     } -->
-                    <button type="submit"
-                            style="margin-top: 20px; background-color: #80d0c7;"
-                            class="btn custom-btn" onclick="toggleLoader()">
+                    <button type="submit" style="margin-top: 20px; background-color: #80d0c7;" class="btn custom-btn"
+                        onclick="toggleLoader()">
                         Save Changes
                     </button>
                 </div>

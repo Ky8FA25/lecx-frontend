@@ -1,0 +1,215 @@
+<div class="container-fluid">
+
+    <!-- @if (isPassed)
+    {
+        <div class="bg-white p-3 shadow-lg rounded mb-4 text-black d-flex align-items-center justify-content-between">
+            <div class="fs-6 ml-3">Congratulations, you have completed our course.</div>
+            <form asp-action="GenerateCertificate" asp-controller="Student" asp-area="Student" class="d-flex align-items-center" onsubmit="return disableButton(this)">
+                <input type="hidden" name="StudentID" value="@studentCourse.StudentID" />
+                <input type="hidden" name="CourseID" value="@studentCourse.CourseID" />
+                <input type="hidden" name="InstructorID" value="@studentCourse.Course.InstructorID" />
+                <div class="mr-3 fs-6">Your certificate is ready!</div>
+                <button id="claimButton" class="btn btn-warning text-black px-3 py-1 fs-6 border">Claim now</button>
+            </form>
+       </div>
+    } -->
+
+    <h1 class="h3 mb-4 text-gray-800">
+        Welcome to @studentCourse.Course.Title
+        <button class="btn">@studentCourse.CertificateStatus</button>
+
+        <a href="@certificate.CertificateLink" target="_blank" class="fs-5 ml-1 d-flex align-items-center mt-1">View
+            Certificate <i class="bi bi-caret-right-fill"></i> </a>
+
+    </h1>
+    <div class="row">
+        <div class="col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">Course Infomation</h6>
+                </div>
+                <div class="card-body">
+
+                    <div class="row d-flex align-items-center">
+                        <div class="col-md-4 d-flex justify-content-center">
+                            <img src="@studentCourse.Course.CoverImagePath" alt="Avatar" class="avatar rounded-2">
+                        </div>
+                        <div class="col-md-8">
+                            <ul class="list-unstyled">
+                                <li>
+                                    <strong>Instructor</strong> @studentCourse.Course.Instructor.AppUser.FirstName
+                                    @studentCourse.Course.Instructor.AppUser.LastName
+                                </li>
+                                <li>
+                                    <strong>Created on</strong> @studentCourse.Course.CreateDate.ToShortDateString()
+                                </li>
+                                <li>
+                                    <strong>Last Update:</strong> @studentCourse.Course.LastUpdate.ToShortDateString()
+                                </li>
+                                <li>
+                                    <strong>Number of Students:</strong> @studentCourse.Course.NumberOfStudents
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p>
+                        @studentCourse.Course.Description
+                    </p>
+                    <div class="course-outcomes">
+                        <h5>What You Will Learn</h5>
+                        <ul>
+                            <li>Basic understanding of @studentCourse.Course.Title</li>
+                            <li>Proficiency in practical skills required for @studentCourse.Course.Category.FullName
+                            </li>
+                            <li>Ability to apply knowledge in real-world projects</li>
+                            <li>Access to exclusive materials and lectures from the instructor,
+                                @studentCourse.Course.Instructor.AppUser.FirstName</li>
+                            <li>Engagement with a community of learners and feedback from the instructor</li>
+                            <li><strong>Certificate of Completion upon finishing the course</strong></li>
+                        </ul>
+                    </div>
+                    <div class="my-4"></div>
+                    <ul class="list-unstyled">
+                        <li>
+                            <div class="btn btn-success btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-star"></i> <!-- Icon cho level -->
+                                </span>
+                                <span class="label icon text-white-50 mr-auto">Level</span>
+                                <span class="text">@studentCourse.Course.Level</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="btn btn-info btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-th-list"></i> <!-- Icon cho category -->
+                                </span>
+                                <span class="label icon text-white-50 mr-auto">Category</span>
+                                <span class="text">@studentCourse.Course.Category.FullName</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="btn btn-primary btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-video"></i> <!-- Icon cho total lectures -->
+                                </span>
+                                <span class="label icon text-white-50 mr-auto">Lectures</span>
+                                <span class="text">@lectures.Count()</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="btn btn-warning btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-video"></i> <!-- Icon cho total lectures -->
+                                </span>
+                                <span class="label icon text-white-50 mr-auto">Assigments</span>
+                                <span class="text">N/A</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="btn btn-danger btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-video"></i> <!-- Icon cho total lectures -->
+                                </span>
+                                <span class="label icon text-white-50 mr-auto">Tests</span>
+                                <span class="text">N/A</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="btn btn-secondary btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-chart-line"></i> <!-- Icon cho progress -->
+                                </span>
+                                <span class="label icon text-white-50 mr-auto">Progress</span>
+                                <span class="text">@studentCourse.Progress%</span>
+                                <!-- Bạn có thể tính toán phần trăm tiến độ -->
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4" style="margin-bottom: 30px">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">Instructor</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row d-flex align-items-start">
+                        <div class="col-md-4 d-flex justify-content-center py-2">
+                            <img src="@studentCourse.Course.Instructor.AppUser.ProfileImagePath" alt="Avatar"
+                                class="avatar rounded-circle ml-4">
+                        </div>
+                        <div class="col-md-8">
+                            <ul style="list-style-type: none;">
+                                <li class="my-2"></li>
+                                <li>
+                                    <strong>Name:</strong> @studentCourse.Course.Instructor.AppUser.FirstName
+                                    @studentCourse.Course.Instructor.AppUser.LastName
+                                </li>
+                                <li class="my-2"></li>
+                                <li>
+                                    <strong>Email:</strong> @studentCourse.Course.Instructor.AppUser.Email
+                                </li>
+                                <li class="my-2"></li>
+                                <li>
+                                    <strong>Description:</strong> @studentCourse.Course.Instructor.Description
+                                </li>
+                                <li class="my-2"></li>
+                                <li>
+                                    <strong>Number of course:</strong> @Model.TotalCourse
+                                </li>
+                                <li class="my-2"></li>
+                                <li>
+                                    <strong>Number of student:</strong> @Model.TotalStudent
+                                </li>
+                                <li class="my-3"></li>
+                                <li>
+                                    <a asp-action="ViewUserProfile" asp-controller="Profile"
+                                        asp-route-id="@studentCourse.Course.Instructor.AppUser.Id"
+                                        class="btn btn-info btn-icon-split">
+                                        <span class="icon text-white-50">
+                                            <i class="bi bi-person-fill"></i>
+                                        </span>
+                                        <span class="text">View Profile</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-5">
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">Lectures</h6>
+                </div>
+                <div class="card-body">
+                    <p>
+                        To pass this course,
+                        you must complete all the lectures
+                        and have an average score of 5 or above.
+                    </p>
+                    <div *ngFor="let lecture of lectures; let i = index">
+                        <a class="btn btn-light btn-icon-split w-100 d-flex justify-content-between">
+                            <div>
+                                <span class="icon text-gray-600 mr-auto">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </span>
+                                <span class="text mr-auto">{{ lecture.title}}</span>
+                            </div>
+                            <span class="ml-auto icon">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </a>
+                        <div class="my-2"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

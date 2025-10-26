@@ -10,7 +10,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   const accessToken = authService.getAccessToken();
   const expectedRoles = route.data['roles'] as Role[];
     const userRole = authService.getRole();
-  // 🔹 Nếu không có token → chuyển đến trang login
+    
   if (!accessToken) {
     router.navigate(['/auth/signin'], {
       queryParams: { returnUrl: state.url } 
