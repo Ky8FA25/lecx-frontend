@@ -1,6 +1,5 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { SharedModule } from '../../../../core/shared/sharedModule';
-import { ToastrService } from 'ngx-toastr';
 import { GenericServices } from '../../../../core/services/GenericServices';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -14,7 +13,6 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./edit-user-profile.scss']
 })
 export class EditUserProfile implements OnInit, OnDestroy {
-  private toastr = inject(ToastrService);
   private genericService = inject(GenericServices);
   private router = inject(Router);
   private subscriptions = new Subscription();
@@ -49,7 +47,7 @@ export class EditUserProfile implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('❌ Failed to load profile:', err);
-        this.toastr.error('Failed to load user profile', 'Error');
+        this.genericService.showError('Failed to load user profile');
       }
     });
     this.subscriptions.add(loadUserProfile);
@@ -75,7 +73,7 @@ export class EditUserProfile implements OnInit, OnDestroy {
 
     const formData = new FormData();
     formData.append('File', this.selectedFile);
-    formData.append('Prefix', 'user-profiles');
+    formData.append('Prefix', 'public/user-avatars');
 
     return new Promise((resolve, reject) => {
       const upload = this.genericService.post('api/storage/upload', formData).subscribe({
@@ -98,16 +96,16 @@ export class EditUserProfile implements OnInit, OnDestroy {
 
   async onSubmit(): Promise<void> {
     if (this.formModel.invalid) {
-      this.toastr.warning('Please fill in all required fields', 'Warning');
+      this.genericService.showWarning('Please fill in all required fields');
       return;
     }
 
     try {
       const currentProfileImage = this.uploadedImageUrl;
-let profileImageUrl: string | null = 
-  typeof currentProfileImage === 'string' ? currentProfileImage : null;
+      let profileImageUrl: string | null =
+        typeof currentProfileImage === 'string' ? currentProfileImage : null;
       if (this.selectedFile) {
-        this.toastr.info('Uploading image...', 'Please wait');
+        this.genericService.showInfo('Uploading image...', 'Please wait');
         profileImageUrl = await this.uploadImageAndGetUrl();
       }
 
@@ -124,18 +122,18 @@ let profileImageUrl: string | null =
 
       const submit = this.genericService.put('api/user/profile/edit', body).subscribe({
         next: (response: any) => {
-          this.toastr.success('Profile updated successfully', 'Success');
+          this.genericService.showSuccess('Profile updated successfully', 'Success');
           console.log('✅ Updated:', response);
           this.router.navigateByUrl('/user/profile');
         },
         error: (err) => {
           console.error('❌ Update failed:', err);
-          this.toastr.error('Failed to update profile', 'Error');
+          this.genericService.showError('Failed to update profile', 'Error');
         }
       });
       this.subscriptions.add(submit);
     } catch (err) {
-      this.toastr.error('Image upload failed', 'Error');
+      this.genericService.showError('Image upload failed', 'Error');
       console.error(err);
     }
   }
