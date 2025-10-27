@@ -22,6 +22,7 @@ import { CourseLayout } from './layouts/course-layout/course-layout';
 import { Coursedetail } from './features/courses/components/course-detail/course-detail';
 import { Courselist } from './features/courses/components/course-list/course-list';
 import { NotFound } from './features/not-found/not-found';
+import { CourseInfo } from './features/student/components/course-info/course-info';
 
 export const routes: Routes = [
   
@@ -120,6 +121,10 @@ export const routes: Routes = [
       path: 'grade-list',
       component: GradeList
     },
+    {
+      path: 'course-info',
+      component: CourseInfo
+    },
   ]
 },
 {
@@ -150,7 +155,6 @@ export const routes: Routes = [
     path: 'unauthorized',
     component: NotFound
   },
-  // ⚠️ Đặt cuối cùng để bắt tất cả route sai
   {
     path: '**',
     component: NotFound
