@@ -143,7 +143,7 @@
           <div class="row">
             <div class="col-lg-4 col-md-6 col-12 mb-4" *ngFor="let course of courses()">
               <div class="custom-block bg-white shadow-lg">
-                <a [routerLink]="['/course', course.courseId]">
+                <a [routerLink]="['/courses/detail', course.courseId]">
                   <div class="d-flex">
                     <div>
                       <h5 class="mb-2">{{ course.title }}</h5>
@@ -152,7 +152,7 @@
                     <span class="badge bg-primary rounded-pill ms-auto">{{ course.level }}</span>
                   </div>
                   <img
-                    [src]=""
+                    [src]=" course.coverImagePath || 'assets/images/default-course-image.jpg'"
                     class="custom-block-image img-fluid mt-2"
                     alt="{{ course.title }}" />
                 </a>

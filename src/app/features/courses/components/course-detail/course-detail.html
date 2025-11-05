@@ -1,72 +1,76 @@
-
 <header class="site-header d-flex flex-column justify-content-center align-items-center">
     <div class="container">
         <div class="row justify-content-center align-items-center">
             <ng-container *ngIf="course()">
-            <div class="col-lg-5 col-12 mb-5">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Homepage</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ course()?.title }}</li>
-                    </ol>
-                </nav>
-                <h2 class="text-white">{{ course()?.title }}</h2>
-                <h6>{{ course()?.level }}</h6>
-                <div class="d-flex align-items-center">
-                   
+                <div class="col-lg-5 col-12 mb-5">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Homepage</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ course()?.title }}</li>
+                        </ol>
+                    </nav>
+                    <h2 class="text-white">{{ course()?.title }}</h2>
+                    <h6>{{ course()?.level }}</h6>
+                    <div class="d-flex align-items-center">
+
                         <!-- <h7 class="text-whit text-white-50 me-2">(No reviews yet)</h7>
                     
                         <h7 class="me-1 text-white">@Model.Course.Rating.ToString("N1")</h7> -->
                         <div class="stars me-2 mb-1">
-                              <span class="star">&#9733;</span> 
-                           
-                                    <span class="star">&#9733;</span> <!-- Ngôi sao đầy -->
-                               
-                                    <span class="star">&#9734;</span> <!-- Ngôi sao rỗng -->
-                              
-                        </div>
-                         <a class="me-3" href="#comments"><!--<h7 class="text-white-50">(@Model.Course.NumberOfRate rates)</h7> --></a>
-                    
-                    <!-- <h7 class="text-white">@Model.Course.NumberOfStudents students</h7>                 -->
-                </div>
-                <h4 class="text-white">{{ course()?.price }} VND</h4>
-                <!-- <h7 class="text-white">Create by: <a class="text-white-50" asp-area="" asp-action="ViewUserProfile" asp-controller="Profile" asp-route-id="@Model.Course.InstructorID"> @Model.Course.Instructor?.AppUser?.FirstName @Model.Course.Instructor?.AppUser?.LastName</a></h7>
-                <h7 class="text-white d-flex mt-2 me-2">
-                    Last Update: @Model.Course.LastUpdate.ToString("dd/MM/yyyy")
-                </h7> -->
-              
-                    <div class="d-flex align-items-center mt-4">
-                        <a asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@Model.Course.CourseID" class="btn custom-btn smoothscroll me-4">Go to course</a>
-                    </div>
-               
-                            <div class="d-flex align-items-center mt-4">
-                              
-                                    <form asp-action="GetFreeCourse" asp-controller="Payment" method="post">
-                                        <input type="hidden" name="CourseID" value="@Model.Course.CourseID"/>
-                                        <button type="submit" class="btn custom-btn smoothscroll me-4">Enroll Now</button>
-                                    </form>
-                               
-                                    <!-- pay -->
-                                    <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-CourseID="@Model.Course.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
-                                
-                                <!-- book mark -->
-                                <form asp-action="BookMark" asp-controller="Course" asp-area="Student" method="POST">
-                                    <input type="hidden" name="CourseID" value="@Model.Course.CourseID">
-                                    <button type="submit" class="bg-transparent border-0 p-0 smoothscroll">
-                                        <!-- <i class="custom-icon bi @(Model.IsMark == true ? "bi-bookmark-fill" : "bi-bookmark") smoothscroll fs-1"></i>
-                                  -->  </button> 
-                                </form>
-                            </div>
-                       
-                            <h5 class="text-white mt-4">This course is not available now!</h5>
-               
-            </div>
+                            <span class="star">&#9733;</span>
 
-            <div class="col-lg-5 col-12">
-                <div class="topics-detail-block bg-white shadow-lg">
-                    <img src="@Model.Course.CoverImagePath" class="topics-detail-block-image img-fluid">
+                            <span class="star">&#9733;</span> <!-- Ngôi sao đầy -->
+
+                            <span class="star">&#9734;</span> <!-- Ngôi sao rỗng -->
+
+                        </div>
+                        <a class="me-3"
+                            href="#comments"><!--<h7 class="text-white-50">(@Model.Course.NumberOfRate rates)</h7> --></a>
+
+                        <!-- <h7 class="text-white">@Model.Course.NumberOfStudents students</h7>                 -->
+                    </div>
+                    <h4 class="text-white">{{ course()?.price }} VND</h4>
+                    <!-- <h7 class="text-white">Create by: <a class="text-white-50" asp-area="" asp-action="ViewUserProfile" asp-controller="Profile" asp-route-id="@Model.Course.InstructorID"> @Model.Course.Instructor?.AppUser?.FirstName @Model.Course.Instructor?.AppUser?.LastName</a></h7>
+                 -->
+                    <h6 class="text-white d-flex mt-2 me-2">
+                        Create date: {{ course()?.createDate | date:'dd/MM/yyyy HH:mm' }}
+                    </h6>
+
+                    <div class="d-flex align-items-center mt-4">
+                        <a *ngIf="enrolled()"
+                            style="background: #80d0c7; border-radius: 50px; font-weight: bold; width: 150px; height: 50px;"
+                            class="btn custom-btn smoothscroll me-4">Go to course</a>
+                    </div>
+
+                    <div class="d-flex align-items-center mt-4">
+
+                        <a *ngIf="!enrolled() && free()"
+                            style="background: #80d0c7; border-radius: 50px; font-weight: bold; width: 150px; height: 50px;"
+                            class="btn custom-btn smoothscroll me-4">Enroll Now</a>
+
+
+                        <!-- pay -->
+                        <a *ngIf="!enrolled() && !free()" class="btn custom-btn smoothscroll me-4" (click)="buyCourse()"
+                            style="background: #80d0c7; border-radius: 50px; font-weight: bold; width: 150px; height: 50px;">Buy
+                            Now</a>
+
+                        <!-- book mark -->
+                        <form asp-action="BookMark" asp-controller="Course" asp-area="Student" method="POST">
+                            <input type="hidden" name="CourseID" value="@Model.Course.CourseID">
+                            <button type="submit" class="bg-transparent border-0 p-0 smoothscroll">
+                                <!-- <i class="custom-icon bi @(Model.IsMark == true ? "bi-bookmark-fill" : "bi-bookmark") smoothscroll fs-1"></i>
+                                  --> </button>
+                        </form>
+                    </div>
+
                 </div>
-            </div>
+
+                <div class="col-lg-5 col-12">
+                    <div class="topics-detail-block bg-white shadow-lg">
+                        <img [src]="course()?.coverImagePath || 'assets/images/default.jpg'"
+                            class="topics-detail-block-image img-fluid">
+                    </div>
+                </div>
             </ng-container>
         </div>
     </div>
@@ -80,9 +84,12 @@
             <div class="col-lg-8 col-12 m-auto">
                 <h3 class="mb-4">Introduction to {{ course()?.title }}</h3>
                 <p>{{ course()?.description }}</p>
-                <p>So how can you stand out, do something unique and interesting, build an online business, and get paid enough to change life. Please visit TemplateMo website to download free website templates.</p>
+                <p>So how can you stand out, do something unique and interesting, build an online business, and get paid
+                    enough to change life. Please visit TemplateMo website to download free website templates.</p>
 
-                <p><strong>There are so many ways to make money online</strong>. Below are several platforms you can use to find success. Keep in mind that there is no one path everyone can take. If that were the case, everyone would have a million dollars.</p>
+                <p><strong>There are so many ways to make money online</strong>. Below are several platforms you can use
+                    to find success. Keep in mind that there is no one path everyone can take. If that were the case,
+                    everyone would have a million dollars.</p>
 
                 <blockquote>
                     Freelancing your skills isn’t going to make you a millionaire overnight.
@@ -90,148 +97,158 @@
 
                 <div class="row my-4">
                     <div class="col-lg-6 col-md-6 col-12">
-                        <img src="assets/images/rear-view-young-college-student.jpg" class="topics-detail-block-image img-fluid">
+                        <img src="assets/images/rear-view-young-college-student.jpg"
+                            class="topics-detail-block-image img-fluid">
                     </div>
 
                     <div class="col-lg-6 col-md-6 col-12 mt-4 mt-lg-0 mt-md-0">
-                        <img src="assets/images/colleagues-working-cozy-office-medium-shot.jpg" class="topics-detail-block-image img-fluid">
+                        <img src="assets/images/colleagues-working-cozy-office-medium-shot.jpg"
+                            class="topics-detail-block-image img-fluid">
                     </div>
                 </div>
 
-                <p>Most people start with freelancing skills they already have as a side hustle to build up income. This extra cash can be used for a vacation, to boost up savings, investing, build business.</p>
+                <p>Most people start with freelancing skills they already have as a side hustle to build up income. This
+                    extra cash can be used for a vacation, to boost up savings, investing, build business.</p>
             </div>
 
         </div>
     </div>
 </section>
 
- <section id="comments" class="section-padding bg-light">
-     <div class="container">
+<section id="comments" class="section-padding bg-light">
+    <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 col-12">
                 <h3 class="mb-4 text-center ">Student Reviews</h3>
-                
 
-               
-                    
-                    <div class="card mb-4 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <div class="d-flex align-items-center">
-                                    <img src="@Model.YourReview.User.ProfileImagePath" alt="Profile Image" class="rounded-circle me-3" style="width: 50px; height: 50px;">
-                                    <div >
-                                        <h5 class="mb-0">Me</h5>
-                                        <div id="my-review-rating">
-                                            
-                                                    <span class="text-warning">&#9733;</span>
-                                                
-                                                    <span class="text-muted">&#9734;</span>
-                                            
-                                        </div>
+
+
+
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                <img src="@Model.YourReview.User.ProfileImagePath" alt="Profile Image"
+                                    class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                                <div>
+                                    <h5 class="mb-0">Me</h5>
+                                    <div id="my-review-rating">
+
+                                        <span class="text-warning">&#9733;</span>
+
+                                        <span class="text-muted">&#9734;</span>
+
                                     </div>
-                                </div>
-
-                                <!-- Dropdown for more options -->
-                                <div class="dropdown ms-auto">
-                                    <button class="btn btn-sm p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: transparent; border: none;">
-                                        <span style="font-size: 1.5rem; color: #333;">&#x22EE;</span> <!-- Three dots icon -->
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                                        <li>
-                                            <button class="dropdown-item" onclick="showUpdateForm()">Update</button>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Delete</a>
-                                        </li>
-                                    </ul>
                                 </div>
                             </div>
 
-                            <!-- Hiển thị review hiện tại -->
-                            <p id="my-review-text" class="card-text">@Model.YourReview.Comment</p>
-
-                            <!-- Form cập nhật review, ban đầu sẽ được ẩn đi -->
-                            <div id="update-review-form" style="display: none;">
-                                <form asp-action="UpdateReview" asp-controller="Review" method="post" id="reviewForm">
-                                    <div class="mb-3">
-                                        <label for="Rating" class="form-label">Rating</label>
-                                        <div class="star-rating">
-                                           
-                                                <input type="radio" id="star@(i)" name="Rating" value="@i" required />
-                                                <label for="star@(i)">★</label>
-                                            
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="comment" class="form-label">Comment</label>
-                                        <textarea class="form-control" id="Comment" name="comment" rows="5" required>@Model.YourReview.Comment</textarea>
-                                    </div>
-                                    <input type="hidden" id="CourseID" name="CourseID" value="@Model.Course.CourseID" />
-                                    <button type="submit" class="btn custom-btn w-100">Submit Review</button>
-                                </form>
+                            <!-- Dropdown for more options -->
+                            <div class="dropdown ms-auto">
+                                <button class="btn btn-sm p-0" type="button" id="dropdownMenuButton"
+                                    data-bs-toggle="dropdown" aria-expanded="false"
+                                    style="background-color: transparent; border: none;">
+                                    <span style="font-size: 1.5rem; color: #333;">&#x22EE;</span>
+                                    <!-- Three dots icon -->
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                                    <li>
+                                        <button class="dropdown-item" onclick="showUpdateForm()">Update</button>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" data-bs-toggle="modal"
+                                            data-bs-target="#confirmDeleteModal">Delete</a>
+                                    </li>
+                                </ul>
                             </div>
+                        </div>
+
+                        <!-- Hiển thị review hiện tại -->
+                        <p id="my-review-text" class="card-text">@Model.YourReview.Comment</p>
+
+                        <!-- Form cập nhật review, ban đầu sẽ được ẩn đi -->
+                        <div id="update-review-form" style="display: none;">
+                            <form asp-action="UpdateReview" asp-controller="Review" method="post" id="reviewForm">
+                                <div class="mb-3">
+                                    <label for="Rating" class="form-label">Rating</label>
+                                    <div class="star-rating">
+
+                                        <input type="radio" id="star@(i)" name="Rating" value="@i" required />
+                                        <label for="star@(i)">★</label>
+
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="comment" class="form-label">Comment</label>
+                                    <textarea class="form-control" id="Comment" name="comment" rows="5"
+                                        required>@Model.YourReview.Comment</textarea>
+                                </div>
+                                <input type="hidden" id="CourseID" name="CourseID" value="@Model.Course.CourseID" />
+                                <button type="submit" class="btn custom-btn w-100">Submit Review</button>
+                            </form>
                         </div>
                     </div>
-                
-                        <div class="card mb-4 shadow-sm">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <img src="@review.User.ProfileImagePath" alt="Profile Image" class="rounded-circle me-3" style="width: 50px; height: 50px;">
-                                    <div>
-                                        <h5 class="mb-0">@review.User.FirstName @review.User.LastName</h5>
-                                        <div>
-                                            
-                                                    <span class="text-warning">&#9733;</span>
-                                                
-                                                    <span class="text-muted">&#9734;</span>
-                                           
-                                        </div>
-                                    </div>
+                </div>
+
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="@review.User.ProfileImagePath" alt="Profile Image" class="rounded-circle me-3"
+                                style="width: 50px; height: 50px;">
+                            <div>
+                                <h5 class="mb-0">@review.User.FirstName @review.User.LastName</h5>
+                                <div>
+
+                                    <span class="text-warning">&#9733;</span>
+
+                                    <span class="text-muted">&#9734;</span>
+
                                 </div>
-                                <p class="card-text">@review.Comment</p>
                             </div>
                         </div>
-                    
-
-                        <nav aria-label="Review pagination">
-                            <ul class="pagination justify-content-center">
-                               
-                                    <li class="page-item">
-                                        <a class="page-link">Prev</a>
-                                    </li>
-                               
-                                    <li class="page-item disabled">
-                                        <span class="page-link">Previous</span>
-                                    </li>
-                               
-                                    <li class="page-item">
-                                        <a class="page-link">@i</a>
-                                    </li>
-                                
-                                    <li class="page-item">
-                                        <a class="page-link" >Next</a>
-                                    </li>
-                               
-                                    <li class="page-item disabled">
-                                        <span class="page-link">Next</span>
-                                    </li>
-                                
-                            </ul>
-                        </nav>
-
-                    <div class="text-center">
-                        <p class="text-muted">No reviews available.</p>
-                    </div>  
-                
+                        <p class="card-text">@review.Comment</p>
+                    </div>
+                </div>
 
 
-               
-                    
-                
-             </div>
+                <nav aria-label="Review pagination">
+                    <ul class="pagination justify-content-center">
+
+                        <li class="page-item">
+                            <a class="page-link">Prev</a>
+                        </li>
+
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+
+                        <li class="page-item">
+                            <a class="page-link">@i</a>
+                        </li>
+
+                        <li class="page-item">
+                            <a class="page-link">Next</a>
+                        </li>
+
+                        <li class="page-item disabled">
+                            <span class="page-link">Next</span>
+                        </li>
+
+                    </ul>
+                </nav>
+
+                <div class="text-center">
+                    <p class="text-muted">No reviews available.</p>
+                </div>
+
+
+
+
+
+
+            </div>
         </div>
-     </div>
-        
+    </div>
+
 </section>
 
 <!-- 
@@ -256,32 +273,32 @@
         </div>
     </div> -->
 
-    <script>
-     document.addEventListener('DOMContentLoaded', function() {
-         var form = document.getElementById('reviewForm');
-         var stars = document.querySelectorAll('.star-rating input');
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var form = document.getElementById('reviewForm');
+        var stars = document.querySelectorAll('.star-rating input');
 
-         stars.forEach(function(star) {
-             star.addEventListener('change', function() {
-                 console.log('Selected rating: ' + this.value);
-             });
-         });
+        stars.forEach(function (star) {
+            star.addEventListener('change', function () {
+                console.log('Selected rating: ' + this.value);
+            });
+        });
 
-         form.addEventListener('submit', function(event) {
-             event.preventDefault();
-             var formData = new FormData(form);
-             var rating = formData.get('Rating');
-             var comment = formData.get('Comment');
-             var courseId = formData.get('CourseID');
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            var formData = new FormData(form);
+            var rating = formData.get('Rating');
+            var comment = formData.get('Comment');
+            var courseId = formData.get('CourseID');
 
-             console.log('Submitting review:', {
-                 rating: rating,
-                 comment: comment,
-                 courseId: courseId
-             });          
-             form.submit();
-         });
-     });
+            console.log('Submitting review:', {
+                rating: rating,
+                comment: comment,
+                courseId: courseId
+            });
+            form.submit();
+        });
+    });
     function showUpdateForm() {
         document.getElementById('my-review-rating').style.display = 'none';
         document.getElementById('my-review-text').style.display = 'none';  // Ẩn phần review hiện tại
@@ -289,7 +306,7 @@
     }
     let courseIdToDelete;
 
-   
-    
-    
+
+
+
 </script>

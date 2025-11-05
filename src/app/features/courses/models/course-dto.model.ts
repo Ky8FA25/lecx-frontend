@@ -9,4 +9,5 @@ export interface CourseDto {
   createDate: string;      // Dạng ISO string từ backend (DateTime)
   level: string;           // Cấp độ (Beginner, Intermediate, Advanced)
   status: string; 
+  coverImagePath: string;
 }

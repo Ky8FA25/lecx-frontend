@@ -23,6 +23,8 @@ import { Coursedetail } from './features/courses/components/course-detail/course
 import { Courselist } from './features/courses/components/course-list/course-list';
 import { NotFound } from './features/not-found/not-found';
 import { CourseInfo } from './features/student/components/course-info/course-info';
+import { PaymentSuccessful } from './features/payments/components/payment-successful/payment-successful';
+import { PaymentFailed } from './features/payments/components/payment-failed/payment-failed';
 
 export const routes: Routes = [
   
@@ -150,6 +152,19 @@ export const routes: Routes = [
       component:DoTest
     }
   ]
+},
+{
+path: 'payments',
+children: [
+  {
+    path: 'successful',
+    component: PaymentSuccessful
+  },
+  {
+    path: 'failed',
+    component: PaymentFailed
+  }
+]
 },
 {
     path: 'unauthorized',

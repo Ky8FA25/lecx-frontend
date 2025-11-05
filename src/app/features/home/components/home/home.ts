@@ -4,6 +4,7 @@ import { CategoryDto } from '../../models/categoryDto';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CourseDto } from '../../../courses/models/course-dto.model';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -21,6 +22,8 @@ export class Home implements OnInit, OnDestroy{
   loading = signal<boolean>(false);
   pageIndex : number = 1;
   pageSize : number = 6;
+  private subscriptions = new Subscription(); 
+
 
 
   ngOnInit(): void {
@@ -39,7 +42,7 @@ export class Home implements OnInit, OnDestroy{
         console.error('❌ Failed to load categories:', err);
       }
     });
-    this.genericService.AddSubscription(getallcategory);
+    this.subscriptions.add(getallcategory);
   }
 loadCourses(categoryId: number) {
     this.loading.set(true);
@@ -57,10 +60,9 @@ loadCourses(categoryId: number) {
       }
     });
 
-    this.genericService.AddSubscription(getAllCourseById);;
+    this.subscriptions.add(getAllCourseById);;
   }
   ngOnDestroy(): void {
-    console.log('da huy')
-    this.genericService.DeleteSubscription();
+    this.subscriptions.unsubscribe();
   }
 }

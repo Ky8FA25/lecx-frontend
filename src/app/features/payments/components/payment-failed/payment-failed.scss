@@ -1,0 +1,140 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #ffebee 0%, #fce4ec 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    padding: 60px 40px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+}
+
+.error-icon {
+    width: 60px;
+    height: 60px;
+    background: #ffebee;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 30px;
+    font-size: 32px;
+    color: #d32f2f;
+}
+
+h1 {
+    color: #c62828;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.message {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 25px;
+}
+
+.error-details {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    background: #fafafa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #d32f2f;
+}
+
+.contact-info {
+    color: #999;
+    font-size: 12px;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.contact-info a {
+    color: #d32f2f;
+    text-decoration: none;
+}
+
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+.button-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.retry-button {
+    display: inline-block;
+    background: #d32f2f;
+    color: white;
+    padding: 12px 40px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+}
+
+.retry-button:hover {
+    background: #b71c1c;
+}
+
+.back-button {
+    display: inline-block;
+    background: white;
+    color: #d32f2f;
+    padding: 12px 40px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    border: 2px solid #d32f2f;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background: #ffebee;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 40px 25px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .retry-button,
+    .back-button {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 15px;
+    }
+}

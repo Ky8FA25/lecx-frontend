@@ -4,6 +4,7 @@ import { FormControl, FormGroup, FormsModule, Validators } from '@angular/forms'
 import { ToastrService } from 'ngx-toastr';
 import { GenericServices } from '../../../../core/services/GenericServices';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-user-change-password',
@@ -15,6 +16,8 @@ export class UserChangePassword implements OnInit, OnDestroy {
   private toastr = inject(ToastrService);
   private genericService = inject(GenericServices);
   private router = inject(Router);
+  private subscriptions = new Subscription(); 
+
 
   formModel : FormGroup = new FormGroup({
     currentPassword: new FormControl('', [Validators.required]),
@@ -38,7 +41,7 @@ export class UserChangePassword implements OnInit, OnDestroy {
         this.toastr.error('Failed to load user profile', 'Error');
       }
     });
-    this.genericService.AddSubscription(userprofile);
+    this.subscriptions.add(userprofile);
   }
 
   onSubmit() {
@@ -71,11 +74,11 @@ export class UserChangePassword implements OnInit, OnDestroy {
           this.toastr.error('Failed to change password.');
         }
       });
-      this.genericService.AddSubscription(changePassword);
+      this.subscriptions.add(changePassword);
     }
 
   ngOnDestroy(): void {
-    this.genericService.DeleteSubscription();
+    this.subscriptions.unsubscribe();
   }
 
 }
