@@ -8,7 +8,7 @@ import { Role } from '../enums/enums';
   providedIn: 'root'
 })
 export class Authservice {
-  private baseUrl = environment.apiUrl; // API backend
+  private baseUrl = environment.apiBEUrl; // API backend
   private accessTokenKey = 'access_token';
   private refreshTokenKey = 'refresh_token';
   isAuthenticated = signal<boolean>(false);

@@ -5,7 +5,7 @@
             <div class="col-lg-5 col-12">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li routerLink="/home/main" class="breadcrumb-item"><a >Homepage</a></li>
+                        <li routerLink="/home/main" class="breadcrumb-item"><a>Homepage</a></li>
                         <li class="breadcrumb-item active" aria-current="page">My Courses</li>
                     </ol>
                 </nav>
@@ -15,276 +15,108 @@
     </div>
 </header>
 
-<section class="topics-section">
-    <div class="button-group d-flex justify-content-between align-items-center">
-        <div>
-            <select class="filter-select me-2" id="statusFilter" onchange="applyFilters()">       
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-                <option value="Saved">Saved</option>
-            </select>
-        </div>
-        <div>
-            <select class="filter-select me-2" id="categoryFilter" onchange="applyFilters()">
-                <option value="">All Category</option>
-                @Html.Partial("_SideCategory")
-            </select>
-
-            <select class="filter-select" id="difficultyFilter" onchange="applyFilters()">
-                <option value="">All Level</option>
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-            </select>
-           
-            
-        </div>
+<section class="topics-section" *ngIf="!loading()">
+  <div class="button-group d-flex justify-content-between align-items-center">
+    <div>
+      <select class="filter-select me-2" [(ngModel)]="statusFilter" (change)="applyFilters()">
+        <option value="">All Status</option>
+        <option value="InProgress">In Progress</option>
+        <option value="Completed">Completed</option>
+        <option value="Saved">Saved</option>
+      </select>
     </div>
-    
-  
-                <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
-                    <div class="row">
 
-                        <div class="col-md-2">
-                            <img src="@course.CoverImagePath" class="custom-block-image rounded img-fluid ms-3" alt="">
-                        </div>
-                        <div class="col-md-9 row custom-block-topics-listing-info">
-                            <div class="col-md-11 ms-3">
-                                <div class="d-flex">
-                                    <div>
-                                        <h4 class="mb-2">
-                                            @course.Title
-                                            <span class="dot">&#9679;</span>
-                                        </h4>
-                                    </div>
-                                </div>
-                                <h6>@course.Level</h6>
-                                <p>Instructor: @course.Instructor?.AppUser?.FirstName @course.Instructor?.AppUser?.LastName</p>
-                                <div class="row progress-group d-flex justify-content-between">
-                                    
-                                        <div class="col-md-9 row align-items-end">
-                                            <div class="col-md-8">
-                                                <div>
-                                                    <h1>studentCourse.CertificateStatus: @studentCourse.Progress</h1>
-                                                </div>
-                                                <div class="progress">
-                                                    <div class="progress-bar-custom" style="width:studentCourseProgress + '%'">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <i class="fas fa-flag"></i>
-                                                <h1>Ends on @course.EndDate.ToString("dd/MM/yyyy")</h1>
-                                            </div>
-                                        </div>
-                                    
-                                    <div class="col-md-3">
-                                        <a asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@course.CourseID" class="btn custom-btn mt-auto mt-lg-4">Go to course</a>
-                                    </div>
-                                    
-                                        <div class="col-md-9">
-                                            <a class="btn custom-btn mt-auto mt-lg-4 active me-auto" style="margin-left: -40px" data-bs-toggle="modal" data-bs-target="#leaveReview-@course.CourseID">Leave review</a>
-                                        </div>
-                                    
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-1 d-flex justify-content-end align-items-start">
-                            <div class="dropdown">
-                                <button class="btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-three-dots-vertical"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                                    <li><a class="dropdown-item" asp-action="CourseDetail" asp-controller="Course" asp-route-CourseID="@course.CourseID">Course Detail</a></li>
-                                    <li><a class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#reportCourseModal-@course.CourseID">Report<i class="far fa-flag ms-2"></i></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+    <div>
+      <select class="filter-select me-2" [(ngModel)]="categoryFilter" (change)="applyFilters()">
+        <option value="">All Category</option>
+        <option *ngFor="let cat of [1,2,3]" [value]="cat">Category {{cat}}</option>
+      </select>
+
+      <select class="filter-select" [(ngModel)]="levelFilter" (change)="applyFilters()">
+        <option value="">All Level</option>
+        <option value="Beginner">Beginner</option>
+        <option value="Intermediate">Intermediate</option>
+        <option value="Advanced">Advanced</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="courses()?.length; else noCourses">
+    <div *ngFor="let item of courses()" class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
+      <div class="row">
+        <div class="col-md-2">
+          <img [src]="item?.course?.coverImagePath" class="custom-block-image rounded img-fluid ms-3" alt="" />
+        </div>
+
+        <div class="col-md-9 row custom-block-topics-listing-info">
+          <div class="col-md-11 ms-3">
+            <h4 class="mb-2" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; size: 30px;">{{item?.course?.title}} <span class="dot">&#9679;</span></h4>
+            <h6 style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 20px; color: #13547a;">{{item?.course?.level}}</h6>
+            <p>Instructor: {{item?.instructor?.user?.firstName}} {{item?.instructor?.user?.lastName}}</p>
+
+            <div class="row progress-group d-flex justify-content-between">
+              <div class="col-md-9 row align-items-end">
+                <div class="col-md-8">
+                  <div>
+                    <h6>Progress: {{item?.progress}}%</h6>
+                  </div>
+                  <div class="progress">
+                    <div class="progress-bar-custom" [style.width.%]="item.progress"></div>
+                  </div>
                 </div>
-
-                <!-- Review Modal-->
-
-                <div class="modal fade" id="leaveReview-@course.CourseID" tabindex="-1" role="dialog" aria-labelledby="leaveReviewModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header ">
-                                <h5 class="modal-title w-100 text-center" id="leaveReviewModalLabel">Course Review</h5>
-                                <div>
-                                </div>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row">
-
-                                    <div class="col-md-6 border-end">
-                                        <div class="col-md-12">
-                                            <img src="@course.CoverImagePath" class="rounded" alt="" style="height: 250px; width: 100%;">
-                                        </div>
-                                        <div class="col-md-12 mt-3">
-                                            <h5>@course.Title</h5>
-                                            <h6>@course.Category.FullName</h6>
-                                            <p>Instructor: @course.Instructor?.AppUser?.FirstName @course.Instructor?.AppUser?.LastName</p>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-md-6">
-                                       
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-md-4">
+                  <i class="fas fa-flag"></i>
+                  <h6>Ends on {{item?.completionDate | date:'dd/MM/yyyy'}}</h6>
                 </div>
+              </div>
 
-                <!-- Report Modal Form -->
-                <div class="modal fade" id="reportCourseModal-@course.CourseID" tabindex="-1" aria-labelledby="reportCourseModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="deleteCourseModalLabel">Report Course</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="reportCourseForm" method="post" asp-controller="Report" asp-action="ReportCourse">
-                                    <input type="hidden" name="CourseID" value="@course.CourseID">
-                                    <p>Please select the reason for reporting this course:</p>
-
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="Reason" id="reason1-@course.CourseID" value="Inappropriate content" required>
-                                        <label class="form-check-label" for="reason1-@course.CourseID">Inappropriate content</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="Reason" id="reason2-@course.CourseID" value="Misleading information" required>
-                                        <label class="form-check-label" for="reason2-@course.CourseID"> Misleading information </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="Reason" id="reason3-@course.CourseID" value="Copyright infringement" required>
-                                        <label class="form-check-label" for="reason3-@course.CourseID">Copyright infringement</label>
-                                    </div>
-
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="Reason" id="otherReason-@course.CourseID" value="Other" required>
-                                        <label class="form-check-label" for="otherReason-@course.CourseID">Other</label>
-                                    </div>
-
-                                    <div class="mt-3">
-                                        <label for="otherReasonText-@course.CourseID" class="form-label">Please specify:</label>
-                                        <textarea class="form-control" name="OtherReason" id="otherReasonText-@course.CourseID" rows="3" readonly required></textarea>
-                                    </div>
-
-                                    
-
-                                    <div class="mt-3 text-end">
-                                        <button type="button" class="btn custom-btn active me-1" data-bs-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn custom-btn">Submit Report</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-       
-            <div class="col-lg-12 col-12 text-center">
-                <h6 class="text-secondary" style="padding: 80px;">no course available</h6>
+              <div class="col-md-3">
+                <a [routerLink]="['/courses', item?.course?.courseId]" class="btn custom-btn mt-auto mt-lg-4" style="background-color: #80d0c7; font-weight: bold; border-radius: 50px;">Go to course</a>
+              </div>
             </div>
-  
-    <!-- Hiển thị book mark-->
-                <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
-                    <div class="row">
-                        <div class="col-md-2">
-                            <img src="@course.CoverImagePath" class="custom-block-image rounded img-fluid ms-1" alt="">
-                        </div>
+          </div>
+        </div>
 
-                        <div class="col-md-9 custom-block-topics-listing-info">
-                            <div class="ms-3">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <h4 class="mb-2">
-                                            @course.Title
-                                            <span class="dot">&#9679;</span>
-                                        </h4>
-                                        <p class="mb-0"> Instructor: @course.Instructor?.AppUser?.FirstName @course.Instructor?.AppUser?.LastName</p>
-                                        <div class="stars justify-content-between align-content-center">
-                                           
-                                                <h6 class="text-muted mt-1">No reviews yet</h6>
-                                            
-                                                <h5>
-                                                    @course.Rating.ToString("F2")
-
-                                                   
-                                                            <span class="star">&#9733;</span> <!-- Ngôi sao đầy -->
-                                                        
-                                                    (@course.NumberOfRate)
-                                                </h5>
-                                            
-                                        </div>
-                                        <h4>@course.Price.ToString("N0") VNĐ</h4>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center mt-4">
-                                    <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-CourseID="@course.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
-                                    <!-- book mark -->
-                                    <form asp-action="BookMark" asp-controller="Course" asp-area="Student" method="POST">
-                                        <input type="hidden" name="CourseID" value="@course.CourseID">
-                                        <button type="submit" class="bg-transparent border-0 p-0 smoothscroll">
-                                            <i class="custom-icon bi bi-bookmark-fill smoothscroll fs-1"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-1 d-flex justify-content-end align-items-start">
-                            <div class="dropdown">
-                                <button class="btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-three-dots-vertical"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                                    <li><a class="dropdown-item" asp-action="CourseDetail" asp-controller="Course" asp-route-CourseID="@course.CourseID">Course Detail</a></li>
-                                    <li><a class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#reportCourseModal-@course.CourseID">Report<i class="far fa-flag ms-2"></i></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-       
-            <div class="col-lg-12 col-12 text-center">
-                <h6 class="text-secondary" style="padding: 80px;">no course available</h6>
-            </div>
-   
-   
-        <nav aria-label="MyCourse pagination">
-            <ul class="pagination justify-content-center">
-                
-                    <li class="page-item">
-                        <a class="page-link">Prev</a>
-                    </li>
-                
-               
-                    <li class="page-item disabled">
-                        <span class="page-link">Previous</span>
-                    </li>
-               
-
-               
-                    <li class="page-item">
-                        <a class="page-link">@i</a>
-                    </li>
-                
-
-                
-                    <li class="page-item">
-                        <a class="page-link">Next</a>
-                    </li>
-                
-               
-                    <li class="page-item disabled">
-                        <span class="page-link">Next</span>
-                    </li>
-                
+        <div class="col-md-1 d-flex justify-content-end align-items-start">
+          <div class="dropdown">
+            <button class="btn" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" [routerLink]="['/courses/detail', item?.course?.courseId]">Course Detail</a>
+              </li>
+              <li><a class="dropdown-item text-danger" href="#">Report</a></li>
             </ul>
-        </nav>
-    
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <nav aria-label="MyCourse pagination">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="pageIndex === 1">
+          <a class="page-link" (click)="prevPage()">Previous</a>
+        </li>
+
+        <li class="page-item" *ngFor="let i of [].constructor(totalPages); let idx = index"
+            [class.active]="pageIndex === idx + 1">
+          <a class="page-link" (click)="pageIndex = idx + 1; loadMyCourses()">{{ idx + 1 }}</a>
+        </li>
+
+        <li class="page-item" [class.disabled]="pageIndex === totalPages">
+          <a class="page-link" (click)="nextPage()">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+   <ng-template #noCourses>
+    <div class="text-center text-secondary py-5">No course available</div>
+  </ng-template>
 </section>
 
 <section class="section-padding section-bg">
@@ -308,7 +140,8 @@
                             <span class="badge bg-music rounded-pill ms-auto">30</span>
                         </div>
 
-                        <img src="~/Images/topics/undraw_Podcast_audience_re_4i5q.png" class="custom-block-image img-fluid" alt=""/>
+                        <img src="assets/images/topics/undraw_Podcast_audience_re_4i5q.png"
+                            class="custom-block-image img-fluid" alt="" />
                     </a>
                 </div>
             </div>
@@ -316,7 +149,8 @@
             <div class="col-lg-6 col-md-6 col-12 mt-lg-3">
                 <div class="custom-block custom-block-overlay">
                     <div class="d-flex flex-column h-100">
-                        <img src="~/Images/businesswoman-using-tablet-analysis.jpg" class="custom-block-image img-fluid" alt="">
+                        <img src="assets/images/businesswoman-using-tablet-analysis.jpg" class="custom-block-image img-fluid"
+                            alt="">
 
                         <div class="custom-block-overlay-text d-flex">
                             <div>
@@ -324,7 +158,8 @@
 
                                 <p class="text-white">Courses focused on data analysis and machine learning.</p>
 
-                                <a asp-action="CourseList" asp-controller="Course" asp-route-category="2" class="btn custom-btn mt-2 mt-lg-3">Learn More</a>
+                                <a asp-action="CourseList" asp-controller="Course" asp-route-category="2"
+                                    class="btn custom-btn mt-2 mt-lg-3">Learn More</a>
                             </div>
 
                             <span class="badge bg-graphic rounded-pill ms-auto">25</span>
@@ -358,4 +193,3 @@
         </div>
     </div>
 </section>
-

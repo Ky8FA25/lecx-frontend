@@ -57,12 +57,12 @@ export class Login {
   }
 
   onGoogleLogin() {
-    //console.log('🚀 Opening Google login popup...');
-    const backendUrl = `${environment.apiUrl}/api/auth/google-login`;
+    console.log('🚀 Opening Google login popup...');
+    const backendUrl = `${environment.apiBEUrl}/api/auth/google-login`;
     const returnUrl = window.location.origin + '/home/main';
 
     const googleLoginUrl = `${backendUrl}?returnUrl=${encodeURIComponent(returnUrl)}&opener=${encodeURIComponent(window.location.origin)}`;
-    //console.log('🌐 Google login URL:', googleLoginUrl);
+    console.log('🌐 Google login URL:', googleLoginUrl);
     // Mở popup Google login
     const popup = window.open(googleLoginUrl, 'GoogleLogin', 'width=500,height=600');
 
