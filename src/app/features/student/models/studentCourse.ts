@@ -1,4 +1,5 @@
 import { CertificateStatus } from "../../../core/enums/enums";
+import { ICategory } from "../../../core/models/category";
 import { IInstructor } from "../../../core/models/instructor";
 import { CourseDto } from "../../courses/models/course-dto.model";
 
@@ -12,4 +13,5 @@ export interface StudentCourse {
   completionDate?: string | null;
   course?: CourseDto;
   instructor: IInstructor;
+  category: ICategory;
 }
