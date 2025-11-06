@@ -152,10 +152,9 @@
                     </form>
 
                     <ol class="breadcrumb mb-0 mr-auto">
-                        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Home</a></li>
-                        <li class="breadcrumb-item"><a asp-action="UserCourse" asp-controller="Course">My Courses</a></li>
+                        <li class="breadcrumb-item"><a routerLink="/home/main">Home</a></li>
+                        <li class="breadcrumb-item"><a routerLink="/student/my-courses">My Courses</a></li>
                         
-                            <li class="breadcrumb-item active" aria-current="page">@currentCourse.Title</li>
                         
                     </ol>
 
@@ -186,7 +185,7 @@
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" asp-action="Index" asp-controller="Chat" id="messagesDropdown" role="button">
                                 <i class="fas fa-envelope fa-fw"></i>
-                                @*      <span class="badge badge-danger badge-counter">7</span> *@
+                                <span class="badge badge-danger badge-counter">7</span>
                             </a>
                         </li>
 
@@ -195,17 +194,17 @@
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img class="img-profile rounded-circle"
-                                     src="@user.ProfileImagePath">
-                                <span class="ml-2 d-none d-lg-inline text-gray-600 small">@user.FirstName @user.LastName</span>
+                                     src="{{ user()?.profileImagePath || 'assets/images/default.jpg' }}">
+                                <span class="ml-2 d-none d-lg-inline text-gray-600 small">{{ user()?.firstName}}</span>
                                 <i class="fas fa-caret-down ml-2"></i>
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow"
                                  aria-labelledby="userDropdown">
-                                <a class="dropdown-item" asp-action="UserProfile" asp-controller="Profile">
+                                <a class="dropdown-item" >
                                     <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>Your Profile
                                 </a>
-                                <a class="dropdown-item" asp-area="Student" asp-action="TransferStudent" asp-controller="Payment">
+                                <a class="dropdown-item" >
                                     <i class="fas fas fa-exchange-alt fa-sm fa-fw me-2 text-gray-400"></i>Request A Transfer
                                 </a>
                                 <div class="dropdown-divider"></div>

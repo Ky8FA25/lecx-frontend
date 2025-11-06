@@ -124,7 +124,7 @@ export const routes: Routes = [
       component: GradeList
     },
     {
-      path: 'course-info',
+      path: 'course-info/:courseId',
       component: CourseInfo
     },
   ]

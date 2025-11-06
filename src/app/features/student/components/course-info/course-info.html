@@ -15,51 +15,57 @@
     } -->
 
     <h1 class="h3 mb-4 text-gray-800">
-        Welcome to @studentCourse.Course.Title
-        <button class="btn">@studentCourse.CertificateStatus</button>
+        Welcome to {{ courses()?.course?.title}}
+        <button class="btn btn-light text-black ml-2 px-2 py-0 fs-6 border border-dark fw-bold">{{
+            courses()?.certificateStatus === 0 ? 'Pending' : 'Completed'}}</button>
+        <div *ngIf="courses()?.certificateStatus === 1">
+            <a href="@certificate.CertificateLink" target="_blank" class="fs-5 ml-1 d-flex align-items-center mt-1">View
+                Certificate <i class="bi bi-caret-right-fill"></i> </a>
+        </div>
 
-        <a href="@certificate.CertificateLink" target="_blank" class="fs-5 ml-1 d-flex align-items-center mt-1">View
-            Certificate <i class="bi bi-caret-right-fill"></i> </a>
 
     </h1>
     <div class="row">
         <div class="col-lg-7">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-info">Course Infomation</h6>
+                    <h6 class="m-0 font-weight-bold text-info"
+                        style="font-weight: bold; font-size: 1.5rem; font-family: Georgia, 'Times New Roman', Times, serif;">
+                        Course Information
+                    </h6>
                 </div>
                 <div class="card-body">
 
                     <div class="row d-flex align-items-center">
                         <div class="col-md-4 d-flex justify-content-center">
-                            <img src="@studentCourse.Course.CoverImagePath" alt="Avatar" class="avatar rounded-2">
+                            <img [src]="courses()?.course?.coverImagePath" alt="Avatar" class="avatar rounded-2">
                         </div>
                         <div class="col-md-8">
                             <ul class="list-unstyled">
                                 <li>
-                                    <strong>Instructor</strong> @studentCourse.Course.Instructor.AppUser.FirstName
-                                    @studentCourse.Course.Instructor.AppUser.LastName
+                                    <strong>Instructor</strong> {{ courses()?.instructor?.user?.firstName}}
+                                    {{ courses()?.instructor?.user?.lastName }}
                                 </li>
                                 <li>
-                                    <strong>Created on</strong> @studentCourse.Course.CreateDate.ToShortDateString()
+                                    <strong>Created on</strong> {{ courses()?.course?.createDate | date:'mediumDate'}}
                                 </li>
                                 <li>
-                                    <strong>Last Update:</strong> @studentCourse.Course.LastUpdate.ToShortDateString()
+                                    <strong>Last Update:</strong> {{ courses()?.enrollmentDate | date:'mediumDate'}}
                                 </li>
                                 <li>
-                                    <strong>Number of Students:</strong> @studentCourse.Course.NumberOfStudents
+                                    <strong>Number of Students:</strong> null
                                 </li>
                             </ul>
                         </div>
                     </div>
                     <p>
-                        @studentCourse.Course.Description
+                        {{ courses()?.course?.description }}
                     </p>
                     <div class="course-outcomes">
                         <h5>What You Will Learn</h5>
                         <ul>
-                            <li>Basic understanding of @studentCourse.Course.Title</li>
-                            <li>Proficiency in practical skills required for @studentCourse.Course.Category.FullName
+                            <li>Basic understanding of {{ courses()?.course?.title}}</li>
+                            <li>Proficiency in practical skills required for {{ category()?.fullName}}
                             </li>
                             <li>Ability to apply knowledge in real-world projects</li>
                             <li>Access to exclusive materials and lectures from the instructor,
@@ -76,7 +82,7 @@
                                     <i class="fas fa-star"></i> <!-- Icon cho level -->
                                 </span>
                                 <span class="label icon text-white-50 mr-auto">Level</span>
-                                <span class="text">@studentCourse.Course.Level</span>
+                                <span class="text">{{ courses()?.course?.level}}</span>
                             </div>
                         </li>
                         <li>
@@ -85,7 +91,7 @@
                                     <i class="fas fa-th-list"></i> <!-- Icon cho category -->
                                 </span>
                                 <span class="label icon text-white-50 mr-auto">Category</span>
-                                <span class="text">@studentCourse.Course.Category.FullName</span>
+                                <span class="text">{{ category()?.fullName}}</span>
                             </div>
                         </li>
                         <li>
@@ -121,7 +127,7 @@
                                     <i class="fas fa-chart-line"></i> <!-- Icon cho progress -->
                                 </span>
                                 <span class="label icon text-white-50 mr-auto">Progress</span>
-                                <span class="text">@studentCourse.Progress%</span>
+                                <span class="text">{{ courses()?.progress}} %</span>
                                 <!-- Bạn có thể tính toán phần trăm tiến độ -->
                             </div>
                         </li>
@@ -136,23 +142,23 @@
                 <div class="card-body">
                     <div class="row d-flex align-items-start">
                         <div class="col-md-4 d-flex justify-content-center py-2">
-                            <img src="@studentCourse.Course.Instructor.AppUser.ProfileImagePath" alt="Avatar"
+                            <img [src]="courses()?.instructor?.user?.profileImagePath || 'assets/images/default.jpg'" alt="Avatar"
                                 class="avatar rounded-circle ml-4">
                         </div>
                         <div class="col-md-8">
                             <ul style="list-style-type: none;">
                                 <li class="my-2"></li>
                                 <li>
-                                    <strong>Name:</strong> @studentCourse.Course.Instructor.AppUser.FirstName
-                                    @studentCourse.Course.Instructor.AppUser.LastName
+                                    <strong>Name:</strong> {{ courses()?.instructor?.user?.firstName}} {{
+                                    courses()?.instructor?.user?.lastName }}
                                 </li>
                                 <li class="my-2"></li>
                                 <li>
-                                    <strong>Email:</strong> @studentCourse.Course.Instructor.AppUser.Email
+                                    <strong>Email:</strong> {{ courses()?.instructor?.user?.email }}
                                 </li>
                                 <li class="my-2"></li>
                                 <li>
-                                    <strong>Description:</strong> @studentCourse.Course.Instructor.Description
+                                    <strong>Description:</strong> {{ courses()?.instructor?.bio }}
                                 </li>
                                 <li class="my-2"></li>
                                 <li>
@@ -193,13 +199,13 @@
                         you must complete all the lectures
                         and have an average score of 5 or above.
                     </p>
-                    <div *ngFor="let lecture of lectures; let i = index">
+                    <div>
                         <a class="btn btn-light btn-icon-split w-100 d-flex justify-content-between">
                             <div>
                                 <span class="icon text-gray-600 mr-auto">
                                     <i class="fas fa-graduation-cap"></i>
                                 </span>
-                                <span class="text mr-auto">{{ lecture.title}}</span>
+                                <span class="text mr-auto"></span>
                             </div>
                             <span class="ml-auto icon">
                                 <i class="fas fa-check"></i>
