@@ -1,0 +1,113 @@
+<div class="container-fluid">
+  <div class="card shadow row m-3 mb-5">
+    <div class="d-flex justify-content-between align-items-center m-3">
+      <h4 class="mb-0">Assignments</h4>
+    </div>
+
+    <div class="m-4">
+      <div *ngIf="assignments().length > 0; else noData"
+        class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5" style="width: 1140px">
+        <div *ngFor="let item of assignments()" class="row d-flex mb-4 p-3 border rounded">
+          <!-- Cột hình -->
+          <div class="col-md-2 me-3">
+            <img src="assets/asm.png" class="custom-block-image img-fluid ms-3" alt="Assignment"
+              style="width: 100%; height: auto;" />
+          </div>
+
+          <!-- Cột nội dung -->
+          <div class="col-md-9 custom-block-topics-listing-info">
+            <div class="d-flex align-items-center">
+              <h4 class="mb-2 me-2">
+                <span class="dot">{{ item.title }}</span>
+              </h4>
+              <h6 [ngClass]="isAvailable(item) ? 'text-success' : 'text-danger'">
+                {{ isAvailable(item) ? 'Available' : 'Expired' }}
+              </h6>
+            </div>
+
+            <div>
+              <div class="text-dark">
+                <h6>Open:</h6> {{ item.startDate | date: 'shortDate' }}
+              </div>
+              <div>
+                <h6>Due:</h6> {{ item.dueDate | date: 'shortDate' }}
+              </div>
+            </div>
+
+            <div class="row progress-group d-flex justify-content-between mt-3">
+              <div class="col-md-12 mb-2">
+                <h6 class="me-1">
+                  Grade:
+                  <span class="text-muted">Not yet graded</span>
+                </h6>
+              </div>
+
+              <!-- Nút Download -->
+              <div class="col-md-3 mb-2">
+                <a target="_blank" [href]="item.assignmentLink"
+                  class="btn btn-primary w-100 d-flex align-items-center justify-content-center fs-6"
+                  style="height: 45px;">
+                  Download
+                </a>
+              </div>
+
+              <!-- Nút Submit / Re-submit -->
+              <ng-container *ngIf="hasSubmission(item.assignmentId); else submitBtn">
+                <div class="col-md-3 mb-2">
+                  <label class="btn btn-success w-100 d-flex align-items-center justify-content-center fs-6"
+                    style="height: 45px;" for="fileInput-{{item.assignmentId}}">
+                    Re-Submit
+                  </label>
+                  <input type="file" id="fileInput-{{item.assignmentId}}" hidden
+                    (change)="onFileSelected($event, item)" />
+                </div>
+                <!-- Nút Get My File -->
+                <div class="col-md-3 mb-2">
+                  <a class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center fs-6"
+                    target="_blank" [href]="getSubmissionLink(item.assignmentId)" style="height: 45px;">
+                    Get My File
+                  </a>
+                </div>
+              </ng-container>
+
+              <ng-template #submitBtn>
+                <div class="col-md-3 mb-2">
+                  <label class="btn btn-success w-100 d-flex align-items-center justify-content-center fs-6"
+                    style="height: 45px;" for="fileInput-{{item.assignmentId}}">
+                    Submit
+                  </label>
+                  <input type="file" id="fileInput-{{item.assignmentId}}" hidden
+                    (change)="onFileSelected($event, item)" />
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav *ngIf="totalPage > 1" aria-label="Assignment pagination">
+          <ul class="pagination justify-content-center">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <a class="page-link" (click)="changePage(currentPage - 1)">Prev</a>
+            </li>
+
+            <li class="page-item" *ngFor="let p of pages" [class.active]="p === currentPage">
+              <a class="page-link" (click)="changePage(p)">{{ p }}</a>
+            </li>
+
+            <li class="page-item" [class.disabled]="currentPage === totalPage">
+              <a class="page-link" (click)="changePage(currentPage + 1)">Next</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Khi không có dữ liệu -->
+      <ng-template #noData>
+        <div class="text-center text-muted mt-5">
+          <h5>No assignments available</h5>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

@@ -25,6 +25,7 @@ import { NotFound } from './features/not-found/not-found';
 import { CourseInfo } from './features/student/components/course-info/course-info';
 import { PaymentSuccessful } from './features/payments/components/payment-successful/payment-successful';
 import { PaymentFailed } from './features/payments/components/payment-failed/payment-failed';
+import { AsignmentList } from './features/student/components/asignment-list/asignment-list';
 import { InstructorDashboard } from './features/instructor/components/dashboard/dashboard';
 import { InstructorMyCourses } from './features/instructor/components/my-courses/my-courses';
 import { Role } from './core/enums/enums';
@@ -133,7 +134,7 @@ export const routes: Routes = [
   ]
 },
 {
-  path: 'student',
+  path: 'student/course/:courseID',
   component: CourseLayout,
   children: [
     {
@@ -153,9 +154,14 @@ export const routes: Routes = [
       component: GradeList
     },
     {
-      path: 'course-info/:courseId',
+       path: '',
+      pathMatch: 'full',
       component: CourseInfo
     },
+    {
+      path: 'assignments',
+      component: AsignmentList
+    }
   ]
 },
 {
