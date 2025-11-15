@@ -24,7 +24,7 @@ export class CourseInfo implements OnInit, OnDestroy{
   private route = inject(ActivatedRoute);
 
   ngOnInit(): void {
-    const courseId = Number(this.route.snapshot.paramMap.get('courseId'));
+    const courseId = Number(this.route.snapshot.paramMap.get('courseID'));
     if (courseId) {
       console.log('Loading course detail for ID:', courseId);
       this.loadStudentCourseDetail(courseId);

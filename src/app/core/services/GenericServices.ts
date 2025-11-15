@@ -21,6 +21,10 @@ export class GenericServices {
     return this.http.get<T>(`${this.baseUrl}/${url}`);
   }
 
+  getWithParams<T>(url: string, ): Observable<T> {
+    return this.http.get<T>(`${this.baseUrl}/${url}`);
+  }
+
   post<T>(url: string, body: any): Observable<T> {
     return this.http.post<T>(`${this.baseUrl}/${url}`, body);
   }
