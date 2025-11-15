@@ -17,6 +17,9 @@ import { ForgotPassword } from './features/auth/components/forgot-password/forgo
 import { ResetPassword } from './features/auth/components/reset-password/reset-password';
 import { InstructorMyCourseComponent } from './features/instructor/components/mycourse/instructor-mycourse';
 import { CourseDetailComponent } from './features/instructor/components/course-detail/course-detail.component';
+import { Component } from '@angular/core';
+import { InstructorDashboardComponent } from './features/instructor/components/dashboard/instructor-dashboard.component';
+import { LectureDetailComponent } from './features/instructor/components/lecture-detail/lecture-detail.component';
 
 
 export const routes: Routes = [
@@ -107,16 +110,36 @@ export const routes: Routes = [
 },
 {
   path: 'instructor',
-  component: Mainlayout,
   children: [
+    // Route dùng layout chính (Mainlayout)
     {
-      path: 'courses',
-      component: InstructorMyCourseComponent
+      path: '',
+      component: Mainlayout,
+      children: [
+        { path: 'courses', component: InstructorMyCourseComponent },
+        { path: 'courses/detail/:courseId', component: CourseDetailComponent },
+      ]
     },
+
+    // Route riêng biệt dùng layout LearnOn (Courselayout)
     {
-  path: 'courses/detail/:courseId',
-  component: CourseDetailComponent
-}
+      path: 'dashboard',
+      component: Courselayout,
+      children: [
+        { path: '', component: InstructorDashboardComponent }
+      ]
+    },
+
+    // Route LECTURES
+    {
+      path: 'lectures',
+      component: Courselayout,
+      children: [
+        // Ví dụ: /instructor/lectures/1
+        { path: ':id', component: LectureDetailComponent }       
+        
+      ]
+    }
   ]
 }
 ];

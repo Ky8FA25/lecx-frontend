@@ -1,0 +1,179 @@
+<div class="container-fluid">
+  <h1 class="h3 mb-2 text-gray-800 d-flex align-items-center">
+    {{ lecture?.title }}
+    <button class="btn ms-auto" type="button" data-bs-toggle="dropdown">
+      <i class="fas fa-cog"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li>
+        <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#updateLectureModal">Update Lecture</a>
+      </li>
+      <li>
+        <a class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteLectureModal">Delete Lecture</a>
+      </li>
+    </ul>
+  </h1>
+  <p class="mb-4">{{ lecture?.description }}</p>
+
+  <div class="row">
+    <!-- Left: Lecture Content -->
+    <div class="col-xl-8 col-lg-7">
+      <div class="card shadow mb-4">
+        <!-- Video -->
+        <div *ngIf="videoFile; else noVideo">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="fw-bold">{{ videoFile.fileName }}</div>
+            <div>
+              <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#uploadVideoModal">
+                Change Lecture Video
+              </button>
+              <button class="btn" (click)="deleteFile(videoFile.fileId)">
+                <i class="text-danger bi bi-trash-fill"></i>
+              </button>
+            </div>
+          </div>
+          <video class="card-img-top" controls>
+            <source [src]="videoFile.filePath" type="video/mp4" />
+          </video>
+        </div>
+
+        <ng-template #noVideo>
+          <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <div><i class="bi bi-skip-end-circle"></i> No lecture video yet.</div>
+            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#uploadVideoModal">
+              Upload Lecture Video
+            </button>
+          </div>
+        </ng-template>
+
+        <!-- Documents -->
+        <div class="m-3">
+          <h5>
+            Documents
+            <a class="ms-1 text-dark" data-bs-toggle="modal" data-bs-target="#uploadModal">
+              <i class="bi bi-plus-circle"></i>
+            </a>
+          </h5>
+
+          <div *ngIf="documents.length; else noDocs">
+            <div *ngFor="let doc of documents" class="mb-2 d-flex align-items-center">
+              <i [class]="getFileIcon(doc)" class="me-2 ms-2"></i>
+              <a [href]="doc.filePath" target="_blank" class="btn-link flex-grow-1">{{ doc.fileName }}</a>
+              <button class="btn" (click)="deleteFile(doc.fileId)">
+                <i class="text-danger bi bi-trash-fill"></i>
+              </button>
+            </div>
+          </div>
+
+          <ng-template #noDocs>
+            <p class="text-muted ms-2">No documents yet.</p>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Prev/Next -->
+      <div class="d-flex justify-content-between mt-3 mb-5">
+        <button class="btn btn-outline-dark" (click)="goPrevious()">
+          <i class="fas fa-chevron-left me-1"></i> Previous
+        </button>
+        <button class="btn btn-outline-dark" (click)="goNext()">
+          Next <i class="fas fa-chevron-right ms-1"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: Discussion -->
+    <div class="col-xl-4 col-lg-5">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-info">Discussion</h6>
+        </div>
+        <div class="card-body">
+          <div class="text-muted text-center" style="height: 400px;">[Comment system here]</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Video Modal -->
+<div class="modal fade" id="uploadVideoModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form [formGroup]="uploadVideoForm" (ngSubmit)="uploadVideo()" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Upload Lecture Video</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="file" accept=".mp4,.avi,.mov,.wmv" (change)="onUploadVideoChange($event)" class="form-control" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-info" [disabled]="uploadVideoForm.invalid">Upload</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Upload Docs Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form [formGroup]="uploadDocForm" (ngSubmit)="uploadDocuments()" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Upload Lecture Documents</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="file" (change)="onUploadDocChange($event)" multiple accept=".pdf,.doc,.docx,.ppt,.pptx,.xlsx" class="form-control" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn custom-btn" [disabled]="uploadDocForm.invalid">Upload</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Update Modal -->
+<div class="modal fade" id="updateLectureModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form [formGroup]="updateForm" (ngSubmit)="updateLecture()" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Update Lecture</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Title</label>
+          <input formControlName="title" class="form-control" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea formControlName="description" rows="3" class="form-control"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn custom-btn" type="submit">Update Lecture</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteLectureModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Lecture</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this Lecture?
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-danger" (click)="deleteLecture()" data-bs-dismiss="modal">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
