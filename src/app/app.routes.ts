@@ -96,10 +96,6 @@ export const routes: Routes = [
     {
       path: 'courses',
       component: InstructorMyCourses
-    },
-    {
-      path: 'courses/:courseId/dashboard',
-      component: InstructorDashboard
     }
   ]
 },
@@ -109,6 +105,10 @@ export const routes: Routes = [
   canActivate: [authGuard],
   data: { roles: [Role.Instructor, Role.Admin] },
   children: [
+    {
+      path: 'courses/:courseId/dashboard',
+      component: InstructorDashboard
+    }
     // Instructor course-specific routes will be added here
     // e.g., lectures, materials, tests, assignments, etc.
   ]

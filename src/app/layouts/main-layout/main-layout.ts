@@ -6,6 +6,7 @@ import { GenericServices } from '../../core/services/GenericServices';
 import { ToastrService } from 'ngx-toastr';
 import { userDto } from '../../features/user/models/userDto';
 import { CommonModule } from '@angular/common';
+import { Role } from '../../core/enums/enums';
 
 @Component({
   selector: 'app-mainlayout',
@@ -52,6 +53,19 @@ export class Mainlayout implements OnInit {
     this.isAuthenticated.set(false);
     this.user.set(null);
     this.router.navigate(['/auth/signin']);
+  }
+
+  /**
+   * Lấy route "My Courses" dựa trên role của user
+   * - Instructor/Admin: /instructor/courses
+   * - Student: /student/my-courses
+   */
+  getMyCoursesRoute(): string {
+    const role = this.authService.getRole();
+    if (role === Role.Instructor || role === Role.Admin) {
+      return '/instructor/courses';
+    }
+    return '/student/my-courses';
   }
   
 }

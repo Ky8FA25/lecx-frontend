@@ -44,6 +44,26 @@ export class Login {
 
           localStorage.setItem('access_token', response.accessToken);
           localStorage.setItem('refresh_token', response.refreshToken);
+          
+          // Lưu user data với roles
+          if (response.user) {
+            // Lấy role đầu tiên từ roles array (hoặc có thể có nhiều roles)
+            const userRole = response.user.roles && response.user.roles.length > 0 
+              ? response.user.roles[0] 
+              : null;
+            
+            const userData = {
+              id: response.user.id,
+              email: response.user.email,
+              firstName: response.user.firstName,
+              lastName: response.user.lastName,
+              avatarUrl: response.user.avatarUrl,
+              role: userRole // Lưu role string (cần convert sang number nếu cần)
+            };
+            
+            localStorage.setItem('user', JSON.stringify(userData));
+            console.log('✅ User data saved:', userData);
+          }
 
           this.router.navigate(['/home/main']);
 

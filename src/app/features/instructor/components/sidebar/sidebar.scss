@@ -1,0 +1,166 @@
+// Sidebar styling - đảm bảo màu chữ rõ ràng trên background
+#accordionSidebar,
+.sidebar {
+  // Background màu teal/aqua (#50c8b8)
+  background: linear-gradient(180deg, #50c8b8 10%, #3da89a 100%) !important;
+  
+  // Đảm bảo tất cả text trong sidebar có màu trắng
+  color: #ffffff !important;
+  
+  // Tất cả icon trong sidebar phải có màu trắng
+  i, .bi, .fas, .fa {
+    color: #ffffff !important;
+  }
+  
+  // Tất cả text trong sidebar phải có màu trắng
+  span, a, div, p, small {
+    color: #ffffff !important;
+  }
+  
+  .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    
+    span {
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+    
+    i, .bi, .fas, .fa {
+      width: 1.5rem;
+      margin-right: 0.5rem;
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+    
+    &:hover {
+      color: #ffffff !important;
+      background-color: rgba(255, 255, 255, 0.1);
+      
+      span, i, .bi, .fas, .fa {
+        color: #ffffff !important;
+      }
+    }
+    
+    &.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #ffffff !important;
+      
+      span, i, .bi, .fas, .fa {
+        color: #ffffff !important;
+      }
+    }
+  }
+  
+  .nav-item {
+    &.active {
+      .nav-link {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #ffffff !important;
+        
+        span, i, .bi, .fas, .fa {
+          color: #ffffff !important;
+        }
+      }
+    }
+  }
+  
+  .collapse-inner {
+    background: white !important;
+    padding: 0.5rem 0;
+    border-radius: 4px;
+    margin: 0.5rem;
+    
+    // Trong collapse-inner, text phải là màu đen
+    * {
+      color: #333 !important;
+    }
+    
+    .collapse-item {
+      display: block;
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #333 !important;
+      text-decoration: none;
+      padding: 0.25rem 0;
+      
+      &:hover {
+        color: #4e73df !important;
+        text-decoration: underline;
+      }
+    }
+    
+    .collapse-header {
+      padding: 0.5rem 1rem;
+      color: #666 !important;
+      font-size: 0.875rem;
+    }
+    
+    strong {
+      color: #333 !important;
+    }
+    
+    i, .bi, .fas, .fa {
+      color: #333 !important;
+    }
+  }
+  
+  .sidebar-brand {
+    display: flex !important;
+    align-items: center;
+    padding: 1rem;
+    color: #ffffff !important;
+    text-decoration: none;
+    font-weight: bold;
+    visibility: visible !important;
+    opacity: 1 !important;
+    
+    span {
+      color: #ffffff !important;
+      visibility: visible !important;
+    }
+    
+    i, .bi, .bi-back {
+      margin-right: 0.5rem;
+      color: #ffffff !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      font-size: 1.2rem;
+    }
+    
+    &:hover {
+      color: rgba(255, 255, 255, 0.8) !important;
+      
+      span, i, .bi, .bi-back {
+        color: rgba(255, 255, 255, 0.8) !important;
+      }
+    }
+  }
+  
+  // Override cho các element đặc biệt
+  .text-warning {
+    color: #ffc107 !important;
+  }
+  
+  .text-dark {
+    color: #ffffff !important;
+  }
+  
+  small {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+  
+  // Đảm bảo hr (divider) vẫn hiển thị
+  hr.sidebar-divider {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+  }
+  
+  // Đảm bảo button sidebar toggle vẫn hiển thị
+  #sidebarToggle {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+  }
+}
+

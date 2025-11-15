@@ -97,16 +97,86 @@ export class InstructorMyCourses implements OnInit {
       this.currentPage(),
       10
     ).subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.courses.set(response.data.items);
-          this.totalPages.set(response.data.totalPages);
+      next: (response: any) => {
+        console.log('✅ Courses API Response:', response);
+        console.log('📋 Response structure:', {
+          success: response?.success,
+          hasData: !!response?.data,
+          dataType: typeof response?.data,
+          dataKeys: response?.data ? Object.keys(response.data) : [],
+          hasItems: response?.data && 'items' in response.data,
+          directItems: (response as any)?.items ? 'yes' : 'no',
+          itemsLength: response?.data?.items?.length || (response as any)?.items?.length || 0
+        });
+        
+        let coursesToSet: CourseModel[] = [];
+        let totalPagesToSet = 1;
+        
+        // Handle different response formats
+        if (response) {
+          // Format 1: { success: true, data: { items: [], totalPages: 1 } } - ApiResponse wrapper
+          if (response.success && response.data) {
+            const data = response.data;
+            
+            // Check if data has items property (PaginatedResponse format)
+            if (data.items && Array.isArray(data.items)) {
+              console.log('✅ Format 1: ApiResponse<PaginatedResponse> - Found', data.items.length, 'courses');
+              coursesToSet = data.items;
+              totalPagesToSet = data.totalPages || 1;
+            } 
+            // Check if data is directly an array
+            else if (Array.isArray(data)) {
+              console.log('✅ Format 1b: ApiResponse<Array> - Found', data.length, 'courses');
+              coursesToSet = data;
+              totalPagesToSet = 1;
+            }
+          } 
+          // Format 2: Direct PaginatedResponse { items: [], totalPages: 1 } - No ApiResponse wrapper
+          else if ((response as any).items && Array.isArray((response as any).items)) {
+            const paginatedResponse = response as any;
+            console.log('✅ Format 2: Direct PaginatedResponse - Found', paginatedResponse.items.length, 'courses');
+            coursesToSet = paginatedResponse.items;
+            totalPagesToSet = paginatedResponse.totalPages || 1;
+          }
+          // Format 3: Direct array
+          else if (Array.isArray(response)) {
+            console.log('✅ Format 3: Direct Array - Found', response.length, 'courses');
+            coursesToSet = response;
+            totalPagesToSet = 1;
+          } 
+          // Format 4: { data: { items: [] } } - Data without success property
+          else if (response.data && (response.data as any).items && Array.isArray((response.data as any).items)) {
+            const data = response.data as any;
+            console.log('✅ Format 4: Data with items - Found', data.items.length, 'courses');
+            coursesToSet = data.items;
+            totalPagesToSet = data.totalPages || 1;
+          }
+          else {
+            console.warn('⚠️ Unknown response format:', response);
+            console.warn('Response keys:', Object.keys(response));
+          }
         }
+        
+        // Set courses if found
+        if (coursesToSet.length > 0) {
+          this.courses.set(coursesToSet);
+          this.totalPages.set(totalPagesToSet);
+          console.log('✅ Successfully set', coursesToSet.length, 'courses');
+        } else {
+          console.warn('⚠️ No courses found in response');
+        }
+        
+        console.log('📚 Final courses count:', this.courses().length);
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading courses:', err);
-        this.genericService.showError('Failed to load courses');
+        console.error('❌ Error loading courses:', err);
+        console.error('Error details:', {
+          status: err.status,
+          message: err.message,
+          error: err.error
+        });
+        this.genericService.showError(err.error?.message || 'Failed to load courses');
         this.loading.set(false);
       }
     });

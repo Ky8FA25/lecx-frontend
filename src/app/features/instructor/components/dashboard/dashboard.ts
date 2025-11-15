@@ -24,8 +24,9 @@ export class InstructorDashboard implements OnInit {
   loading = signal(false);
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      const courseId = params['CourseID'] || params['courseId'];
+    // Lấy courseId từ route params (URL: /instructor/courses/:courseId/dashboard)
+    this.route.params.subscribe(params => {
+      const courseId = params['courseId'];
       if (courseId) {
         this.courseId.set(+courseId);
         this.loadDashboard(+courseId);
@@ -38,18 +39,29 @@ export class InstructorDashboard implements OnInit {
 
   loadDashboard(courseId: number) {
     this.loading.set(true);
+    console.log('📊 Loading dashboard for course:', courseId);
+    
     this.instructorService.getDashboard(courseId).subscribe({
       next: (response) => {
+        console.log('✅ Dashboard API Response:', response);
+        
         if (response.success && response.data) {
+          console.log('📈 Dashboard data:', response.data);
           this.dashboardData.set(response.data);
         } else {
+          console.warn('⚠️ Dashboard response:', response);
           this.genericService.showError(response.message || 'Failed to load dashboard');
         }
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading dashboard:', err);
-        this.genericService.showError('Failed to load dashboard data');
+        console.error('❌ Error loading dashboard:', err);
+        console.error('Error details:', {
+          status: err.status,
+          message: err.message,
+          error: err.error
+        });
+        this.genericService.showError(err.error?.message || 'Failed to load dashboard data');
         this.loading.set(false);
       }
     });

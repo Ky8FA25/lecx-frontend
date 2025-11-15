@@ -1,17 +1,19 @@
-import { Component, inject, signal } from '@angular/core';
-import { Router, RouterOutlet, RouterLinkWithHref } from "@angular/router";
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { Router, RouterOutlet, RouterLink } from "@angular/router";
 import { Authservice } from '../../core/services/authservice';
 import { GenericServices } from '../../core/services/GenericServices';
 import { ToastrService } from 'ngx-toastr';
 import { userDto } from '../../features/user/models/userDto';
+import { SidebarComponent } from '../../features/instructor/components/sidebar/sidebar';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-course-layout',
-  imports: [RouterOutlet, RouterLinkWithHref],
+  imports: [RouterOutlet, RouterLink, CommonModule, SidebarComponent],
   templateUrl: './course-layout.html',
   styleUrl: './course-layout.scss'
 })
-export class CourseLayout {
+export class CourseLayout implements OnInit {
 private authService = inject(Authservice);
   private router = inject(Router);
   private toastr = inject(ToastrService);
