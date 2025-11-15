@@ -59,8 +59,7 @@
 
             <!-- Nav Item - Material -->
             <li title="Materials" class="nav-item">
-                <a class="nav-link" asp-action="MaterialList" asp-controller="Participation"
-                    asp-route-CourseID="@courseID">
+                <a class="nav-link" [routerLink]="['/student/course', courseID, 'material-list']">
                     <i class="fas fa-file-alt"></i>
                     <a> Materials</a>
                 </a>
@@ -68,30 +67,55 @@
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li title="Lectures" class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#lectureList"
-                    aria-expanded="true" aria-controls="collapseTwo">
+                <a class="nav-link" 
+                   [class.collapsed]="!isLecturesExpanded()"
+                   href="#" 
+                   (click)="toggleLectures(); $event.preventDefault()"
+                   [attr.aria-expanded]="isLecturesExpanded()" 
+                   aria-controls="lectureList">
                     <i class="fas fa-book-open"></i>
-                    <a>Lectures</a>
+                    <span>Lectures</span>
                 </a>
-                <div id="lectureList" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div id="lectureList" 
+                     class="collapse" 
+                     [class.show]="isLecturesExpanded()"
+                     aria-labelledby="headingTwo" 
+                     data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-
-
-                        <h6 class="ml-4 mt-1">
-                            <a class="btn btn-outline active" data-bs-toggle="modal"
-                                data-bs-target="#createLectureModal">
-                                Add Lecture<i class="ml-3 fas fa-plus-circle"></i>
-                            </a>
-                        </h6>
-
+                        @if (loadingLectures()) {
+                            <div class="px-4 py-2 text-center">
+                                <div class="spinner-border spinner-border-sm" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        } @else if (lectures() && lectures().length > 0) {
+                            <div class="mt-2">
+                                @for (lecture of lectures(); track lecture.lectureId; let i = $index) {
+                                    <div class="px-4 py-1">
+                                        <strong>
+                                            <i class="fas fa-graduation-cap mr-1"></i>
+                                            Lecture {{ i + 1 }}
+                                        </strong>
+                                        <br />
+                                        <a (click)="goToLecture(lecture.lectureId)" 
+                                           class="collapse-item" 
+                                           [title]="lecture.title"
+                                           style="cursor: pointer;">
+                                             {{ lecture.title | slice:0:20 }}{{ lecture.title.length > 20 ? '...' : '' }}
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        } @else {
+                            <h6 class="collapse-header mt-2 mb-2 px-4">No lecture yet</h6>
+                        }
                     </div>
                 </div>
             </li>
 
 
             <li title="Grades" class="nav-item">
-                <a class="nav-link" asp-action="GradeList" asp-controller="Student" asp-area="Student"
-                    asp-route-CourseID="@courseID">
+                <a class="nav-link" [routerLink]="['/student/course', courseID, 'grade-list']">
                     <i class="fas fa-clipboard"></i>
                     <a>Grades</a>
                 </a>
@@ -99,7 +123,7 @@
 
 
             <li title="Tests" class="nav-item">
-                <a class="nav-link" asp-action="TestList" asp-controller="Participation" asp-route-CourseID="@courseID">
+                <a class="nav-link" [routerLink]="['/student/course', courseID, 'test-list']">
                     <i class="fas fa-clipboard-list"></i>
                     <a>Tests</a>
                 </a>
@@ -109,14 +133,6 @@
                 <a class="nav-link" [routerLink]="['/student/course', courseID, 'assignments']">
                     <i class="fas fa-tasks"></i>
                     Assignments
-                </a>
-            </li>
-
-            <li title="Live stream" class="nav-item">
-                <a class="nav-link" asp-action="Livestream" asp-controller="Participation"
-                    asp-route-CourseID="@courseID">
-                    <i class="bi bi-broadcast"></i>
-                    <a>Live stream</a>
                 </a>
             </li>
 
@@ -334,9 +350,7 @@
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     English
                                 </button>
-                                @* <ul class="dropdown-menu">
-                                    <li><button class="dropdown-item" type="button">VietNam</button></li>
-                                </ul> *@
+                              
                             </div>
                         </div>
                     </div>

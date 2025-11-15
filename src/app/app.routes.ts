@@ -29,6 +29,7 @@ import { AsignmentList } from './features/student/components/asignment-list/asig
 import { InstructorDashboard } from './features/instructor/components/dashboard/dashboard';
 import { InstructorMyCourses } from './features/instructor/components/my-courses/my-courses';
 import { Role } from './core/enums/enums';
+import { TestList } from './features/student/components/test-list/test-list';
 
 export const routes: Routes = [
   
@@ -144,6 +145,14 @@ export const routes: Routes = [
     {
       path: 'lecture-detail',
       component: LectureDetail
+    },
+    {
+      path: 'material-list',
+      component: MaterialList
+    },
+    {
+      path: 'test-list',
+      component: TestList
     },
     {
       path: 'material-list',

@@ -100,7 +100,7 @@
                                     <i class="fas fa-video"></i> <!-- Icon cho total lectures -->
                                 </span>
                                 <span class="label icon text-white-50 mr-auto">Lectures</span>
-                                <span class="text">@lectures.Count()</span>
+                                <span class="text">{{ lectures().length }}</span>
                             </div>
                         </li>
                         <li>
@@ -199,21 +199,40 @@
                         you must complete all the lectures
                         and have an average score of 5 or above.
                     </p>
-                    <div>
-                        <a class="btn btn-light btn-icon-split w-100 d-flex justify-content-between">
-                            <div>
-                                <span class="icon text-gray-600 mr-auto">
-                                    <i class="fas fa-graduation-cap"></i>
-                                </span>
-                                <span class="text mr-auto"></span>
+                    @if (loadingLectures()) {
+                        <div class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
                             </div>
-                            <span class="ml-auto icon">
-                                <i class="fas fa-check"></i>
-                            </span>
-                        </a>
-                        <div class="my-2"></div>
-
-                    </div>
+                        </div>
+                    } @else if (lectures() && lectures().length > 0) {
+                        <div>
+                            @for (lecture of lectures(); track lecture.lectureId; let i = $index) {
+                                <a 
+                                    class="btn btn-light btn-icon-split w-100 d-flex justify-content-between mb-2"
+                                    (click)="goToLecture(lecture.lectureId)"
+                                    style="cursor: pointer; text-decoration: none;">
+                                    <div class="d-flex align-items-center">
+                                        <span class="icon text-gray-600 mr-2">
+                                            <i class="fas fa-graduation-cap"></i>
+                                        </span>
+                                        <span class="text text-left" [title]="lecture.title">
+                                            {{ lecture.title | slice:0:40 }}{{ lecture.title.length > 40 ? '...' : '' }}
+                                        </span>
+                                    </div>
+                                    @if (isLectureCompleted(lecture.lectureId)) {
+                                        <span class="ml-auto icon text-success">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    }
+                                </a>
+                            }
+                        </div>
+                    } @else {
+                        <div class="text-muted text-center py-3">
+                            <p>No lectures available yet.</p>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
