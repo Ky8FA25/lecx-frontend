@@ -1,0 +1,109 @@
+<div class="container-fluid">
+  <div class="card shadow row m-3 mb-5">
+    <div class="d-flex justify-content-between align-items-center m-3">
+      <h4 class="mb-0">Tests</h4>
+    </div>
+    <div class="m-4">
+      @if (loading()) {
+        <div class="d-flex align-items-center justify-content-center mb-5" style="height: 60vh;">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      } @else if (tests() && tests().length > 0) {
+        @for (test of tests(); track test.testId) {
+          @let attemptsLeft = getAttemptsLeft(test);
+          @let score = getScore(test);
+          
+          <div class="card shadow-sm test-card">
+            <div class="card-body">
+              <h5 class="card-title">{{ test.title }}</h5>
+              <p class="card-text">{{ test.description }}</p>
+
+              <div class="mb-3">
+                <p><strong>Start time:</strong> {{ formatDate(test.startTime) }}</p>
+                <p><strong>End time:</strong> {{ formatDate(test.endTime) }}</p>
+                <p><strong>Time to do test:</strong> {{ test.testTime || 'N/A' }}</p>
+              </div>
+
+              <div class="mb-4">
+                <p><strong>Number of questions:</strong> {{ test.numberOfQuestion }}</p>
+              </div>
+
+              <div class="mb-4">
+                <p><strong>Score to Pass:</strong> {{ test.passingScore ?? 'N/A' }}</p>
+              </div>
+
+              @if (attemptsLeft !== -1) {
+                <div class="mb-4">
+                  <p><strong>Your attempts left:</strong> {{ attemptsLeft }}</p>
+                </div>
+              } @else {
+                <div class="mb-4">
+                  <p><strong>Number of max attempts:</strong> Unlimited</p>
+                </div>
+              }
+
+              <div class="mb-4">
+                <p><strong>Status:</strong> {{ getStatusText(test.status) }}</p>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between">
+                @if (isTestNotStarted(test)) {
+                  <p><strong>Test is not yet available. Start time:</strong> {{ formatDate(test.startTime) }}</p>
+                  <button class="btn btn-secondary" disabled>Do Test</button>
+                } @else if (isTestEnded(test)) {
+                  <p><strong>This test has ended. End time:</strong> {{ formatDate(test.endTime) }}</p>
+                  <button class="btn btn-secondary" disabled>Test Ended</button>
+                } @else {
+                  @if (attemptsLeft > 0 || attemptsLeft === -1) {
+                    @if (score != null) {
+                      <p><strong>Your Score:</strong> {{ score | number:'1.2-2' }}</p>
+                      <button 
+                        id="doTestButton-{{ test.testId }}" 
+                        type="button" 
+                        class="btn btn-warning"
+                        (click)="navigateToDoTest(test.testId)">
+                        Redo Test
+                      </button>
+                    } @else {
+                      <button 
+                        id="doTestButton-{{ test.testId }}" 
+                        type="button" 
+                        class="btn btn-success"
+                        (click)="navigateToDoTest(test.testId)">
+                        Do Test
+                      </button>
+                    }
+                  } @else {
+                    <div class="d-flex align-items-center">
+                      <div class="row">
+                        @if (score != null) {
+                          <div class="col-md-12">
+                            <p><strong>Your Score:</strong> {{ score | number:'1.2-2' }}</p>
+                          </div>
+                        }
+                        <div class="col-md-12">
+                          <button 
+                            id="doTestButton-{{ test.testId }}" 
+                            class="btn btn-warning" 
+                            disabled>
+                            No Attempt Left
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                }
+              </div>
+            </div>
+          </div>
+        }
+      } @else {
+        <div class="d-flex align-items-center justify-content-center mb-5" style="height: 60vh;">
+          <h5 class="text-muted">No test available</h5>
+        </div>
+      }
+    </div>
+  </div>
+</div>
