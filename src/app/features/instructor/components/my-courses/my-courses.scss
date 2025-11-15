@@ -1,0 +1,89 @@
+.site-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 200px;
+  padding: 40px 0;
+}
+
+.breadcrumb {
+  background: transparent;
+  padding: 0;
+  margin-bottom: 10px;
+}
+
+.breadcrumb-item a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+}
+
+.breadcrumb-item.active {
+  color: white;
+}
+
+.custom-block {
+  border-radius: 10px;
+  padding: 20px;
+  transition: transform 0.2s;
+}
+
+.custom-block:hover {
+  transform: translateY(-5px);
+}
+
+.custom-block-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.dot {
+  font-size: 1.2em;
+  margin-left: 10px;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.custom-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.custom-btn:hover {
+  background: #5568d3;
+}
+
+.modal.show {
+  display: block;
+}
+
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.pagination {
+  margin-top: 20px;
+}
+
+.page-item.active .page-link {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.page-link {
+  cursor: pointer;
+  color: #667eea;
+}
+
+.page-link:hover {
+  color: #5568d3;
+}
+
