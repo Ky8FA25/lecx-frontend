@@ -12,7 +12,7 @@ export class CommentService {
 
   // Comment APIs
   getCommentsByLecture(lectureId: number, parentCmtId: number | null = null, pageIndex: number = 1, pageSize: number = 10): Observable<ApiResponse<PaginatedResponse<CommentDTO>>> {
-    let url = `api/comments/lecture/${lectureId}?pageIndex=${pageIndex}&pageSize=${pageSize}`;
+    let url = `api/comments?lectureId=${lectureId}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
     if (parentCmtId !== null) {
       url += `&parentCmtId=${parentCmtId}`;
     }

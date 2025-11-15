@@ -275,8 +275,8 @@ export class InstructorMyCourses implements OnInit {
     if (formValue.coverImage) {
       try {
         const uploadResponse = await this.storageService.uploadFile(formValue.coverImage, 'courses').toPromise();
-        if (uploadResponse?.success && uploadResponse.data) {
-          coverImagePath = uploadResponse.data.publicUrl;
+        if (uploadResponse?.success) {
+          coverImagePath = uploadResponse.publicUrl;
         }
       } catch (err) {
         this.genericService.showError('Failed to upload cover image');
@@ -328,8 +328,8 @@ export class InstructorMyCourses implements OnInit {
     if (formValue.coverImage) {
       try {
         const uploadResponse = await this.storageService.uploadFile(formValue.coverImage, 'courses').toPromise();
-        if (uploadResponse?.success && uploadResponse.data) {
-          coverImagePath = uploadResponse.data.publicUrl;
+        if (uploadResponse?.success) {
+          coverImagePath = uploadResponse.publicUrl;
         }
       } catch (err) {
         this.genericService.showError('Failed to upload cover image');

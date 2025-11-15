@@ -82,14 +82,51 @@
                     </a>
                 </li>
 
-                <!-- Nav Item - Lectures -->
+                <!-- Nav Item - Lectures Collapse -->
                 <li class="nav-item">
                     <a class="nav-link" 
-                       [routerLink]="['/instructor/courses', courseId(), 'lectures']" 
-                       routerLinkActive="active">
+                       [class.collapsed]="!showLecturesDropdown()"
+                       href="#" 
+                       (click)="toggleLecturesDropdown(); $event.preventDefault()"
+                       [class.active]="router.url.includes('/lectures/')"
+                       data-bs-toggle="collapse" 
+                       data-bs-target="#lecturesCollapse"
+                       [attr.aria-expanded]="showLecturesDropdown()"
+                       aria-controls="lecturesCollapse">
                         <i class="fas fa-book-open"></i>
                         <span>Lectures</span>
+                        <i class="fas fa-chevron-down ms-auto" [class.rotate]="showLecturesDropdown()"></i>
                     </a>
+                    <div class="collapse" 
+                         id="lecturesCollapse"
+                         [class.show]="showLecturesDropdown()"
+                         data-bs-parent="#accordionSidebar">
+                        <div class="collapse-inner">
+                            <!-- Create Lecture Button -->
+                            <div class="collapse-header">
+                                <button class="btn btn-sm w-100" (click)="openCreateLectureModal()">
+                                    <i class="fas fa-plus me-2"></i>Create New Lecture
+                                </button>
+                            </div>
+                            
+                            <!-- Lectures List -->
+                            @if (lectures().length > 0) {
+                                @for (lecture of lectures(); track lecture.lectureId) {
+                                    <a class="collapse-item" 
+                                       href="#"
+                                       (click)="navigateToLecture(lecture.lectureId); $event.preventDefault()"
+                                       [class.active]="router.url.includes('/lectures/' + lecture.lectureId)">
+                                        <i class="fas fa-file-video me-2"></i>
+                                        {{ lecture.title }}
+                                    </a>
+                                }
+                            } @else {
+                                <div class="collapse-item text-muted text-center py-2">
+                                    <small>No lectures yet</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </li>
 
                 <!-- Nav Item - Tests -->
@@ -309,6 +346,55 @@
 
     </div>
     <!-- End of Page Wrapper -->
+    
+    <!-- Create Lecture Modal -->
+    @if (showCreateLectureModal()) {
+        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create New Lecture</h5>
+                        <button type="button" class="btn-close" (click)="closeCreateLectureModal()"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="lectureTitle" class="form-label">Title <span class="text-danger">*</span></label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="lectureTitle" 
+                                    [(ngModel)]="newLectureTitle"
+                                    name="lectureTitle"
+                                    placeholder="Enter lecture title"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="lectureDescription" class="form-label">Description</label>
+                                <textarea 
+                                    class="form-control" 
+                                    id="lectureDescription" 
+                                    rows="4"
+                                    [(ngModel)]="newLectureDescription"
+                                    name="lectureDescription"
+                                    placeholder="Enter lecture description (optional)"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" (click)="closeCreateLectureModal()">Cancel</button>
+                        <button type="button" class="btn btn-primary" (click)="createLecture()" [disabled]="creatingLecture() || !newLectureTitle().trim()">
+                            @if (creatingLecture()) {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                            }
+                            Create Lecture
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" style="z-index: 10;" href="#page-top">
         <i class="fas fa-angle-up"></i>

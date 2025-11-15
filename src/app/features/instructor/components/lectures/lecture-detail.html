@@ -1,0 +1,364 @@
+<div class="container-fluid">
+  @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else if (lecture()) {
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+      <div class="flex-grow-1">
+        <div class="d-flex align-items-center justify-content-between">
+          <h1 class="h3 mb-0 text-gray-800">{{ lecture()!.title }}</h1>
+          <div class="dropdown">
+            <button class="btn btn-link text-gray-800" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-cog fa-lg"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
+              <li>
+                <a class="dropdown-item" href="#" (click)="openUpdateModal(); $event.preventDefault()">
+                  <i class="bi bi-pencil me-2"></i>Update Lecture
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item text-danger" href="#" (click)="openDeleteModal(); $event.preventDefault()">
+                  <i class="bi bi-trash me-2"></i>Delete Lecture
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        @if (lecture()!.description) {
+          <p class="mt-2 text-gray-600">{{ lecture()!.description }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+      <!-- Left Column -->
+      <div class="col-xl-8">
+        <!-- Video Section -->
+        <div class="card shadow mb-4">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Lecture Video</h6>
+            <div>
+              @if (videoFile()) {
+                <button class="btn btn-sm btn-info me-2" (click)="openUploadVideoModal()">
+                  <i class="fas fa-edit me-1"></i>Change Lecture Video
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="deleteVideo()">
+                  <i class="bi bi-trash me-1"></i>Delete
+                </button>
+              } @else {
+                <button class="btn btn-sm btn-primary" (click)="openUploadVideoModal()">
+                  <i class="fas fa-upload me-1"></i>Upload Lecture Video
+                </button>
+              }
+            </div>
+          </div>
+          <div class="card-body">
+            @if (videoFile()) {
+              <video class="w-100" controls style="max-height: 500px;">
+                <source [src]="getVideoUrl(videoFile()!.filePath)" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            } @else {
+              <div class="text-center py-5 text-muted">
+                <i class="fas fa-video fa-3x mb-3"></i>
+                <p>No video uploaded yet</p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Documents Section -->
+        <div class="card shadow mb-4">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">
+              <i class="fas fa-file me-2"></i>Documents
+            </h6>
+            <button class="btn btn-sm btn-primary" (click)="openUploadDocumentModal()">
+              <i class="bi bi-plus-circle me-1"></i>Add Document
+            </button>
+          </div>
+          <div class="card-body">
+            @if (documentFiles().length > 0) {
+              <div class="list-group">
+                @for (doc of documentFiles(); track doc.fileId) {
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                      <i [class]="getFileIconClass(doc.fileExtension)" class="me-3 fa-2x"></i>
+                      <div>
+                        <a [href]="getFileDownloadUrl(doc.filePath)" target="_blank" class="text-decoration-none">
+                          {{ doc.fileName }}
+                        </a>
+                        <small class="d-block text-muted">{{ formatDate(doc.uploadDate) }}</small>
+                      </div>
+                    </div>
+                    <button class="btn btn-sm btn-danger" (click)="deleteDocument(doc.fileId)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="text-center py-4 text-muted">
+                <i class="fas fa-file fa-3x mb-3"></i>
+                <p>No documents available</p>
+              </div>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column -->
+      <div class="col-xl-4">
+        <!-- Discussion Card -->
+        <div class="card shadow mb-4">
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Discussion</h6>
+          </div>
+          <div class="card-body">
+            <!-- Comments List -->
+            <div class="comments-list" style="max-height: 400px; overflow-y: auto;">
+              <!-- Debug: Comments count = {{ comments().length }} -->
+              @if (comments().length > 0) {
+                @for (comment of comments(); track comment.commentId) {
+                  <div class="mb-3 pb-3 border-bottom">
+                    <div class="d-flex align-items-start">
+                      <div class="flex-shrink-0 me-3">
+                        @if (comment.user.profileImagePath) {
+                          <img [src]="comment.user.profileImagePath" class="rounded-circle" width="40" height="40" alt="Avatar">
+                        } @else {
+                          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            {{ (comment.user.firstName || 'U')[0] }}
+                          </div>
+                        }
+                      </div>
+                      <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                          <div>
+                            <strong>{{ comment.user.firstName }} {{ comment.user.lastName }}</strong>
+                            <small class="text-muted ms-2">{{ formatDate(comment.timestamp) }}</small>
+                          </div>
+                        </div>
+                        <p class="mb-1">{{ comment.content }}</p>
+                        @if (comment.file) {
+                          <a [href]="getFileDownloadUrl(comment.file.filePath)" target="_blank" class="text-decoration-none">
+                            <i class="fas fa-paperclip me-1"></i>Attachment
+                          </a>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
+              } @else {
+                <p class="text-muted text-center py-3">No comments yet</p>
+              }
+            </div>
+
+            <!-- Comment Form -->
+            <div class="mt-3 pt-3 border-top">
+              <div class="mb-2">
+                <input 
+                  type="file" 
+                  id="commentFileInput" 
+                  class="d-none" 
+                  (change)="onCommentFileSelected($event)"
+                  accept="*/*">
+                <button 
+                  class="btn btn-sm btn-outline-secondary" 
+                  type="button"
+                  (click)="triggerCommentFileInput()">
+                  <i class="fas fa-paperclip"></i>
+                </button>
+                @if (commentFile) {
+                  <small class="ms-2 text-muted">{{ commentFile.name }}</small>
+                }
+              </div>
+              <textarea 
+                class="form-control mb-2" 
+                rows="3" 
+                placeholder="Write your comment"
+                [(ngModel)]="newCommentContent"></textarea>
+              <button 
+                class="btn btn-primary btn-sm w-100" 
+                (click)="submitComment()"
+                [disabled]="uploadingComment() || (!newCommentContent().trim() && !commentFile)">
+                @if (uploadingComment()) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                } @else {
+                  <i class="fas fa-paper-plane me-2"></i>
+                }
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Update Lecture Modal -->
+  @if (showUpdateModal()) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Update Lecture</h5>
+            <button type="button" class="btn-close" (click)="closeUpdateModal()"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="updateTitle" class="form-label">Title</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="updateTitle" 
+                  [(ngModel)]="updateTitle"
+                  name="updateTitle"
+                  required>
+              </div>
+              <div class="mb-3">
+                <label for="updateDescription" class="form-label">Description</label>
+                <textarea 
+                  class="form-control" 
+                  id="updateDescription" 
+                  rows="3"
+                  [(ngModel)]="updateDescription"
+                  name="updateDescription"></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeUpdateModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="updateLecture()" [disabled]="loading()">
+              @if (loading()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Delete Lecture Modal -->
+  @if (showDeleteModal()) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Delete Lecture</h5>
+            <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete this lecture? This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">Cancel</button>
+            <button type="button" class="btn btn-danger" (click)="deleteLecture()" [disabled]="loading()">
+              @if (loading()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Upload Video Modal -->
+  @if (showUploadVideoModal()) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ videoFile() ? 'Change' : 'Upload' }} Lecture Video</h5>
+            <button type="button" class="btn-close" (click)="closeUploadVideoModal()"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="videoFileInput" class="form-label">Video File</label>
+                <input 
+                  type="file" 
+                  class="form-control" 
+                  id="videoFileInput" 
+                  accept=".mp4,.avi,.mov,.wmv"
+                  (change)="onVideoFileSelected($event)"
+                  required>
+                <small class="form-text text-muted">Accepted formats: MP4, AVI, MOV, WMV</small>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeUploadVideoModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="uploadVideo()" [disabled]="!uploadVideoFile || uploadingVideo()">
+              @if (uploadingVideo()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              Upload
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Upload Document Modal -->
+  @if (showUploadDocumentModal()) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Documents</h5>
+            <button type="button" class="btn-close" (click)="closeUploadDocumentModal()"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="documentFilesInput" class="form-label">Document Files</label>
+                <input 
+                  type="file" 
+                  class="form-control" 
+                  id="documentFilesInput" 
+                  accept=".pdf,.doc,.docx,.ppt,.pptx,.xlsx"
+                  multiple
+                  (change)="onDocumentFilesSelected($event)"
+                  required>
+                <small class="form-text text-muted">Accepted formats: PDF, DOC, DOCX, PPT, PPTX, XLSX</small>
+              </div>
+              @if (uploadDocumentFiles.length > 0) {
+                <div class="mt-2">
+                  <small class="text-muted">Selected files:</small>
+                  <ul class="list-unstyled mt-1">
+                    @for (file of uploadDocumentFiles; track file.name) {
+                      <li><small>{{ file.name }}</small></li>
+                    }
+                  </ul>
+                </div>
+              }
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeUploadDocumentModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="uploadDocuments()" [disabled]="uploadDocumentFiles.length === 0 || uploadingDocuments()">
+              @if (uploadingDocuments()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              Upload
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+

@@ -28,6 +28,7 @@ import { PaymentFailed } from './features/payments/components/payment-failed/pay
 import { AsignmentList } from './features/student/components/asignment-list/asignment-list';
 import { InstructorDashboard } from './features/instructor/components/dashboard/dashboard';
 import { InstructorMyCourses } from './features/instructor/components/my-courses/my-courses';
+import { InstructorLectureDetail } from './features/instructor/components/lectures/lecture-detail';
 import { Role } from './core/enums/enums';
 import { InstructorLayout } from './layouts/instructor-layout/instructor-layout';
 
@@ -110,9 +111,13 @@ export const routes: Routes = [
     {
       path: 'courses/:courseId/dashboard',
       component: InstructorDashboard
+    },
+    {
+      path: 'courses/:courseId/lectures/:lectureId',
+      component: InstructorLectureDetail
     }
     // Instructor course-specific routes will be added here
-    // e.g., lectures, materials, tests, assignments, etc.
+    // e.g., materials, tests, assignments, etc.
   ]
 },
 {
