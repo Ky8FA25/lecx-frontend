@@ -25,6 +25,9 @@ import { NotFound } from './features/not-found/not-found';
 import { CourseInfo } from './features/student/components/course-info/course-info';
 import { PaymentSuccessful } from './features/payments/components/payment-successful/payment-successful';
 import { PaymentFailed } from './features/payments/components/payment-failed/payment-failed';
+import { InstructorDashboard } from './features/instructor/components/dashboard/dashboard';
+import { InstructorMyCourses } from './features/instructor/components/my-courses/my-courses';
+import { Role } from './core/enums/enums';
 
 export const routes: Routes = [
   
@@ -82,6 +85,32 @@ export const routes: Routes = [
       path: 'list',
       component: InstructorCourse
     }
+  ]
+},
+{
+  path: 'instructor',
+  component: Mainlayout,
+  canActivate: [authGuard],
+  data: { roles: [Role.Instructor, Role.Admin] },
+  children: [
+    {
+      path: 'courses',
+      component: InstructorMyCourses
+    },
+    {
+      path: 'courses/:courseId/dashboard',
+      component: InstructorDashboard
+    }
+  ]
+},
+{
+  path: 'instructor',
+  component: CourseLayout,
+  canActivate: [authGuard],
+  data: { roles: [Role.Instructor, Role.Admin] },
+  children: [
+    // Instructor course-specific routes will be added here
+    // e.g., lectures, materials, tests, assignments, etc.
   ]
 },
 {
