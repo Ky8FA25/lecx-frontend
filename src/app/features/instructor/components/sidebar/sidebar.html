@@ -1,0 +1,152 @@
+<ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar" style="background: linear-gradient(180deg, #50c8b8 10%, #3da89a 100%);">
+  
+  <!-- Sidebar Brand -->
+  <a class="sidebar-brand mr-auto" routerLink="/home/main">
+    <i class="bi-back"></i>
+    <span>LearnOn</span>
+  </a>
+  
+  <!-- Debug Info (temporary) -->
+  @if (!courseId()) {
+    <li class="nav-item">
+      <div class="nav-link">
+        <small>Loading courseId...</small>
+      </div>
+    </li>
+  }
+
+  <!-- Dashboard (Chỉ Instructor) -->
+  @if (isInstructor()) {
+    <li title="Dashboard" class="nav-item" [class.active]="isDashboardActive()">
+      <a class="nav-link" [routerLink]="['/instructor/courses', courseId(), 'dashboard']" routerLinkActive="active">
+        <i class="fas fa-fw fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+  }
+
+  <!-- Course Info (Chỉ Student) -->
+  @if (!isInstructor()) {
+    <li title="Course Info" class="nav-item" [class.active]="isCourseInfoActive()">
+      <a class="nav-link" [routerLink]="['/student/course-info', courseId()]" routerLinkActive="active">
+        <i class="bi bi-info-circle"></i>
+        <span>Course Info</span>
+      </a>
+    </li>
+  }
+
+  <!-- Materials -->
+  <li title="Materials" class="nav-item" [class.active]="isMaterialsActive()">
+    <a class="nav-link" [routerLink]="['/instructor/courses', courseId(), 'materials']" routerLinkActive="active">
+      <i class="fas fa-file-alt"></i>
+      <span>Materials</span>
+    </a>
+  </li>
+
+  <!-- Lectures (Collapsible Menu) -->
+  <li title="Lectures" class="nav-item" [class.active]="isLecturesActive()">
+    <a class="nav-link" 
+       (click)="toggleLectures()" 
+       [class.collapsed]="!lecturesExpanded()"
+       style="cursor: pointer;">
+      <i class="fas fa-book-open"></i>
+      <span>Lectures</span>
+    </a>
+    
+    <div id="lectureList" 
+         class="collapse" 
+         [class.show]="lecturesExpanded()"
+         aria-labelledby="headingTwo" 
+         data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        
+        <!-- Add Lecture Button (Chỉ Instructor) -->
+        @if (isInstructor()) {
+          <h6 class="ml-4 mt-1">
+            <a class="btn btn-outline active" 
+               (click)="openCreateLectureModal()"
+               style="cursor: pointer;">
+              Add Lecture
+              <i class="ml-3 fas fa-plus-circle"></i>
+            </a>
+          </h6>
+        }
+        
+        <!-- Lecture List -->
+        @if (loading()) {
+          <div class="text-center py-2">
+            <div class="spinner-border spinner-border-sm" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        } @else {
+          @if (lectures().length > 0) {
+            <div class="mt-2">
+              @for (lecture of lectures(); track lecture.lectureId; let i = $index) {
+                <div class="px-4 py-1">
+                  <strong>
+                    <i class="fas fa-graduation-cap mr-1"></i>
+                    Lecture {{ i + 1 }}
+                  </strong>
+                  <br />
+                  <a (click)="goToLecture(lecture.lectureId)" 
+                     class="collapse-item" 
+                     [title]="lecture.title"
+                     style="cursor: pointer;">
+                    {{ lecture.title }}
+                  </a>
+                </div>
+              }
+            </div>
+          } @else {
+            <h6 class="collapse-header mt-2 mb-2">No lecture yet</h6>
+          }
+        }
+      </div>
+    </div>
+  </li>
+
+  <!-- Grades (Chỉ Student) -->
+  @if (!isInstructor()) {
+    <li title="Grades" class="nav-item" [class.active]="isGradesActive()">
+      <a class="nav-link" [routerLink]="['/student/grade-list']" [queryParams]="{courseId: courseId()}" routerLinkActive="active">
+        <i class="fas fa-clipboard"></i>
+        <span>Grades</span>
+      </a>
+    </li>
+  }
+
+  <!-- Tests -->
+  <li title="Tests" class="nav-item" [class.active]="isTestsActive()">
+    <a class="nav-link" [routerLink]="['/instructor/courses', courseId(), 'tests']" routerLinkActive="active">
+      <i class="fas fa-clipboard-list"></i>
+      <span>Tests</span>
+    </a>
+  </li>
+
+  <!-- Assignments -->
+  <li title="Assignments" class="nav-item" [class.active]="isAssignmentsActive()">
+    <a class="nav-link" [routerLink]="['/instructor/courses', courseId(), 'assignments']" routerLinkActive="active">
+      <i class="fas fa-tasks"></i>
+      <span>Assignments</span>
+    </a>
+  </li>
+
+  <!-- Live Stream -->
+  <li title="Live stream" class="nav-item" [class.active]="isLivestreamActive()">
+    <a class="nav-link" [routerLink]="['/instructor/courses', courseId(), 'livestream']" routerLinkActive="active">
+      <i class="bi bi-broadcast"></i>
+      <span>Live stream</span>
+    </a>
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider d-none d-md-block">
+
+  <!-- Sidebar Toggler -->
+  <div class="text-center d-none d-md-inline">
+    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+  </div>
+
+</ul>
+
