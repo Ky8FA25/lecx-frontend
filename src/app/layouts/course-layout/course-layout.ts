@@ -1,31 +1,32 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { Router, RouterOutlet, RouterLink } from "@angular/router";
+import { Component, inject, signal } from '@angular/core';
+import { Router, RouterOutlet, RouterLinkWithHref, ActivatedRoute } from "@angular/router";
 import { Authservice } from '../../core/services/authservice';
 import { GenericServices } from '../../core/services/GenericServices';
 import { ToastrService } from 'ngx-toastr';
 import { userDto } from '../../features/user/models/userDto';
-import { SidebarComponent } from '../../features/instructor/components/sidebar/sidebar';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-course-layout',
-  imports: [RouterOutlet, RouterLink, CommonModule, SidebarComponent],
+  imports: [RouterOutlet, RouterLinkWithHref],
   templateUrl: './course-layout.html',
   styleUrl: './course-layout.scss'
 })
-export class CourseLayout implements OnInit {
+export class CourseLayout {
 private authService = inject(Authservice);
   private router = inject(Router);
   private toastr = inject(ToastrService);
   private genericservice = inject(GenericServices);
   isAuthenticated = signal(false);
   user = signal<userDto | any>(null);
-
+  courseID: string | undefined; 
+  private route = inject(ActivatedRoute);
+  
   constructor() { }
 
   ngOnInit() {
     const token = this.authService.getAccessToken();
-
+    this.courseID = this.route.snapshot.paramMap.get('courseID') ?? '';
+    
     if (token) {
       this.isAuthenticated.set(true)
       this.loadUserProfile();

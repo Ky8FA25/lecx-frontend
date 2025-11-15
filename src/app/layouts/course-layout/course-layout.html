@@ -12,8 +12,9 @@
     <title>Learn0n | @currentCourse.Title</title>
 
     <!-- Custom fonts for this template -->
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-          rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <link rel="icon" type="image/png" href="assets/images/webLogo.png">
@@ -29,7 +30,8 @@
 <body id="page-top">
 
     <div class="loading-overlay" id="loading" style="display: none;">
-        <div id="spinner" class="show w-100 vh-100 position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
+        <div id="spinner"
+            class="show w-100 vh-100 position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
             <div class="spinner-grow" role="status"></div>
         </div>
     </div>
@@ -38,39 +40,27 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <app-sidebar></app-sidebar>
-        <!-- Old Sidebar HTML removed - using SidebarComponent -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" style="display: none;">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand text-dark mr-auto" asp-action="Index" asp-controller="Home">
+            <a class="sidebar-brand text-dark mr-auto" [routerLink]="['/home/main']">
                 <i class="bi-back"></i>
                 <span>LearnOn</span>
             </a>
 
-           
-                <!-- Nav Item - Dashboard -->
-                <li title="Dashboard" class="nav-item">
-                    <a class="nav-link">
-                        <i class="fas fa-fw fa-tachometer-alt"></i>
-                        <a> Dashboard </a>
-                    </a>
-                </li>
-            
-            
+            <!-- Nav Item - Course Info -->
+            <li title="Course Info" class="nav-item">
+                <a class="nav-link" [routerLink]="['/student/course', courseID]">
+                    <i class="bi bi-info-circle"></i>
+                    <a>Course Info</a>
+                </a>
+            </li>
 
-                <!-- Nav Item - Course Info -->
-                <li title="Course Info" class="nav-item">
-                    <a class="nav-link" asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@courseID">
-                        <i class="bi bi-info-circle"></i>
-                        <a>Course Info</a>
-                    </a>
-                </li>
-            
 
             <!-- Nav Item - Material -->
             <li title="Materials" class="nav-item">
-                <a class="nav-link" asp-action="MaterialList" asp-controller="Participation" asp-route-CourseID="@courseID">
+                <a class="nav-link" asp-action="MaterialList" asp-controller="Participation"
+                    asp-route-CourseID="@courseID">
                     <i class="fas fa-file-alt"></i>
                     <a> Materials</a>
                 </a>
@@ -79,32 +69,34 @@
             <!-- Nav Item - Pages Collapse Menu -->
             <li title="Lectures" class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#lectureList"
-                   aria-expanded="true" aria-controls="collapseTwo">
+                    aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-book-open"></i>
                     <a>Lectures</a>
                 </a>
                 <div id="lectureList" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
 
-                       
-                            <h6 class="ml-4 mt-1">
-                                <a class="btn btn-outline active" data-bs-toggle="modal" data-bs-target="#createLectureModal">
-                                    Add Lecture<i class="ml-3 fas fa-plus-circle"></i>
-                                </a>
-                            </h6>
-                       
+
+                        <h6 class="ml-4 mt-1">
+                            <a class="btn btn-outline active" data-bs-toggle="modal"
+                                data-bs-target="#createLectureModal">
+                                Add Lecture<i class="ml-3 fas fa-plus-circle"></i>
+                            </a>
+                        </h6>
+
                     </div>
                 </div>
             </li>
 
-           
-                <li title="Grades" class="nav-item">
-                    <a class="nav-link" asp-action="GradeList" asp-controller="Student" asp-area="Student" asp-route-CourseID="@courseID">
-                        <i class="fas fa-clipboard"></i>
-                        <a>Grades</a>
-                    </a>
-                </li>
-           
+
+            <li title="Grades" class="nav-item">
+                <a class="nav-link" asp-action="GradeList" asp-controller="Student" asp-area="Student"
+                    asp-route-CourseID="@courseID">
+                    <i class="fas fa-clipboard"></i>
+                    <a>Grades</a>
+                </a>
+            </li>
+
 
             <li title="Tests" class="nav-item">
                 <a class="nav-link" asp-action="TestList" asp-controller="Participation" asp-route-CourseID="@courseID">
@@ -114,14 +106,15 @@
             </li>
 
             <li title="Assignments" class="nav-item">
-                <a class="nav-link" asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID">
+                <a class="nav-link" [routerLink]="['/student/course', courseID, 'assignments']">
                     <i class="fas fa-tasks"></i>
-                    <a>Assignments</a>
+                    Assignments
                 </a>
             </li>
 
             <li title="Live stream" class="nav-item">
-                <a class="nav-link" asp-action="Livestream" asp-controller="Participation" asp-route-CourseID="@courseID">
+                <a class="nav-link" asp-action="Livestream" asp-controller="Participation"
+                    asp-route-CourseID="@courseID">
                     <i class="bi bi-broadcast"></i>
                     <a>Live stream</a>
                 </a>
@@ -156,15 +149,17 @@
                     <ol class="breadcrumb mb-0 mr-auto">
                         <li class="breadcrumb-item"><a routerLink="/home/main">Home</a></li>
                         <li class="breadcrumb-item"><a routerLink="/student/my-courses">My Courses</a></li>
-                        
-                        
+
+
                     </ol>
 
                     <!-- Topbar Search -->
                     <div class="d-none d-lg-block ml-auto">
                         <form asp-action="CourseList" asp-controller="Course" method="GET" class="navbar-form">
-                            <div class="input-group bg-white flex-nowrap" style="padding: 3px; padding-left: 13px; border-radius: 25px; border: 1px solid #ccc;">
-                                <input type="search" name="keyword" placeholder="Search" style="border: none; outline: none;" required>
+                            <div class="input-group bg-white flex-nowrap"
+                                style="padding: 3px; padding-left: 13px; border-radius: 25px; border: 1px solid #ccc;">
+                                <input type="search" name="keyword" placeholder="Search"
+                                    style="border: none; outline: none;" required>
                                 <button type="submit" class="btn btn-white border-0">
                                     <i class="bi bi-search" style="font-size: 1.2em;"></i>
                                 </button>
@@ -178,14 +173,15 @@
                         <!-- Nav Item - Alerts -->
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
-                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                             </a>
                         </li>
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" asp-action="Index" asp-controller="Chat" id="messagesDropdown" role="button">
+                            <a class="nav-link dropdown-toggle" asp-action="Index" asp-controller="Chat"
+                                id="messagesDropdown" role="button">
                                 <i class="fas fa-envelope fa-fw"></i>
                                 <span class="badge badge-danger badge-counter">7</span>
                             </a>
@@ -194,20 +190,20 @@
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img class="img-profile rounded-circle"
-                                     src="{{ user()?.profileImagePath || 'assets/images/default.jpg' }}">
+                                    src="{{ user()?.profileImagePath || 'assets/images/default.jpg' }}">
                                 <span class="ml-2 d-none d-lg-inline text-gray-600 small">{{ user()?.firstName}}</span>
                                 <i class="fas fa-caret-down ml-2"></i>
                             </a>
                             <!-- Dropdown - User Information -->
-                            <div class="dropdown-menu dropdown-menu-right shadow"
-                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" >
+                            <div class="dropdown-menu dropdown-menu-right shadow" aria-labelledby="userDropdown">
+                                <a class="dropdown-item">
                                     <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>Your Profile
                                 </a>
-                                <a class="dropdown-item" >
-                                    <i class="fas fas fa-exchange-alt fa-sm fa-fw me-2 text-gray-400"></i>Request A Transfer
+                                <a class="dropdown-item">
+                                    <i class="fas fas fa-exchange-alt fa-sm fa-fw me-2 text-gray-400"></i>Request A
+                                    Transfer
                                 </a>
                                 <div class="dropdown-divider"></div>
                                 <form asp-action="Logout" asp-controller="Account" method="post">
@@ -226,16 +222,20 @@
                     <router-outlet></router-outlet>
                 </div>
                 <!-- Add Lecture Modal -->
-                <div class="modal fade" id="createLectureModal" tabindex="-1" aria-labelledby="addLectureModalLabel" aria-hidden="true">
+                <div class="modal fade" id="createLectureModal" tabindex="-1" aria-labelledby="addLectureModalLabel"
+                    aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="addLectureModalLabel">Add New Lecture</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form id="addLectureForm" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Lecture" asp-action="Create">
-                                    <input type="hidden" class="form-control" name="CourseID" value="@courseID" required>
+                                <form id="addLectureForm" enctype="multipart/form-data" method="post"
+                                    asp-area="Instructor" asp-controller="Lecture" asp-action="Create">
+                                    <input type="hidden" class="form-control" name="CourseID" value="@courseID"
+                                        required>
                                     <div class="mb-3">
                                         <label for="Title" class="form-label">Title</label>
                                         <input type="text" class="form-control" name="Title" required>
@@ -246,11 +246,13 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="LectureFile" class="form-label">Upload Lecture Documents</label>
-                                        <input type="file" class="form-control" id="LectureFile" name="LectureFile" accept=".pdf,.doc,.docx,.ppt,.pptx,.xlsx" multiple required>
+                                        <input type="file" class="form-control" id="LectureFile" name="LectureFile"
+                                            accept=".pdf,.doc,.docx,.ppt,.pptx,.xlsx" multiple required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="VideoFile" class="form-label">Upload Lecture Video</label>
-                                        <input type="file" class="form-control" id="VideoFile" name="VideoFile" accept=".mp4,.mov,.avi">
+                                        <input type="file" class="form-control" id="VideoFile" name="VideoFile"
+                                            accept=".mp4,.mov,.avi">
                                     </div>
                                     <button type="submit" id="submit-btn" class="custom-btn">Add Lecture</button>
                                 </form>
@@ -302,10 +304,12 @@
                                     <a asp-action="Index" asp-controller="Home" class="site-footer-link">Home</a>
                                 </li>
                                 <li class="site-footer-link-item">
-                                    <a asp-action="Index" asp-controller="Home" asp-fragment="section_3" class="site-footer-link">How it works</a>
+                                    <a asp-action="Index" asp-controller="Home" asp-fragment="section_3"
+                                        class="site-footer-link">How it works</a>
                                 </li>
                                 <li class="site-footer-link-item">
-                                    <a asp-action="Index" asp-controller="Home" asp-fragment="section_4" class="site-footer-link">FAQs</a>
+                                    <a asp-action="Index" asp-controller="Home" asp-fragment="section_4"
+                                        class="site-footer-link">FAQs</a>
                                 </li>
                                 <li class="site-footer-link-item">
                                     <a asp-action="Contact" asp-controller="Home" class="site-footer-link">Contact</a>
@@ -319,17 +323,19 @@
                                 <a href="tel:110-220-8386" class="site-footer-link">110-220-8386</a>
                             </p>
                             <p class="text-white d-flex">
-                                <a href="https://mail.google.com" target="_blank" class="site-footer-link">info@company.com</a>
+                                <a href="https://mail.google.com" target="_blank"
+                                    class="site-footer-link">info@company.com</a>
                             </p>
                         </div>
 
                         <div class="col-lg-3 col-md-4 col-12 mt-4 mt-lg-0 ms-auto">
                             <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
                                     English
                                 </button>
-                                @*                                 <ul class="dropdown-menu">
-                                <li><button class="dropdown-item" type="button">VietNam</button></li>
+                                @* <ul class="dropdown-menu">
+                                    <li><button class="dropdown-item" type="button">VietNam</button></li>
                                 </ul> *@
                             </div>
                         </div>
@@ -373,7 +379,7 @@
         });
     </script>
 
-   
+
 </body>
 
 </html>
