@@ -1,8 +1,9 @@
-.site-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 200px;
-  padding: 40px 0;
-}
+// Removed custom header background to use main-layout.scss default
+// .site-header {
+//   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+//   min-height: 200px;
+//   padding: 40px 0;
+// }
 
 .breadcrumb {
   background: transparent;
@@ -47,19 +48,20 @@
   margin-right: 10px;
 }
 
-.custom-btn {
-  background: #667eea;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
+// Use default custom-btn from main-layout.scss
+// .custom-btn {
+//   background: #667eea;
+//   color: white;
+//   border: none;
+//   padding: 10px 20px;
+//   border-radius: 5px;
+//   cursor: pointer;
+//   transition: background 0.3s;
+// }
 
-.custom-btn:hover {
-  background: #5568d3;
-}
+// .custom-btn:hover {
+//   background: #5568d3;
+// }
 
 .modal.show {
   display: block;
@@ -73,17 +75,18 @@
   margin-top: 20px;
 }
 
-.page-item.active .page-link {
-  background-color: #667eea;
-  border-color: #667eea;
-}
+// Use default pagination colors from main-layout.scss
+// .page-item.active .page-link {
+//   background-color: #667eea;
+//   border-color: #667eea;
+// }
 
-.page-link {
-  cursor: pointer;
-  color: #667eea;
-}
+// .page-link {
+//   cursor: pointer;
+//   color: #667eea;
+// }
 
-.page-link:hover {
-  color: #5568d3;
-}
+// .page-link:hover {
+//   color: #5568d3;
+// }
 

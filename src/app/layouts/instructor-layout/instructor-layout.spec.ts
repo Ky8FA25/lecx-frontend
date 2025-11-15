@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Mainlayout } from './main-layout';
+import { InstructorLayout } from './instructor-layout';
 
-describe('MainLayout', () => {
-  let component: Mainlayout;
-  let fixture: ComponentFixture<Mainlayout>;
+describe('InstructorLayout', () => {
+  let component: InstructorLayout;
+  let fixture: ComponentFixture<InstructorLayout>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Mainlayout]
+      imports: [InstructorLayout]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Mainlayout);
+    fixture = TestBed.createComponent(InstructorLayout);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -21,3 +21,4 @@ describe('MainLayout', () => {
     expect(component).toBeTruthy();
   });
 });
+

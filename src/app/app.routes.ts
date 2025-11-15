@@ -29,6 +29,7 @@ import { AsignmentList } from './features/student/components/asignment-list/asig
 import { InstructorDashboard } from './features/instructor/components/dashboard/dashboard';
 import { InstructorMyCourses } from './features/instructor/components/my-courses/my-courses';
 import { Role } from './core/enums/enums';
+import { InstructorLayout } from './layouts/instructor-layout/instructor-layout';
 
 export const routes: Routes = [
   
@@ -102,7 +103,7 @@ export const routes: Routes = [
 },
 {
   path: 'instructor',
-  component: CourseLayout,
+  component: InstructorLayout,
   canActivate: [authGuard],
   data: { roles: [Role.Instructor, Role.Admin] },
   children: [
