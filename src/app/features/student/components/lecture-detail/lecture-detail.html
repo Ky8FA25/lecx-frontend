@@ -146,27 +146,670 @@
 
       <!-- Discussion Section -->
       <div class="col-xl-4 col-lg-5">
-        <div class="card shadow mb-4">
-          <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-info">Discussion</h6>
+        <div class="card shadow mb-4 discussion-card">
+          <div class="card-header">
+            <h6>Discussion</h6>
           </div>
 
-          <div class="card-body position-relative" style="height: 400px; overflow-y: auto">
+          <div class="card-body position-relative" style="height: 500px; overflow-y: auto">
             <!-- Comment list -->
-            <div class="comment-list">
-              <p class="text-muted">Discussion feature coming soon...</p>
+            <div class="comment-list mb-4" style="padding-bottom: 100px;">
+              @if (loadingComments() && topLevelComments().length === 0) {
+                <div class="loading-comments">
+                  <div class="spinner-border text-info" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <p class="mt-3">Loading comments...</p>
+                </div>
+              } @else if (topLevelComments().length === 0 && !loadingComments()) {
+                <div class="empty-state">
+                  <p class="mb-2">No comments yet</p>
+                  <p class="small">Be the first to start the discussion!</p>
+                </div>
+              } @else {
+                @for (comment of topLevelComments(); track comment.commentId) {
+                  <div class="comment-item">
+                    <!-- Main Comment -->
+                    <div class="d-flex align-items-start">
+                      <!-- Avatar -->
+                      <div class="flex-shrink-0 me-3">
+                        @if (comment.user.profileImagePath) {
+                          <img 
+                            [src]="comment.user.profileImagePath" 
+                            [alt]="getUserDisplayName(comment.user)"
+                            class="comment-avatar">
+                        } @else {
+                          <div class="avatar-initials">
+                            {{ getInitials(comment.user) }}
+                          </div>
+                        }
+                      </div>
+
+                      <!-- Comment Content -->
+                      <div class="flex-grow-1">
+                        <div class="comment-header d-flex justify-content-between align-items-start">
+                          <div>
+                            <strong>{{ getUserDisplayName(comment.user) }}</strong>
+                            <span class="timestamp">{{ formatDateTime(comment.timestamp) }}</span>
+                          </div>
+                          @if (isOwnComment(comment)) {
+                            <div class="dropdown" style="position: relative;">
+                              <button 
+                                class="btn btn-sm btn-link text-muted p-0"
+                                style="border: none; background: none; font-size: 1rem;"
+                                (click)="toggleDropdown(comment.commentId, $event)"
+                                type="button">
+                                <i class="fas fa-ellipsis-v"></i>
+                              </button>
+                              @if (openDropdownId() === comment.commentId) {
+                                <div class="dropdown-menu show" style="position: absolute; right: 0; top: 100%; z-index: 1000; min-width: 120px;">
+                                  <button 
+                                    class="dropdown-item"
+                                    (click)="startEditComment(comment)">
+                                    <i class="fas fa-edit me-2"></i>Edit
+                                  </button>
+                                  <button 
+                                    class="dropdown-item text-danger"
+                                    (click)="deleteComment(comment.commentId)">
+                                    @if (deletingComment() === comment.commentId) {
+                                      <span class="spinner-border spinner-border-sm me-2"></span>
+                                    } @else {
+                                      <i class="fas fa-trash me-2"></i>
+                                    }
+                                    Delete
+                                  </button>
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+                        
+                        @if (editingCommentId() === comment.commentId) {
+                          <!-- Edit Comment Form -->
+                          <div class="comment-edit-form mt-2 p-2" style="background: #f8f9fa; border-radius: 8px;">
+                            <textarea 
+                              [(ngModel)]="editContent"
+                              class="form-control mb-2"
+                              rows="3"
+                              placeholder="Edit your comment..."
+                              style="font-size: 0.9rem;"></textarea>
+                            
+                            <div class="d-flex gap-2">
+                              <button 
+                                class="btn btn-sm btn-primary"
+                                (click)="updateComment(comment.commentId)"
+                                [disabled]="updatingComment()">
+                                @if (updatingComment()) {
+                                  <span class="spinner-border spinner-border-sm me-1"></span>
+                                }
+                                Save
+                              </button>
+                              <button 
+                                class="btn btn-sm btn-secondary"
+                                (click)="cancelEditComment()">
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        } @else {
+                          <!-- Display Comment Content -->
+                          <div class="comment-content">
+                            <p style="white-space: pre-wrap;">{{ comment.content }}</p>
+                            
+                            @if (hasValidFile(comment)) {
+                              <div class="mt-2">
+                                <a 
+                                  [href]="comment.file!.filePath" 
+                                  target="_blank"
+                                  class="attachment-link">
+                                  <i class="fas fa-paperclip"></i>
+                                  <span>Attachment</span>
+                                </a>
+                              </div>
+                            }
+                          </div>
+                        }
+
+                        <!-- Reply Button and View Replies -->
+                        <div class="comment-actions">
+                          <button 
+                            class="btn btn-reply"
+                            (click)="replyToComment(comment.commentId)">
+                            <i class="fas fa-reply me-1"></i>
+                            Reply
+                          </button>
+                          
+                          @let replyCount = getReplyCount(comment.commentId);
+                          @if (replyCount > 0) {
+                            <button 
+                              class="btn btn-view-replies"
+                              (click)="loadRepliesForComment(comment.commentId)">
+                              @if (isRepliesExpanded(comment.commentId)) {
+                                <i class="fas fa-chevron-up me-1"></i>
+                                Hide {{ replyCount }} {{ replyCount === 1 ? 'reply' : 'replies' }}
+                              } @else {
+                                <i class="fas fa-chevron-down me-1"></i>
+                                View {{ replyCount }} {{ replyCount === 1 ? 'reply' : 'replies' }}
+                              }
+                            </button>
+                          }
+                        </div>
+
+                        <!-- Nested Replies Section (Recursive) -->
+                        @let replies = getRepliesForComment(comment.commentId);
+                        @if (isRepliesExpanded(comment.commentId)) {
+                          @if (replies.length > 0) {
+                            <div class="replies-section">
+                              @for (reply of replies; track reply.commentId) {
+                                @let nestedReplies = getRepliesForComment(reply.commentId);
+                                @let nestedReplyCount = getReplyCount(reply.commentId);
+                                
+                                <div class="reply-item">
+                                  <div class="d-flex align-items-start">
+                                    <!-- Reply Avatar -->
+                                    <div class="flex-shrink-0 me-2">
+                                      @if (reply.user.profileImagePath) {
+                                        <img 
+                                          [src]="reply.user.profileImagePath" 
+                                          [alt]="getUserDisplayName(reply.user)"
+                                          class="comment-avatar"
+                                          style="width: 36px; height: 36px;">
+                                      } @else {
+                                        <div class="avatar-initials" style="width: 36px; height: 36px; font-size: 0.8rem;">
+                                          {{ getInitials(reply.user) }}
+                                        </div>
+                                      }
+                                    </div>
+
+                                    <!-- Reply Content -->
+                                    <div class="flex-grow-1">
+                                      <div class="comment-header d-flex justify-content-between align-items-start">
+                                        <div>
+                                          <strong style="font-size: 0.9rem;">{{ getUserDisplayName(reply.user) }}</strong>
+                                          <span class="timestamp" style="font-size: 0.75rem;">{{ formatDateTime(reply.timestamp) }}</span>
+                                        </div>
+                                        @if (isOwnComment(reply)) {
+                                          <div class="dropdown" style="position: relative;">
+                                            <button 
+                                              class="btn btn-sm btn-link text-muted p-0"
+                                              style="border: none; background: none; font-size: 0.9rem;"
+                                              (click)="toggleDropdown(reply.commentId, $event)"
+                                              type="button">
+                                              <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            @if (openDropdownId() === reply.commentId) {
+                                              <div class="dropdown-menu show" style="position: absolute; right: 0; top: 100%; z-index: 1000; min-width: 120px;">
+                                                <button 
+                                                  class="dropdown-item"
+                                                  (click)="startEditComment(reply)">
+                                                  <i class="fas fa-edit me-2"></i>Edit
+                                                </button>
+                                                <button 
+                                                  class="dropdown-item text-danger"
+                                                  (click)="deleteComment(reply.commentId)">
+                                                  @if (deletingComment() === reply.commentId) {
+                                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                                  } @else {
+                                                    <i class="fas fa-trash me-2"></i>
+                                                  }
+                                                  Delete
+                                                </button>
+                                              </div>
+                                            }
+                                          </div>
+                                        }
+                                      </div>
+                                      
+                                      @if (editingCommentId() === reply.commentId) {
+                                        <!-- Edit Reply Form -->
+                                        <div class="comment-edit-form mt-2 p-2" style="background: #f8f9fa; border-radius: 8px;">
+                                          <textarea 
+                                            [(ngModel)]="editContent"
+                                            class="form-control mb-2"
+                                            rows="2"
+                                            placeholder="Edit your reply..."
+                                            style="font-size: 0.85rem;"></textarea>
+                                          
+                                          <div class="d-flex gap-2">
+                                            <button 
+                                              class="btn btn-sm btn-primary"
+                                              style="font-size: 0.75rem;"
+                                              (click)="updateComment(reply.commentId)"
+                                              [disabled]="updatingComment()">
+                                              @if (updatingComment()) {
+                                                <span class="spinner-border spinner-border-sm me-1"></span>
+                                              }
+                                              Save
+                                            </button>
+                                            <button 
+                                              class="btn btn-sm btn-secondary"
+                                              style="font-size: 0.75rem;"
+                                              (click)="cancelEditComment()">
+                                              Cancel
+                                            </button>
+                                          </div>
+                                        </div>
+                                      } @else {
+                                        <!-- Display Reply Content -->
+                                        <div class="comment-content">
+                                          <p style="white-space: pre-wrap; font-size: 0.9rem;">{{ reply.content }}</p>
+                                          
+                                          @if (hasValidFile(reply)) {
+                                            <div class="mt-1">
+                                              <a 
+                                                [href]="reply.file!.filePath" 
+                                                target="_blank"
+                                                class="attachment-link">
+                                                <i class="fas fa-paperclip"></i>
+                                                <span>Attachment</span>
+                                              </a>
+                                            </div>
+                                          }
+                                        </div>
+                                      }
+
+                                      <!-- Reply Actions -->
+                                      <div class="comment-actions" style="margin-top: 0.5rem; padding-top: 0.5rem;">
+                                        <button 
+                                          class="btn btn-reply"
+                                          (click)="replyToComment(reply.commentId)">
+                                          <i class="fas fa-reply me-1"></i>
+                                          Reply
+                                        </button>
+                                        
+                                        @if (nestedReplyCount > 0) {
+                                          <button 
+                                            class="btn btn-view-replies"
+                                            (click)="loadRepliesForComment(reply.commentId)">
+                                            @if (isRepliesExpanded(reply.commentId)) {
+                                              <i class="fas fa-chevron-up me-1"></i>
+                                              Hide {{ nestedReplyCount }} {{ nestedReplyCount === 1 ? 'reply' : 'replies' }}
+                                            } @else {
+                                              <i class="fas fa-chevron-down me-1"></i>
+                                              View {{ nestedReplyCount }} {{ nestedReplyCount === 1 ? 'reply' : 'replies' }}
+                                            }
+                                          </button>
+                                        }
+                                      </div>
+
+                                      <!-- Nested Replies (Recursive) -->
+                                      @if (nestedReplies.length > 0 && isRepliesExpanded(reply.commentId)) {
+                                        <div class="nested-replies">
+                                          @for (nestedReply of nestedReplies; track nestedReply.commentId) {
+                                            @let deepReplies = getRepliesForComment(nestedReply.commentId);
+                                            @let deepReplyCount = getReplyCount(nestedReply.commentId);
+                                            
+                                            <div class="nested-reply-item">
+                                              <div class="d-flex align-items-start">
+                                                <!-- Nested Reply Avatar -->
+                                                <div class="flex-shrink-0 me-2">
+                                                  @if (nestedReply.user.profileImagePath) {
+                                                    <img 
+                                                      [src]="nestedReply.user.profileImagePath" 
+                                                      [alt]="getUserDisplayName(nestedReply.user)"
+                                                      class="comment-avatar"
+                                                      style="width: 32px; height: 32px;">
+                                                  } @else {
+                                                    <div class="avatar-initials" style="width: 32px; height: 32px; font-size: 0.75rem;">
+                                                      {{ getInitials(nestedReply.user) }}
+                                                    </div>
+                                                  }
+                                                </div>
+
+                                                <!-- Nested Reply Content -->
+                                                <div class="flex-grow-1">
+                                                  <div class="comment-header d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                      <strong style="font-size: 0.8rem;">{{ getUserDisplayName(nestedReply.user) }}</strong>
+                                                      <span class="timestamp" style="font-size: 0.7rem;">{{ formatDateTime(nestedReply.timestamp) }}</span>
+                                                    </div>
+                                                    @if (isOwnComment(nestedReply)) {
+                                                      <div class="dropdown" style="position: relative;">
+                                                        <button 
+                                                          class="btn btn-sm btn-link text-muted p-0"
+                                                          style="border: none; background: none; font-size: 0.8rem;"
+                                                          (click)="toggleDropdown(nestedReply.commentId, $event)"
+                                                          type="button">
+                                                          <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        @if (openDropdownId() === nestedReply.commentId) {
+                                                          <div class="dropdown-menu show" style="position: absolute; right: 0; top: 100%; z-index: 1000; min-width: 120px;">
+                                                            <button 
+                                                              class="dropdown-item"
+                                                              (click)="startEditComment(nestedReply)">
+                                                              <i class="fas fa-edit me-2"></i>Edit
+                                                            </button>
+                                                            <button 
+                                                              class="dropdown-item text-danger"
+                                                              (click)="deleteComment(nestedReply.commentId)">
+                                                              @if (deletingComment() === nestedReply.commentId) {
+                                                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                                              } @else {
+                                                                <i class="fas fa-trash me-2"></i>
+                                                              }
+                                                              Delete
+                                                            </button>
+                                                          </div>
+                                                        }
+                                                      </div>
+                                                    }
+                                                  </div>
+                                                  
+                                                  @if (editingCommentId() === nestedReply.commentId) {
+                                                    <!-- Edit Nested Reply Form -->
+                                                    <div class="comment-edit-form mt-2 p-2" style="background: #f8f9fa; border-radius: 8px;">
+                                                      <textarea 
+                                                        [(ngModel)]="editContent"
+                                                        class="form-control mb-2"
+                                                        rows="2"
+                                                        placeholder="Edit your reply..."
+                                                        style="font-size: 0.75rem;"></textarea>
+                                                      
+                                                      <div class="d-flex gap-2">
+                                                        <button 
+                                                          class="btn btn-sm btn-primary"
+                                                          style="font-size: 0.7rem;"
+                                                          (click)="updateComment(nestedReply.commentId)"
+                                                          [disabled]="updatingComment()">
+                                                          @if (updatingComment()) {
+                                                            <span class="spinner-border spinner-border-sm me-1"></span>
+                                                          }
+                                                          Save
+                                                        </button>
+                                                        <button 
+                                                          class="btn btn-sm btn-secondary"
+                                                          style="font-size: 0.7rem;"
+                                                          (click)="cancelEditComment()">
+                                                          Cancel
+                                                        </button>
+                                                      </div>
+                                                    </div>
+                                                  } @else {
+                                                    <!-- Display Nested Reply Content -->
+                                                    <div class="comment-content">
+                                                      <p style="white-space: pre-wrap; font-size: 0.8rem;">{{ nestedReply.content }}</p>
+                                                      
+                                                      @if (hasValidFile(nestedReply)) {
+                                                        <div class="mt-1">
+                                                          <a 
+                                                            [href]="nestedReply.file!.filePath" 
+                                                            target="_blank"
+                                                            class="attachment-link">
+                                                            <i class="fas fa-paperclip"></i>
+                                                            <span>Attachment</span>
+                                                          </a>
+                                                        </div>
+                                                      }
+                                                    </div>
+                                                  }
+
+                                                  <!-- Nested Reply Actions -->
+                                                  <div class="comment-actions" style="margin-top: 0.35rem; padding-top: 0.35rem;">
+                                                    <button 
+                                                      class="btn btn-reply"
+                                                      style="font-size: 0.75rem; padding: 0.15rem 0.3rem;"
+                                                      (click)="replyToComment(nestedReply.commentId)">
+                                                      <i class="fas fa-reply me-1"></i>
+                                                      Reply
+                                                    </button>
+                                                    
+                                                    @if (deepReplyCount > 0) {
+                                                      <button 
+                                                        class="btn btn-view-replies"
+                                                        style="font-size: 0.75rem; padding: 0.15rem 0.3rem;"
+                                                        (click)="loadRepliesForComment(nestedReply.commentId)">
+                                                        @if (isRepliesExpanded(nestedReply.commentId)) {
+                                                          <i class="fas fa-chevron-up me-1"></i>
+                                                          Hide {{ deepReplyCount }} {{ deepReplyCount === 1 ? 'reply' : 'replies' }}
+                                                        } @else {
+                                                          <i class="fas fa-chevron-down me-1"></i>
+                                                          View {{ deepReplyCount }} {{ deepReplyCount === 1 ? 'reply' : 'replies' }}
+                                                        }
+                                                      </button>
+                                                    }
+                                                  </div>
+
+                                                  <!-- Deeper Nested Replies -->
+                                                  @if (deepReplies.length > 0 && isRepliesExpanded(nestedReply.commentId)) {
+                                                    <div class="deep-nested-replies">
+                                                      @for (deepReply of deepReplies; track deepReply.commentId) {
+                                                        @let deeperReplies = getRepliesForComment(deepReply.commentId);
+                                                        
+                                                        <div class="deep-reply-item">
+                                                          <div class="d-flex align-items-start">
+                                                            <div class="flex-shrink-0 me-2">
+                                                              @if (deepReply.user.profileImagePath) {
+                                                                <img 
+                                                                  [src]="deepReply.user.profileImagePath" 
+                                                                  [alt]="getUserDisplayName(deepReply.user)"
+                                                                  class="comment-avatar"
+                                                                  style="width: 28px; height: 28px;">
+                                                              } @else {
+                                                                <div class="avatar-initials" style="width: 28px; height: 28px; font-size: 0.7rem;">
+                                                                  {{ getInitials(deepReply.user) }}
+                                                                </div>
+                                                              }
+                                                            </div>
+                                                            <div class="flex-grow-1">
+                                                              <div class="comment-header d-flex justify-content-between align-items-start">
+                                                                <div>
+                                                                  <strong style="font-size: 0.75rem;">{{ getUserDisplayName(deepReply.user) }}</strong>
+                                                                  <span class="timestamp" style="font-size: 0.65rem;">{{ formatDateTime(deepReply.timestamp) }}</span>
+                                                                </div>
+                                                                @if (isOwnComment(deepReply)) {
+                                                                  <div class="dropdown" style="position: relative;">
+                                                                    <button 
+                                                                      class="btn btn-sm btn-link text-muted p-0"
+                                                                      style="border: none; background: none; font-size: 0.75rem;"
+                                                                      (click)="toggleDropdown(deepReply.commentId, $event)"
+                                                                      type="button">
+                                                                      <i class="fas fa-ellipsis-v"></i>
+                                                                    </button>
+                                                                    @if (openDropdownId() === deepReply.commentId) {
+                                                                      <div class="dropdown-menu show" style="position: absolute; right: 0; top: 100%; z-index: 1000; min-width: 120px;">
+                                                                        <button 
+                                                                          class="dropdown-item"
+                                                                          (click)="startEditComment(deepReply)">
+                                                                          <i class="fas fa-edit me-2"></i>Edit
+                                                                        </button>
+                                                                        <button 
+                                                                          class="dropdown-item text-danger"
+                                                                          (click)="deleteComment(deepReply.commentId)">
+                                                                          @if (deletingComment() === deepReply.commentId) {
+                                                                            <span class="spinner-border spinner-border-sm me-2"></span>
+                                                                          } @else {
+                                                                            <i class="fas fa-trash me-2"></i>
+                                                                          }
+                                                                          Delete
+                                                                        </button>
+                                                                      </div>
+                                                                    }
+                                                                  </div>
+                                                                }
+                                                              </div>
+                                                              
+                                                              @if (editingCommentId() === deepReply.commentId) {
+                                                                <!-- Edit Deep Reply Form -->
+                                                                <div class="comment-edit-form mt-2 p-2" style="background: #f8f9fa; border-radius: 8px;">
+                                                                  <textarea 
+                                                                    [(ngModel)]="editContent"
+                                                                    class="form-control mb-2"
+                                                                    rows="2"
+                                                                    placeholder="Edit your reply..."
+                                                                    style="font-size: 0.7rem;"></textarea>
+                                                                  
+                                                                  <div class="d-flex gap-2">
+                                                                    <button 
+                                                                      class="btn btn-sm btn-primary"
+                                                                      style="font-size: 0.65rem;"
+                                                                      (click)="updateComment(deepReply.commentId)"
+                                                                      [disabled]="updatingComment()">
+                                                                      @if (updatingComment()) {
+                                                                        <span class="spinner-border spinner-border-sm me-1"></span>
+                                                                      }
+                                                                      Save
+                                                                    </button>
+                                                                    <button 
+                                                                      class="btn btn-sm btn-secondary"
+                                                                      style="font-size: 0.65rem;"
+                                                                      (click)="cancelEditComment()">
+                                                                      Cancel
+                                                                    </button>
+                                                                  </div>
+                                                                </div>
+                                                              } @else {
+                                                                <!-- Display Deep Reply Content -->
+                                                                <div class="comment-content">
+                                                                  <p style="white-space: pre-wrap; font-size: 0.75rem;">{{ deepReply.content }}</p>
+                                                                  @if (hasValidFile(deepReply)) {
+                                                                    <div class="mt-1">
+                                                                      <a [href]="deepReply.file!.filePath" target="_blank" class="attachment-link">
+                                                                        <i class="fas fa-paperclip"></i><span>Attachment</span>
+                                                                      </a>
+                                                                    </div>
+                                                                  }
+                                                                </div>
+                                                              }
+                                                              <button 
+                                                                class="btn btn-reply"
+                                                                style="font-size: 0.7rem; padding: 0.1rem 0.25rem; margin-top: 0.25rem;"
+                                                                (click)="replyToComment(deepReply.commentId)">
+                                                                <i class="fas fa-reply me-1"></i>Reply
+                                                              </button>
+                                                              @if (deeperReplies.length > 0) {
+                                                                <button 
+                                                                  class="btn btn-view-replies"
+                                                                  style="font-size: 0.7rem; padding: 0.1rem 0.25rem; margin-top: 0.25rem; margin-left: 0.5rem;"
+                                                                  (click)="loadRepliesForComment(deepReply.commentId)">
+                                                                  @if (isRepliesExpanded(deepReply.commentId)) {
+                                                                    <i class="fas fa-chevron-up me-1"></i>Hide {{ deeperReplies.length }} replies
+                                                                  } @else {
+                                                                    <i class="fas fa-chevron-down me-1"></i>View {{ deeperReplies.length }} replies
+                                                                  }
+                                                                </button>
+                                                                @if (isRepliesExpanded(deepReply.commentId) && deeperReplies.length > 0) {
+                                                                  <div class="deep-nested-replies">
+                                                                    @for (deeperReply of deeperReplies; track deeperReply.commentId) {
+                                                                      <div class="deep-reply-item">
+                                                                        <div class="d-flex align-items-start">
+                                                                          <div class="flex-shrink-0 me-2">
+                                                                            @if (deeperReply.user.profileImagePath) {
+                                                                              <img [src]="deeperReply.user.profileImagePath" [alt]="getUserDisplayName(deeperReply.user)" class="comment-avatar" style="width: 24px; height: 24px;">
+                                                                            } @else {
+                                                                              <div class="avatar-initials" style="width: 24px; height: 24px; font-size: 0.65rem;">
+                                                                                {{ getInitials(deeperReply.user) }}
+                                                                              </div>
+                                                                            }
+                                                                          </div>
+                                                                          <div class="flex-grow-1">
+                                                                            <strong style="font-size: 0.7rem;">{{ getUserDisplayName(deeperReply.user) }}</strong>
+                                                                            <span class="timestamp" style="font-size: 0.65rem;">{{ formatDateTime(deeperReply.timestamp) }}</span>
+                                                                            <p style="white-space: pre-wrap; font-size: 0.7rem; margin-top: 0.25rem;">{{ deeperReply.content }}</p>
+                                                                            @if (hasValidFile(deeperReply)) {
+                                                                              <a [href]="deeperReply.file!.filePath" target="_blank" class="attachment-link" style="font-size: 0.65rem; padding: 0.2rem 0.4rem;">
+                                                                                <i class="fas fa-paperclip"></i><span>File</span>
+                                                                              </a>
+                                                                            }
+                                                                            <button class="btn btn-reply" style="font-size: 0.65rem; padding: 0.1rem 0.2rem; margin-top: 0.25rem;" (click)="replyToComment(deeperReply.commentId)">
+                                                                              <i class="fas fa-reply me-1"></i>Reply
+                                                                            </button>
+                                                                          </div>
+                                                                        </div>
+                                                                      </div>
+                                                                    }
+                                                                  </div>
+                                                                }
+                                                              }
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                      }
+                                                    </div>
+                                                  }
+                                                </div>
+                                              </div>
+                                            </div>
+                                          }
+                                        </div>
+                                      }
+                                    </div>
+                                  </div>
+                                </div>
+                              }
+                            </div>
+                          } @else if (loadingComments() && loadedReplies().has(comment.commentId)) {
+                            <div class="replies-section" style="justify-content: center; align-items: center; display: flex; min-height: 50px;">
+                              <div class="spinner-border spinner-border-sm text-info" role="status">
+                                <span class="visually-hidden">Loading replies...</span>
+                              </div>
+                            </div>
+                          }
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                <!-- Load More Button -->
+                @if (commentsHasNextPage() && !loadingComments()) {
+                  <div class="text-center mt-3">
+                    <button 
+                      class="btn btn-sm btn-outline-info"
+                      (click)="loadMoreComments()">
+                      Load more comments
+                    </button>
+                  </div>
+                }
+
+                @if (loadingComments() && topLevelComments().length > 0) {
+                  <div class="text-center py-2">
+                    <div class="spinner-border spinner-border-sm text-info" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                }
+              }
             </div>
 
             <!-- Comment input -->
-            <div
-              class="border-top p-2 bg-white w-100"
-              style="position: absolute; bottom: 0px; z-index: 1; left: 0"
-            >
-              <form class="input-group d-flex align-items-end">
+            <div class="comment-input-area">
+              @if (parentCommentId()) {
+                <div class="reply-indicator">
+                  <span class="reply-text">
+                    <i class="fas fa-reply"></i>
+                    Replying to comment
+                  </span>
+                  <button 
+                    type="button"
+                    class="cancel-btn"
+                    (click)="cancelReply()">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              }
+
+              @if (selectedFileName()) {
+                <div class="file-indicator">
+                  <span class="file-name">
+                    <i class="fas fa-paperclip"></i>
+                    {{ selectedFileName() }}
+                  </span>
+                  <button 
+                    type="button"
+                    class="remove-file-btn"
+                    (click)="removeSelectedFile()">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              }
+
+              <form 
+                class="input-group"
+                (ngSubmit)="submitComment(); $event.preventDefault()">
                 <label
                   for="file-upload"
-                  class="btn btn-info mr-2 m-0 d-flex align-items-center"
-                  style="border-radius: 20px; height: 40px">
+                  class="file-upload-btn"
+                  [title]="selectedFile() ? 'Change file' : 'Attach file'">
                   <i class="bi bi-plus-lg"></i>
                 </label>
                 <input
@@ -174,23 +817,26 @@
                   id="file-upload"
                   class="d-none"
                   accept=".pdf,.doc,.docx,.ppt,.pptx, image/*"
-                  multiple
+                  (change)="onFileSelected($event)"
                 />
 
                 <textarea
-                  class="form-control"
-                  placeholder="Write your comment"
-                  rows="1"
-                  style="border-radius: 20px; resize: none"
+                  placeholder="Write your comment..."
+                  [value]="commentContent()"
+                  (input)="commentContent.set($any($event.target).value)"
                   required
                 ></textarea>
 
                 <button
                   type="submit"
-                  class="btn btn-info ml-2"
-                  style="border-radius: 20px; height: 40px"
-                  disabled>
+                  class="submit-btn"
+                  [disabled]="submittingComment() || !commentContent().trim()"
+                  [title]="submittingComment() ? 'Posting...' : 'Post comment'">
+                  @if (submittingComment()) {
+                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                  } @else {
                   <i class="bi bi-send-fill"></i>
+                  }
                 </button>
               </form>
             </div>
