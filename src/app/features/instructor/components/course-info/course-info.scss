@@ -1,0 +1,63 @@
+.list-unstyled .icon {
+  width: 40px;
+}
+
+.list-unstyled .label {
+  width: 200px;
+  text-align: left;
+}
+
+.list-unstyled .text {
+  width: 100%;
+  text-align: left;
+}
+
+.list-unstyled .btn-icon-split {
+  display: flex;
+  align-items: center;
+}
+
+.list-unstyled .text-white-50 {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.avatar {
+  width: 175px;
+  height: 175px;
+  object-fit: cover;
+}
+
+.course-outcomes {
+  margin-top: 1.5rem;
+  
+  h5 {
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    
+    li {
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.card {
+  border: none;
+  border-radius: 0.5rem;
+  
+  .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+  }
+}
+
+.btn-icon-split {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+

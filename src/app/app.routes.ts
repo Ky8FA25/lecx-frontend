@@ -27,6 +27,8 @@ import { PaymentSuccessful } from './features/payments/components/payment-succes
 import { PaymentFailed } from './features/payments/components/payment-failed/payment-failed';
 import { InstructorDashboard } from './features/instructor/components/dashboard/dashboard';
 import { InstructorMyCourses } from './features/instructor/components/my-courses/my-courses';
+import { InstructorCourseInfo } from './features/instructor/components/course-info/course-info';
+import { InstructorMaterialList } from './features/instructor/components/material-list/material-list';
 import { Role } from './core/enums/enums';
 import { InstructorLayout } from './layouts/instructor-layout/instructor-layout';
 
@@ -109,9 +111,17 @@ export const routes: Routes = [
     {
       path: 'courses/:courseId/dashboard',
       component: InstructorDashboard
+    },
+    {
+      path: 'courses/:courseId/course-info',
+      component: InstructorCourseInfo
+    },
+    {
+      path: 'courses/:courseId/materials',
+      component: InstructorMaterialList
     }
     // Instructor course-specific routes will be added here
-    // e.g., lectures, materials, tests, assignments, etc.
+    // e.g., lectures, tests, assignments, etc.
   ]
 },
 {
