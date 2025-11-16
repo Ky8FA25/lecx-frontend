@@ -34,6 +34,7 @@ import { AssignmentDetail } from './features/instructor/components/assignments/a
 import { TestList } from './features/instructor/components/tests/test-list';
 import { TestDetail } from './features/instructor/components/tests/test-detail';
 import { Role } from './core/enums/enums';
+import { TestList } from './features/student/components/test-list/test-list';
 import { InstructorLayout } from './layouts/instructor-layout/instructor-layout';
 
 export const routes: Routes = [
@@ -170,6 +171,14 @@ export const routes: Routes = [
     {
       path: 'lecture-detail',
       component: LectureDetail
+    },
+    {
+      path: 'material-list',
+      component: MaterialList
+    },
+    {
+      path: 'test-list',
+      component: TestList
     },
     {
       path: 'material-list',
