@@ -1,0 +1,162 @@
+<div class="container-fluid">
+  @if (loading() && !test()) {
+    <div class="text-center py-5">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else if (test()) {
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+      <div class="flex-grow-1">
+        <h1 class="h3 mb-0 text-gray-800">
+          <i class="fas fa-clipboard-list me-2 text-primary"></i>{{ test()!.title }}
+        </h1>
+        @if (test()!.description) {
+          <p class="text-gray-600 mb-2">{{ test()!.description }}</p>
+        }
+        <div class="d-flex flex-wrap gap-3">
+          <span class="text-gray-600">
+            <i class="fas fa-calendar-alt me-1 text-primary"></i>
+            <strong>Start:</strong> {{ formatDate(test()!.startTime) }}
+          </span>
+          <span class="text-gray-600">
+            <i class="fas fa-calendar-check me-1 text-primary"></i>
+            <strong>End:</strong> {{ formatDate(test()!.endTime) }}
+          </span>
+          <span class="text-gray-600">
+            <i class="fas fa-question-circle me-1 text-primary"></i>
+            <strong>Questions:</strong> {{ test()!.numberOfQuestion }}
+          </span>
+        </div>
+      </div>
+      <button class="btn btn-secondary shadow-sm" (click)="navigateBack()">
+        <i class="fas fa-arrow-left me-2"></i>Back to Tests
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4 border-bottom">
+      <li class="nav-item">
+        <a class="nav-link" 
+           [class.active]="activeTab() === 'scores'"
+           (click)="setActiveTab('scores'); $event.preventDefault()"
+           href="#">
+          <i class="fas fa-chart-bar me-2"></i>Scores
+          @if (activeTab() === 'scores') {
+            <span class="badge bg-primary ms-2">{{ scores().length }}</span>
+          }
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" 
+           [class.active]="activeTab() === 'questions'"
+           (click)="setActiveTab('questions'); $event.preventDefault()"
+           href="#">
+          <i class="fas fa-question-circle me-2"></i>Questions
+        </a>
+      </li>
+    </ul>
+
+    <!-- Scores Tab -->
+    @if (activeTab() === 'scores') {
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Test Scores</h6>
+        </div>
+        <div class="card-body">
+          @if (loadingScores()) {
+            <div class="text-center py-5">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          } @else if (scores().length > 0) {
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Score</th>
+                    <th>Number of Attempt</th>
+                    <th>Submission Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (score of scores(); track score.testScoreId) {
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          @if (score.student.profileImagePath) {
+                            <img 
+                              [src]="score.student.profileImagePath" 
+                              class="rounded-circle me-2" 
+                              width="50" 
+                              height="50" 
+                              alt="Avatar"
+                              style="object-fit: cover;">
+                          } @else {
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" 
+                                 style="width: 50px; height: 50px;">
+                              {{ (score.student.firstName || 'U')[0] }}
+                            </div>
+                          }
+                          <div>
+                            <div class="font-weight-bold">
+                              {{ score.student.firstName }} {{ score.student.lastName }}
+                            </div>
+                            <small class="text-muted">{{ score.student.email || score.student.userName }}</small>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <span [class]="getScoreColor(score.scoreValue, test()!.passingScore)">
+                          <strong>{{ score.scoreValue }}</strong>
+                        </span>
+                        @if (test()!.passingScore) {
+                          <span class="text-muted">/ {{ test()!.passingScore }}</span>
+                        }
+                      </td>
+                      <td>{{ score.numberOfAttempt }}</td>
+                      <td>{{ formatDate(score.doTestAt) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (totalPages() > 1) {
+              <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                  <li class="page-item" [class.disabled]="currentPage() === 1">
+                    <a class="page-link" href="#" (click)="goToPage(currentPage() - 1); $event.preventDefault()">Previous</a>
+                  </li>
+                  @for (page of getPageNumbers(); track page) {
+                    <li class="page-item" [class.active]="currentPage() === page">
+                      <a class="page-link" href="#" (click)="goToPage(page); $event.preventDefault()">{{ page }}</a>
+                    </li>
+                  }
+                  <li class="page-item" [class.disabled]="currentPage() === totalPages()">
+                    <a class="page-link" href="#" (click)="goToPage(currentPage() + 1); $event.preventDefault()">Next</a>
+                  </li>
+                </ul>
+              </nav>
+            }
+          } @else {
+            <div class="text-center py-5">
+              <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+              <p class="text-muted">No scores yet</p>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Questions Tab -->
+    @if (activeTab() === 'questions' && testId() && courseId()) {
+      <app-question-list [testId]="testId()!" [courseId]="courseId()!"></app-question-list>
+    }
+  }
+</div>
+

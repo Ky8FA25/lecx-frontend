@@ -28,6 +28,13 @@ import { PaymentFailed } from './features/payments/components/payment-failed/pay
 import { AsignmentList } from './features/student/components/asignment-list/asignment-list';
 import { InstructorDashboard } from './features/instructor/components/dashboard/dashboard';
 import { InstructorMyCourses } from './features/instructor/components/my-courses/my-courses';
+import { InstructorLectureDetail } from './features/instructor/components/lectures/lecture-detail';
+import {  InstructorAssignmentList } from './features/instructor/components/assignments/assignment-list';
+import {  InstructorAssignmentDetail } from './features/instructor/components/assignments/assignment-detail';
+import { InstructorTestList } from './features/instructor/components/tests/test-list';
+import { InstructorTestDetail } from './features/instructor/components/tests/test-detail';
+import { InstructorCourseInfo } from './features/instructor/components/course-info/course-info';
+import { InstructorMaterialList } from './features/instructor/components/material-list/material-list';
 import { Role } from './core/enums/enums';
 import { TestList } from './features/student/components/test-list/test-list';
 import { InstructorLayout } from './layouts/instructor-layout/instructor-layout';
@@ -111,9 +118,37 @@ export const routes: Routes = [
     {
       path: 'courses/:courseId/dashboard',
       component: InstructorDashboard
+    },
+    {
+      path: 'courses/:courseId/lectures/:lectureId',
+      component: InstructorLectureDetail
+    },
+    {
+      path: 'courses/:courseId/assignments',
+      component: InstructorAssignmentList
+    },
+    {
+      path: 'courses/:courseId/assignments/:assignmentId',
+      component: InstructorAssignmentDetail
+    },
+    {
+      path: 'courses/:courseId/tests',
+      component: InstructorTestList
+    },
+    {
+      path: 'courses/:courseId/tests/:testId',
+      component: InstructorTestDetail
+    },
+    {
+      path: 'courses/:courseId/course-info',
+      component: InstructorCourseInfo
+    },
+    {
+      path: 'courses/:courseId/materials',
+      component: InstructorMaterialList
     }
     // Instructor course-specific routes will be added here
-    // e.g., lectures, materials, tests, assignments, etc.
+    // e.g., materials, etc.
   ]
 },
 {

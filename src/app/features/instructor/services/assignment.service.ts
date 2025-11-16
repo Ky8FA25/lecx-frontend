@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { GenericServices } from '../../../core/services/GenericServices';
 import { Observable } from 'rxjs';
 import { ApiResponse, PaginatedResponse } from '../../../core/models/generic-response-class';
-import { AssignmentDTO, CreateAssignmentDto, UpdateAssignmentDto, SubmissionDTO, ScoreAssignmentDto } from '../models/instructor.models';
+import { AssignmentDTO, CreateAssignmentDto, UpdateAssignmentDto, SubmissionDTO, ScoreAssignmentDto, AssignmentScoreDTO, CreateAssignmentScoreDto, UpdateAssignmentScoreDto } from '../models/instructor.models';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +40,24 @@ export class AssignmentService {
 
   scoreAssignment(score: ScoreAssignmentDto): Observable<ApiResponse<any>> {
     return this.genericService.post<ApiResponse<any>>('api/assignments/score', score);
+  }
+
+  // Assignment Score APIs
+  getAssignmentScore(assignmentId: number, studentId: string): Observable<ApiResponse<AssignmentScoreDTO>> {
+    return this.genericService.get<ApiResponse<AssignmentScoreDTO>>(
+      `api/assignment-scores/assignment/${assignmentId}/student/${studentId}`
+    );
+  }
+
+  createAssignmentScore(score: CreateAssignmentScoreDto): Observable<ApiResponse<AssignmentScoreDTO>> {
+    return this.genericService.post<ApiResponse<AssignmentScoreDTO>>('api/assignment-scores', score);
+  }
+
+  updateAssignmentScore(assignmentScoreId: number, score: UpdateAssignmentScoreDto): Observable<ApiResponse<AssignmentScoreDTO>> {
+    return this.genericService.put<ApiResponse<AssignmentScoreDTO>>(
+      `api/assignment-scores/${assignmentScoreId}`,
+      score
+    );
   }
 }
 

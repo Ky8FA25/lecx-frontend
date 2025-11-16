@@ -113,7 +113,7 @@ export interface CourseMaterialDTO {
   materialId: number;
   courseId: number;
   fileType: number;
-  fileName: string;
+  fIleName: string;
   fileExtension: string;
   materialsLink: string;
   uploadDate: Date;
@@ -122,9 +122,18 @@ export interface CourseMaterialDTO {
 export interface CreateCourseMaterialDto {
   courseId: number;
   fileType: number;
-  fileName: string;
+  fIleName: string;
   fileExtension: string;
   materialsLink: string;
+}
+
+export interface UpdateCourseMaterialDto {
+  materialId: number;
+  courseId: number | null;
+  fileType: number | null;
+  fIleName: string | null;
+  fileExtension: string | null;
+  materialsLink: string | null;
 }
 
 // Test Models
@@ -260,6 +269,23 @@ export interface SubmissionDTO {
 export interface ScoreAssignmentDto {
   assignmentId: number;
   studentId: string;
+  score: number;
+}
+
+export interface AssignmentScoreDTO {
+  assignmentScoreId: number;
+  studentId: string;
+  assignmentId: number;
+  score: number;
+}
+
+export interface CreateAssignmentScoreDto {
+  studentId: string;
+  assignmentId: number;
+  score: number;
+}
+
+export interface UpdateAssignmentScoreDto {
   score: number;
 }
 

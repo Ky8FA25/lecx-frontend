@@ -44,7 +44,7 @@
                 <a class="sidebar-brand d-flex align-items-center justify-content-center" routerLink="/home/main">
                     <div class="sidebar-brand-text mx-3">
                         <i class="bi-back"></i>
-                        <span>LearnOn</span>
+                        <span>LecX</span>
                     </div>
                 </a>
 
@@ -82,53 +82,155 @@
                     </a>
                 </li>
 
-                <!-- Nav Item - Lectures -->
+                <!-- Nav Item - Lectures Collapse -->
                 <li class="nav-item">
                     <a class="nav-link" 
-                       [routerLink]="['/instructor/courses', courseId(), 'lectures']" 
-                       routerLinkActive="active">
+                       [class.collapsed]="!showLecturesDropdown()"
+                       href="#" 
+                       (click)="toggleLecturesDropdown(); $event.preventDefault()"
+                       [class.active]="router.url.includes('/lectures/')"
+                       data-bs-toggle="collapse" 
+                       data-bs-target="#lecturesCollapse"
+                       [attr.aria-expanded]="showLecturesDropdown()"
+                       aria-controls="lecturesCollapse">
                         <i class="fas fa-book-open"></i>
                         <span>Lectures</span>
+                        <i class="fas fa-chevron-down ms-auto" [class.rotate]="showLecturesDropdown()"></i>
                     </a>
+                    <div class="collapse" 
+                         id="lecturesCollapse"
+                         [class.show]="showLecturesDropdown()"
+                         data-bs-parent="#accordionSidebar">
+                        <div class="collapse-inner">
+                            <!-- Create Lecture Button -->
+                            <div class="collapse-header">
+                                <button class="btn btn-sm w-100" (click)="openCreateLectureModal()">
+                                    <i class="fas fa-plus me-2"></i>Create New Lecture
+                                </button>
+                            </div>
+                            
+                            <!-- Lectures List -->
+                            @if (lectures().length > 0) {
+                                @for (lecture of lectures(); track lecture.lectureId) {
+                                    <a class="collapse-item" 
+                                       href="#"
+                                       (click)="navigateToLecture(lecture.lectureId); $event.preventDefault()"
+                                       [class.active]="router.url.includes('/lectures/' + lecture.lectureId)">
+                                        <i class="fas fa-file-video me-2"></i>
+                                        {{ lecture.title }}
+                                    </a>
+                                }
+                            } @else {
+                                <div class="collapse-item text-muted text-center py-2">
+                                    <small>No lectures yet</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </li>
 
-                <!-- Nav Item - Tests -->
+                <!-- Nav Item - Tests Collapse -->
                 <li class="nav-item">
                     <a class="nav-link" 
-                       [routerLink]="['/instructor/courses', courseId(), 'tests']" 
-                       routerLinkActive="active">
+                       [class.collapsed]="!showTestsDropdown()"
+                       href="#" 
+                       (click)="toggleTestsDropdown(); $event.preventDefault()"
+                       [class.active]="router.url.includes('/tests')"
+                       data-bs-toggle="collapse" 
+                       data-bs-target="#testsCollapse"
+                       [attr.aria-expanded]="showTestsDropdown()"
+                       aria-controls="testsCollapse">
                         <i class="fas fa-clipboard-list"></i>
                         <span>Tests</span>
+                        <i class="fas fa-chevron-down ms-auto" [class.rotate]="showTestsDropdown()"></i>
                     </a>
+                    <div class="collapse" 
+                         id="testsCollapse"
+                         [class.show]="showTestsDropdown()"
+                         data-bs-parent="#accordionSidebar">
+                        <div class="collapse-inner">
+                            <!-- View All Tests -->
+                            <div class="collapse-header">
+                                <a class="collapse-item" 
+                                   href="#"
+                                   (click)="navigateToTestsList(); $event.preventDefault()"
+                                   [class.active]="router.url === '/instructor/courses/' + courseId() + '/tests'">
+                                    <i class="fas fa-list me-2"></i>View All Tests
+                                </a>
+                            </div>
+                            
+                            <!-- Tests List -->
+                            @if (tests().length > 0) {
+                                @for (test of tests(); track test.testId) {
+                                    <a class="collapse-item" 
+                                       href="#"
+                                       (click)="navigateToTest(test.testId); $event.preventDefault()"
+                                       [class.active]="router.url.includes('/tests/' + test.testId)">
+                                        <i class="fas fa-file-alt me-2"></i>
+                                        {{ test.title }}
+                                    </a>
+                                }
+                            } @else {
+                                <div class="collapse-item text-muted text-center py-2">
+                                    <small>No tests yet</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </li>
 
-                <!-- Nav Item - Assignments -->
+                <!-- Nav Item - Assignments Collapse -->
                 <li class="nav-item">
                     <a class="nav-link" 
-                       [routerLink]="['/instructor/courses', courseId(), 'assignments']" 
-                       routerLinkActive="active">
+                       [class.collapsed]="!showAssignmentsDropdown()"
+                       href="#" 
+                       (click)="toggleAssignmentsDropdown(); $event.preventDefault()"
+                       [class.active]="router.url.includes('/assignments')"
+                       data-bs-toggle="collapse" 
+                       data-bs-target="#assignmentsCollapse"
+                       [attr.aria-expanded]="showAssignmentsDropdown()"
+                       aria-controls="assignmentsCollapse">
                         <i class="fas fa-tasks"></i>
                         <span>Assignments</span>
+                        <i class="fas fa-chevron-down ms-auto" [class.rotate]="showAssignmentsDropdown()"></i>
                     </a>
-                </li>
-
-                <!-- Nav Item - Live Stream -->
-                <li class="nav-item">
-                    <a class="nav-link" 
-                       [routerLink]="['/instructor/courses', courseId(), 'livestream']" 
-                       routerLinkActive="active">
-                        <i class="bi bi-broadcast"></i>
-                        <span>Live Stream</span>
-                    </a>
+                    <div class="collapse" 
+                         id="assignmentsCollapse"
+                         [class.show]="showAssignmentsDropdown()"
+                         data-bs-parent="#accordionSidebar">
+                        <div class="collapse-inner">
+                            <!-- View All Assignments -->
+                            <div class="collapse-header">
+                                <a class="collapse-item" 
+                                   href="#"
+                                   (click)="navigateToAssignmentsList(); $event.preventDefault()"
+                                   [class.active]="router.url === '/instructor/courses/' + courseId() + '/assignments'">
+                                    <i class="fas fa-list me-2"></i>View All Assignments
+                                </a>
+                            </div>
+                            
+                            <!-- Assignments List -->
+                            @if (assignments().length > 0) {
+                                @for (assignment of assignments(); track assignment.assignmentId) {
+                                    <a class="collapse-item" 
+                                       href="#"
+                                       (click)="navigateToAssignment(assignment.assignmentId); $event.preventDefault()"
+                                       [class.active]="router.url.includes('/assignments/' + assignment.assignmentId)">
+                                        <i class="fas fa-file-alt me-2"></i>
+                                        {{ assignment.title }}
+                                    </a>
+                                }
+                            } @else {
+                                <div class="collapse-item text-muted text-center py-2">
+                                    <small>No assignments yet</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </li>
 
                 <!-- Divider -->
                 <hr class="sidebar-divider d-none d-md-block">
-
-                <!-- Sidebar Toggler (Sidebar) -->
-                <div class="text-center d-none d-md-inline">
-                    <button class="rounded-circle border-0" id="sidebarToggle"></button>
-                </div>
             </ul>
         }
         <!-- End of Sidebar -->
@@ -160,55 +262,8 @@
                                 </li>
                             </ol>
 
-                            <!-- Topbar Search -->
-                            <div class="d-none d-lg-block me-3">
-                                <form class="d-flex">
-                                    <div class="input-group search-box">
-                                        <input type="search" 
-                                               name="keyword" 
-                                               placeholder="Search..." 
-                                               class="form-control border-end-0"
-                                               style="border-radius: 25px 0 0 25px; border: 1px solid #ccc;">
-                                        <button type="button" class="btn btn-white border-start-0" 
-                                                style="border-radius: 0 25px 25px 0; border: 1px solid #ccc;">
-                                            <i class="bi bi-search"></i>
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-
                             <!-- Topbar Navbar -->
-                            <ul class="navbar-nav d-flex flex-row align-items-center">
-
-                                <!-- Nav Item - Alerts -->
-                                <li class="nav-item dropdown no-arrow me-2">
-                                    <a class="nav-link dropdown-toggle position-relative" 
-                                       href="#" 
-                                       id="alertsDropdown" 
-                                       role="button"
-                                       data-bs-toggle="dropdown" 
-                                       aria-haspopup="true" 
-                                       aria-expanded="false">
-                                        <i class="fas fa-bell fa-fw"></i>
-                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
-                                            3
-                                        </span>
-                                    </a>
-                                </li>
-
-                                <!-- Nav Item - Messages -->
-                                <li class="nav-item dropdown no-arrow me-2">
-                                    <a class="nav-link dropdown-toggle position-relative" 
-                                       href="#" 
-                                       id="messagesDropdown" 
-                                       role="button"
-                                       data-bs-toggle="dropdown">
-                                        <i class="fas fa-envelope fa-fw"></i>
-                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
-                                            7
-                                        </span>
-                                    </a>
-                                </li>
+                            <ul class="navbar-nav d-flex flex-row align-items-center ms-auto">
 
                                 <!-- Nav Item - User Information -->
                                 <li class="nav-item dropdown no-arrow">
@@ -232,9 +287,6 @@
                                         <a class="dropdown-item" routerLink="/user/profile">
                                             <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>Your Profile
                                         </a>
-                                        <a class="dropdown-item">
-                                            <i class="fas fa-exchange-alt fa-sm fa-fw me-2 text-gray-400"></i>Request A Transfer
-                                        </a>
                                         <div class="dropdown-divider"></div>
                                         <button type="button" class="dropdown-item" (click)="logout()">
                                             <i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>Logout
@@ -252,63 +304,61 @@
 
             </div>
             <!-- End of Main Content -->
-            <!-- Footer -->
-
-            <footer class="sticky-footer site-footer section-padding bg-white">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-3 col-12 mb-4 pb-2">
-                            <a class="navbar-brand mb-2" href="#">
-                                <i class="bi-back"></i>
-                                <span>Learn0n</span>
-                            </a>
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-6">
-                            <h6 class="site-footer-title mb-3">Resources</h6>
-                            <ul class="site-footer-links">
-                                <li class="site-footer-link-item">
-                                    <a routerLink="/home/main" class="site-footer-link">Home</a>
-                                </li>
-                                <li class="site-footer-link-item">
-                                    <a routerLink="/home/main" fragment="section_3" class="site-footer-link">How it works</a>
-                                </li>
-                                <li class="site-footer-link-item">
-                                    <a routerLink="/home/main" fragment="section_4" class="site-footer-link">FAQs</a>
-                                </li>
-                                <li class="site-footer-link-item">
-                                    <a routerLink="/home/main" class="site-footer-link">Contact</a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-6 mb-4 mb-lg-0">
-                            <h6 class="site-footer-title mb-3">Information</h6>
-                            <p class="text-white d-flex mb-1">
-                                <a href="tel:110-220-8386" class="site-footer-link">110-220-8386</a>
-                            </p>
-                            <p class="text-white d-flex">
-                                <a href="https://mail.google.com" target="_blank" class="site-footer-link">info@company.com</a>
-                            </p>
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-12 mt-4 mt-lg-0 ms-auto">
-                            <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    English
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
 
         </div>
 
 
     </div>
     <!-- End of Page Wrapper -->
+    
+    <!-- Create Lecture Modal -->
+    @if (showCreateLectureModal()) {
+        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create New Lecture</h5>
+                        <button type="button" class="btn-close" (click)="closeCreateLectureModal()"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="lectureTitle" class="form-label">Title <span class="text-danger">*</span></label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="lectureTitle" 
+                                    [(ngModel)]="newLectureTitle"
+                                    name="lectureTitle"
+                                    placeholder="Enter lecture title"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="lectureDescription" class="form-label">Description</label>
+                                <textarea 
+                                    class="form-control" 
+                                    id="lectureDescription" 
+                                    rows="4"
+                                    [(ngModel)]="newLectureDescription"
+                                    name="lectureDescription"
+                                    placeholder="Enter lecture description (optional)"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" (click)="closeCreateLectureModal()">Cancel</button>
+                        <button type="button" class="btn btn-primary" (click)="createLecture()" [disabled]="creatingLecture() || !newLectureTitle().trim()">
+                            @if (creatingLecture()) {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                            }
+                            Create Lecture
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" style="z-index: 10;" href="#page-top">
         <i class="fas fa-angle-up"></i>

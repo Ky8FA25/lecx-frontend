@@ -22,17 +22,19 @@
           <i class="fas fa-plus new-icon"></i> Create new course
         </button>
       </div>
-      <div>
-        <select class="filter-select me-2" [value]="selectedCategory() ?? ''" 
-                (change)="filterByCategory($any($event.target).value ? +$any($event.target).value : null)">
-          <option value="">All Category</option>
+      <div class="d-flex gap-2">
+        <select class="form-select filter-select" style="width: auto; min-width: 200px;" 
+                [value]="selectedCategory() ?? ''" 
+                (change)="filterByCategory($any($event.target).value === '' ? null : +$any($event.target).value)">
+          <option value="">All Categories</option>
           @for (cat of categories(); track cat.categoryId) {
             <option [value]="cat.categoryId">{{ cat.fullName }}</option>
           }
         </select>
-        <select class="filter-select" [value]="selectedLevel() ?? ''"
-                (change)="filterByLevel($any($event.target).value ? +$any($event.target).value : null)">
-          <option value="">All Level</option>
+        <select class="form-select filter-select" style="width: auto; min-width: 180px;"
+                [value]="selectedLevel() !== null && selectedLevel() !== undefined ? selectedLevel() : ''"
+                (change)="filterByLevel($any($event.target).value === '' ? null : +$any($event.target).value)">
+          <option value="">All Levels</option>
           <option [value]="0">Beginner</option>
           <option [value]="1">Intermediate</option>
           <option [value]="2">Advanced</option>
@@ -126,59 +128,137 @@
 
 <!-- Create Course Modal -->
 @if (showCreateModal()) {
-  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
-    <div class="modal-dialog">
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050;">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Create New Course</h5>
-          <button type="button" class="btn-close" (click)="showCreateModal.set(false)"></button>
+          <button type="button" class="btn-close" (click)="showCreateModal.set(false)" [disabled]="creating()"></button>
         </div>
         <div class="modal-body">
           <form [formGroup]="createForm" (ngSubmit)="onCreateSubmit()">
-            <div class="mb-3">
-              <label class="form-label">Course Code</label>
-              <input type="text" class="form-control" formControlName="courseCode" required>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Course Code <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" 
+                       [class.is-invalid]="createForm.get('courseCode')?.invalid && createForm.get('courseCode')?.touched"
+                       formControlName="courseCode" 
+                       placeholder="e.g., CS101">
+                @if (createForm.get('courseCode')?.invalid && createForm.get('courseCode')?.touched) {
+                  <div class="invalid-feedback">Course code is required</div>
+                }
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Category <span class="text-danger">*</span></label>
+                <select class="form-select" 
+                        [class.is-invalid]="createForm.get('categoryId')?.invalid && createForm.get('categoryId')?.touched"
+                        formControlName="categoryId">
+                  <option value="">Select Category</option>
+                  @for (cat of categories(); track cat.categoryId) {
+                    <option [value]="cat.categoryId">{{ cat.fullName }}</option>
+                  }
+                </select>
+                @if (createForm.get('categoryId')?.invalid && createForm.get('categoryId')?.touched) {
+                  <div class="invalid-feedback">Please select a category</div>
+                }
+              </div>
             </div>
+            
             <div class="mb-3">
-              <label class="form-label">Course Title</label>
-              <input type="text" class="form-control" formControlName="title" required>
+              <label class="form-label">Course Title <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" 
+                     [class.is-invalid]="createForm.get('title')?.invalid && createForm.get('title')?.touched"
+                     formControlName="title" 
+                     placeholder="Enter course title">
+              @if (createForm.get('title')?.invalid && createForm.get('title')?.touched) {
+                <div class="invalid-feedback">Course title is required</div>
+              }
             </div>
+            
             <div class="mb-3">
-              <label class="form-label">Description</label>
-              <textarea class="form-control" formControlName="description" rows="3" required></textarea>
+              <label class="form-label">Description <span class="text-danger">*</span></label>
+              <textarea class="form-control" 
+                        [class.is-invalid]="createForm.get('description')?.invalid && createForm.get('description')?.touched"
+                        formControlName="description" 
+                        rows="4" 
+                        placeholder="Enter course description (minimum 20 characters)"></textarea>
+              @if (createForm.get('description')?.invalid && createForm.get('description')?.touched) {
+                <div class="invalid-feedback">
+                  @if (createForm.get('description')?.errors?.['required']) {
+                    Description is required
+                  } @else if (createForm.get('description')?.errors?.['minlength']) {
+                    Description must be at least 20 characters
+                  }
+                </div>
+              }
             </div>
+            
             <div class="mb-3">
               <label class="form-label">Cover Image</label>
+              @if (createImagePreview()) {
+                <div class="mb-2 position-relative" style="max-width: 300px;">
+                  <img [src]="createImagePreview()" class="img-fluid rounded" alt="Preview">
+                  <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" 
+                          (click)="removeImagePreview('create')">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+              }
               <input type="file" class="form-control" accept="image/*" 
-                     (change)="onFileSelected($event, 'create')">
+                     (change)="onFileSelected($event, 'create')"
+                     [disabled]="creating()">
+              <small class="form-text text-muted">Accepted formats: JPG, PNG, GIF. Max size: 5MB</small>
             </div>
-            <div class="mb-3">
-              <label class="form-label">Category</label>
-              <select class="form-select" formControlName="categoryId" required>
-                <option value="">Select Category</option>
-                @for (cat of categories(); track cat.categoryId) {
-                  <option [value]="cat.categoryId">{{ cat.fullName }}</option>
+            
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Level <span class="text-danger">*</span></label>
+                <select class="form-select" 
+                        [class.is-invalid]="createForm.get('level')?.invalid && createForm.get('level')?.touched"
+                        formControlName="level">
+                  <option [value]="0">Beginner</option>
+                  <option [value]="1">Intermediate</option>
+                  <option [value]="2">Advanced</option>
+                </select>
+                @if (createForm.get('level')?.invalid && createForm.get('level')?.touched) {
+                  <div class="invalid-feedback">Please select a level</div>
                 }
-              </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Price (VND) <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" 
+                       [class.is-invalid]="createForm.get('price')?.invalid && createForm.get('price')?.touched"
+                       formControlName="price" 
+                       step="1000" 
+                       min="0" 
+                       placeholder="0">
+                @if (createForm.get('price')?.invalid && createForm.get('price')?.touched) {
+                  <div class="invalid-feedback">
+                    @if (createForm.get('price')?.errors?.['required']) {
+                      Price is required
+                    } @else if (createForm.get('price')?.errors?.['min']) {
+                      Price must be greater than or equal to 0
+                    }
+                  </div>
+                }
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">End Date (Optional)</label>
+                <input type="date" class="form-control" formControlName="endDate">
+              </div>
             </div>
-            <div class="mb-3">
-              <label class="form-label">Level</label>
-              <select class="form-select" formControlName="level" required>
-                <option [value]="0">Beginner</option>
-                <option [value]="1">Intermediate</option>
-                <option [value]="2">Advanced</option>
-              </select>
+            
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="showCreateModal.set(false)" [disabled]="creating()">Cancel</button>
+              <button type="submit" class="btn custom-btn" [disabled]="creating() || !createForm.valid">
+                @if (creating()) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Creating...
+                } @else {
+                  Create Course
+                }
+              </button>
             </div>
-            <div class="mb-3">
-              <label class="form-label">Price</label>
-              <input type="number" class="form-control" formControlName="price" step="0.01" min="0" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">End Date (Optional)</label>
-              <input type="date" class="form-control" formControlName="endDate">
-            </div>
-            <button type="submit" class="btn custom-btn">Create Course</button>
-            <button type="button" class="btn btn-secondary ms-2" (click)="showCreateModal.set(false)">Cancel</button>
           </form>
         </div>
       </div>
@@ -189,60 +269,138 @@
 <!-- Update Course Modal -->
 @if (showUpdateModal() && selectedCourse()) {
   @let course = selectedCourse()!;
-  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
-    <div class="modal-dialog">
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050;">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Update Course</h5>
-          <button type="button" class="btn-close" (click)="showUpdateModal.set(false)"></button>
+          <button type="button" class="btn-close" (click)="showUpdateModal.set(false)" [disabled]="updating()"></button>
         </div>
         <div class="modal-body">
           <form [formGroup]="updateForm" (ngSubmit)="onUpdateSubmit()">
             <div class="mb-3">
-              <label class="form-label">Current Cover Image</label>
-              <img [src]="course.coverImagePath || 'assets/images/default-course.jpg'" 
-                   class="img-fluid mb-3" style="max-width: 100%;">
+              <label class="form-label">Cover Image</label>
+              @if (updateImagePreview()) {
+                <div class="mb-2 position-relative" style="max-width: 300px;">
+                  <img [src]="updateImagePreview()" class="img-fluid rounded" alt="New Preview">
+                  <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" 
+                          (click)="removeImagePreview('update')">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+              } @else {
+                <div class="mb-2">
+                  <label class="text-muted small">Current Image:</label>
+                  <img [src]="course.coverImagePath || 'assets/images/default-course.jpg'" 
+                       class="img-fluid rounded" style="max-width: 300px;" alt="Current">
+                </div>
+              }
               <input type="file" class="form-control" accept="image/*" 
-                     (change)="onFileSelected($event, 'update')">
+                     (change)="onFileSelected($event, 'update')"
+                     [disabled]="updating()">
+              <small class="form-text text-muted">Leave empty to keep current image. Accepted formats: JPG, PNG, GIF. Max size: 5MB</small>
             </div>
-            <div class="mb-3">
-              <label class="form-label">Course Code</label>
-              <input type="text" class="form-control" formControlName="courseCode" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Course Title</label>
-              <input type="text" class="form-control" formControlName="title" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Description</label>
-              <textarea class="form-control" formControlName="description" rows="3" required></textarea>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Category</label>
-              <select class="form-select" formControlName="categoryId" required>
-                @for (cat of categories(); track cat.categoryId) {
-                  <option [value]="cat.categoryId">{{ cat.fullName }}</option>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Course Code <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" 
+                       [class.is-invalid]="updateForm.get('courseCode')?.invalid && updateForm.get('courseCode')?.touched"
+                       formControlName="courseCode">
+                @if (updateForm.get('courseCode')?.invalid && updateForm.get('courseCode')?.touched) {
+                  <div class="invalid-feedback">Course code is required</div>
                 }
-              </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Category <span class="text-danger">*</span></label>
+                <select class="form-select" 
+                        [class.is-invalid]="updateForm.get('categoryId')?.invalid && updateForm.get('categoryId')?.touched"
+                        formControlName="categoryId">
+                  @for (cat of categories(); track cat.categoryId) {
+                    <option [value]="cat.categoryId">{{ cat.fullName }}</option>
+                  }
+                </select>
+                @if (updateForm.get('categoryId')?.invalid && updateForm.get('categoryId')?.touched) {
+                  <div class="invalid-feedback">Please select a category</div>
+                }
+              </div>
             </div>
+            
             <div class="mb-3">
-              <label class="form-label">Level</label>
-              <select class="form-select" formControlName="level" required>
-                <option [value]="0">Beginner</option>
-                <option [value]="1">Intermediate</option>
-                <option [value]="2">Advanced</option>
-              </select>
+              <label class="form-label">Course Title <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" 
+                     [class.is-invalid]="updateForm.get('title')?.invalid && updateForm.get('title')?.touched"
+                     formControlName="title">
+              @if (updateForm.get('title')?.invalid && updateForm.get('title')?.touched) {
+                <div class="invalid-feedback">Course title is required</div>
+              }
             </div>
+            
             <div class="mb-3">
-              <label class="form-label">Price</label>
-              <input type="number" class="form-control" formControlName="price" step="0.01" min="0" required>
+              <label class="form-label">Description <span class="text-danger">*</span></label>
+              <textarea class="form-control" 
+                        [class.is-invalid]="updateForm.get('description')?.invalid && updateForm.get('description')?.touched"
+                        formControlName="description" 
+                        rows="4"></textarea>
+              @if (updateForm.get('description')?.invalid && updateForm.get('description')?.touched) {
+                <div class="invalid-feedback">
+                  @if (updateForm.get('description')?.errors?.['required']) {
+                    Description is required
+                  } @else if (updateForm.get('description')?.errors?.['minlength']) {
+                    Description must be at least 20 characters
+                  }
+                </div>
+              }
             </div>
-            <div class="mb-3">
-              <label class="form-label">End Date (Optional)</label>
-              <input type="date" class="form-control" formControlName="endDate">
+            
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Level <span class="text-danger">*</span></label>
+                <select class="form-select" 
+                        [class.is-invalid]="updateForm.get('level')?.invalid && updateForm.get('level')?.touched"
+                        formControlName="level">
+                  <option [value]="0">Beginner</option>
+                  <option [value]="1">Intermediate</option>
+                  <option [value]="2">Advanced</option>
+                </select>
+                @if (updateForm.get('level')?.invalid && updateForm.get('level')?.touched) {
+                  <div class="invalid-feedback">Please select a level</div>
+                }
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Price (VND) <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" 
+                       [class.is-invalid]="updateForm.get('price')?.invalid && updateForm.get('price')?.touched"
+                       formControlName="price" 
+                       step="1000" 
+                       min="0">
+                @if (updateForm.get('price')?.invalid && updateForm.get('price')?.touched) {
+                  <div class="invalid-feedback">
+                    @if (updateForm.get('price')?.errors?.['required']) {
+                      Price is required
+                    } @else if (updateForm.get('price')?.errors?.['min']) {
+                      Price must be greater than or equal to 0
+                    }
+                  </div>
+                }
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">End Date (Optional)</label>
+                <input type="date" class="form-control" formControlName="endDate">
+              </div>
             </div>
-            <button type="submit" class="btn custom-btn">Update Course</button>
-            <button type="button" class="btn btn-secondary ms-2" (click)="showUpdateModal.set(false)">Cancel</button>
+            
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="showUpdateModal.set(false)" [disabled]="updating()">Cancel</button>
+              <button type="submit" class="btn custom-btn" [disabled]="updating() || !updateForm.valid">
+                @if (updating()) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Updating...
+                } @else {
+                  Update Course
+                }
+              </button>
+            </div>
           </form>
         </div>
       </div>

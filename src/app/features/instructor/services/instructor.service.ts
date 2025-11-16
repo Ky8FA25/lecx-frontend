@@ -47,9 +47,28 @@ export class InstructorService {
   }
 
   /**
-   * Lấy instructorId từ localStorage user data hoặc decode JWT token
+   * Filter courses using GET /api/courses/filter
+   * Query Parameters: keyword, categoryId, level, status, pageIndex, pageSize
    */
-  private getInstructorId(): string | null {
+  filterCourses(keyword?: string | null, categoryId?: number | null, level?: number | null, status?: number | null, pageIndex: number = 1, pageSize: number = 10): Observable<PaginatedResponse<CourseModel>> {
+    let url = `api/courses/filter?pageIndex=${pageIndex}&pageSize=${pageSize}`;
+    
+    if (keyword) url += `&keyword=${encodeURIComponent(keyword)}`;
+    if (categoryId) url += `&categoryId=${categoryId}`;
+    if (level !== null && level !== undefined) url += `&level=${level}`;
+    if (status !== null && status !== undefined) url += `&status=${status}`;
+    
+    console.log('📡 Filter courses API URL:', url);
+    
+    // API filter returns PaginatedResponse directly (not wrapped in ApiResponse)
+    return this.genericService.get<PaginatedResponse<CourseModel>>(url);
+  }
+
+  /**
+   * Lấy instructorId từ localStorage user data hoặc decode JWT token
+   * Public method để các component có thể sử dụng
+   */
+  getInstructorId(): string | null {
     // Thử lấy từ localStorage user data
     const userDataStr = localStorage.getItem('user');
     console.log('🔍 Checking localStorage user data:', userDataStr);

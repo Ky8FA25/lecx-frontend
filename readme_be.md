@@ -610,6 +610,97 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
+### 5.8. Lấy Courses Theo Instructor
+**Endpoint:** `GET /api/courses/instructor/{instructorId?}`  
+**Authentication:** Không yêu cầu  
+**Path Parameters:**
+- `instructorId`: string (optional, nếu không có sẽ lấy từ JWT token)
+
+**Query Parameters:**
+- `pageIndex`: int (default: 1)
+- `pageSize`: int (default: 10)
+
+**Response:**
+```json
+{
+  "pageIndex": 1,
+  "pageSize": 10,
+  "totalPages": 1,
+  "totalCount": 10,
+  "hasPreviousPage": false,
+  "hasNextPage": false,
+  "items": [
+    {
+      "courseId": 1,
+      "title": "string",
+      "courseCode": "string",
+      "description": "string | null",
+      "price": 0.0,
+      "instructorId": "string",
+      "categoryId": 1,
+      "createDate": "2024-01-01T00:00:00Z",
+      "level": "string",
+      "status": "string",
+      "coverImagePath": "string | null"
+    }
+  ]
+}
+```
+
+---
+
+### 5.9. Lấy Course Dashboard
+**Endpoint:** `GET /api/instructor/courses/{courseId}/dashboard`  
+**Authentication:** Yêu cầu (Instructor, Admin)  
+**Path Parameters:**
+- `courseId`: int
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "string",
+  "data": {
+    "earningMonth": 1000000.0,
+    "earningDay": 50000.0,
+    "numStudent": 50,
+    "rating": 4.5,
+    "listStudent": [
+      {
+        "studentCourseId": 1,
+        "studentId": "string",
+        "courseId": 1,
+        "progress": 75.0,
+        "certificateStatus": 0 | 1,
+        "enrollmentDate": "2024-01-01T00:00:00Z",
+        "completionDate": "2024-01-01T00:00:00Z | null",
+        "student": {
+          "id": "string",
+          "firstName": "string",
+          "lastName": "string | null",
+          "profileImagePath": "string | null"
+        },
+        "course": {
+          "courseId": 1,
+          "title": "string",
+          "courseCode": "string",
+          "description": "string | null",
+          "price": 0.0,
+          "instructorId": "string",
+          "categoryId": 1,
+          "createDate": "2024-01-01T00:00:00Z",
+          "level": "string",
+          "status": "string",
+          "coverImagePath": "string | null"
+        }
+      }
+    ]
+  }
+}
+```
+
+---
+
 ## 6. Lectures APIs
 
 ### 6.1. Tạo Lecture
@@ -991,7 +1082,7 @@ Refresh token được lưu trong HTTP-only cookie.
 ---
 
 ### 7.3. Lấy Comments Theo Lecture
-**Endpoint:** `GET /api/comments/lecture/{lectureId}`  
+**Endpoint:** `GET /api/comments`  
 **Authentication:** Yêu cầu  
 **Query Parameters:**
 - `lectureId`: int
@@ -1220,9 +1311,153 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-## 9. Submissions APIs
+## 9. Assignment Scores APIs
 
-### 9.1. Tạo Submission
+### 9.1. Tạo Assignment Score
+**Endpoint:** `POST /api/assignment-scores`  
+**Authentication:** Yêu cầu (Instructor)  
+**Request Body:**
+```json
+{
+  "studentId": "string",
+  "assignmentId": 1,
+  "score": 85.5
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "string",
+  "data": {
+    "assignmentScoreId": 1,
+    "studentId": "string",
+    "assignmentId": 1,
+    "score": 85.5
+  }
+}
+```
+
+---
+
+### 9.2. Lấy Assignment Score Theo ID
+**Endpoint:** `GET /api/assignment-scores/{assignmentScoreId}`  
+**Authentication:** Yêu cầu (Instructor, Admin)  
+**Path Parameters:**
+- `assignmentScoreId`: int
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "string",
+  "data": {
+    "assignmentScoreId": 1,
+    "studentId": "string",
+    "assignmentId": 1,
+    "score": 85.5
+  }
+}
+```
+
+---
+
+### 9.3. Lấy Assignment Score Theo Assignment Và Student
+**Endpoint:** `GET /api/assignment-scores/assignment/{assignmentId}/student/{studentId}`  
+**Authentication:** Yêu cầu (Instructor, Admin, Student)  
+**Path Parameters:**
+- `assignmentId`: int
+- `studentId`: string
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "string",
+  "data": {
+    "assignmentScoreId": 1,
+    "studentId": "string",
+    "assignmentId": 1,
+    "score": 85.5
+  }
+}
+```
+
+---
+
+### 9.4. Lấy Assignment Scores Theo Course
+**Endpoint:** `GET /api/assignmentscores/by-course/{courseId}`  
+**Authentication:** Yêu cầu (Instructor, Admin)  
+**Path Parameters:**
+- `courseId`: int
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "string",
+  "data": [
+    {
+      "assignmentScoreId": 1,
+      "studentId": "string",
+      "assignmentId": 1,
+      "score": 85.5
+    }
+  ]
+}
+```
+
+---
+
+### 9.5. Cập Nhật Assignment Score
+**Endpoint:** `PUT /api/assignment-scores/{AssignmentScoreId}`  
+**Authentication:** Yêu cầu (Instructor)  
+**Path Parameters:**
+- `AssignmentScoreId`: int
+
+**Request Body:**
+```json
+{
+  "score": 90.0
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "string",
+  "data": {
+    "assignmentScoreId": 1,
+    "studentId": "string",
+    "assignmentId": 1,
+    "score": 90.0
+  }
+}
+```
+
+---
+
+### 9.6. Xóa Assignment Score
+**Endpoint:** `DELETE /api/assignment-scores/{AssignmentScoreId}`  
+**Authentication:** Yêu cầu (Instructor, Admin)  
+**Path Parameters:**
+- `AssignmentScoreId`: int
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "string"
+}
+```
+
+---
+
+## 10. Submissions APIs
+
+### 10.1. Tạo Submission
 **Endpoint:** `POST /api/submissions`  
 **Authentication:** Yêu cầu (Student, Instructor)  
 **Request Body:**
@@ -1260,7 +1495,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 9.2. Lấy Submissions Theo Assignment
+### 10.2. Lấy Submissions Theo Assignment
 **Endpoint:** `GET /api/submissions/assignment/{AssignmentId}`  
 **Authentication:** Yêu cầu (Instructor, Student)  
 **Path Parameters:**
@@ -1300,7 +1535,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 9.3. Cập Nhật Submission
+### 10.3. Cập Nhật Submission
 **Endpoint:** `PUT /api/submissions/{submissionId}`  
 **Authentication:** Yêu cầu (Student, Instructor)  
 **Path Parameters:**
@@ -1338,7 +1573,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 9.4. Xóa Submission
+### 10.4. Xóa Submission
 **Endpoint:** `DELETE /api/submissions/{submissionId}`  
 **Authentication:** Yêu cầu (Student, Instructor)  
 **Path Parameters:**
@@ -1354,9 +1589,85 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-## 10. Tests APIs
+## 10. Instructor Confirmations APIs
 
-### 10.1. Tạo Test
+### 10.1. Tạo Instructor Confirmation
+**Endpoint:** `POST /api/instructor-confirmations`  
+**Authentication:** Yêu cầu (Student)  
+**Request Body:**
+```json
+{
+  "fileName": "string",
+  "certificatelink": "string",
+  "description": "string"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "string",
+  "data": {
+    "confirmationId": 1,
+    "userId": "string",
+    "fileName": "string",
+    "certificatelink": "string",
+    "sendDate": "2024-01-01T00:00:00Z",
+    "description": "string",
+    "user": {
+      "userId": "string",
+      "fullName": "string",
+      "email": "string",
+      "profileImagePath": "string | null"
+    }
+  }
+}
+```
+
+**Lưu ý:** `userId` tự động lấy từ JWT token, không cần truyền trong request body.
+
+---
+
+### 10.2. Phê Duyệt Instructor Confirmation
+**Endpoint:** `PUT /api/instructor-confirmations/approve`  
+**Authentication:** Yêu cầu (Admin)  
+**Request Body:**
+```json
+{
+  "confirmationId": 1
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "string",
+  "data": {
+    "confirmationId": 1,
+    "userId": "string",
+    "fileName": "string",
+    "certificatelink": "string",
+    "sendDate": "2024-01-01T00:00:00Z",
+    "description": "string",
+    "user": {
+      "userId": "string",
+      "fullName": "string",
+      "email": "string",
+      "profileImagePath": "string | null"
+    }
+  }
+}
+```
+
+**Lưu ý:** API này sẽ tự động tạo bản ghi Instructor cho user sau khi phê duyệt.
+
+---
+
+## 11. Tests APIs
+
+### 11.1. Tạo Test
 **Endpoint:** `POST /api/tests`  
 **Authentication:** Yêu cầu (Instructor, Admin)  
 **Request Body:**
@@ -1400,7 +1711,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 10.2. Lấy Test Theo ID
+### 11.2. Lấy Test Theo ID
 **Endpoint:** `GET /api/tests/{TestId}`  
 **Authentication:** Yêu cầu (Instructor, Admin, Student)  
 **Path Parameters:**
@@ -1430,7 +1741,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 10.3. Lấy Tests Theo Course
+### 11.3. Lấy Tests Theo Course
 **Endpoint:** `GET /api/tests`  
 **Authentication:** Yêu cầu (Instructor, Admin, Student)  
 **Query Parameters:**
@@ -1462,7 +1773,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 10.4. Cập Nhật Test
+### 11.4. Cập Nhật Test
 **Endpoint:** `PUT /api/tests/{TestId}`  
 **Authentication:** Yêu cầu (Instructor, Admin)  
 **Path Parameters:**
@@ -1508,7 +1819,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 10.5. Xóa Test
+### 11.5. Xóa Test
 **Endpoint:** `DELETE /api/tests/{TestId}`  
 **Authentication:** Yêu cầu (Instructor, Admin)  
 **Path Parameters:**
@@ -1524,9 +1835,9 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-## 11. Test Questions APIs
+## 12. Test Questions APIs
 
-### 11.1. Tạo Question
+### 12.1. Tạo Question
 **Endpoint:** `POST /api/tests/questions`  
 **Authentication:** Yêu cầu (Instructor)  
 **Request Body:**
@@ -1564,7 +1875,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 11.2. Tạo Nhiều Questions
+### 12.2. Tạo Nhiều Questions
 **Endpoint:** `POST /api/tests/questions/lists`  
 **Authentication:** Yêu cầu (Instructor)  
 **Request Body:**
@@ -1608,7 +1919,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 11.3. Lấy Question Theo ID
+### 12.3. Lấy Question Theo ID
 **Endpoint:** `GET /api/tests/questions/{QuestionId}`  
 **Authentication:** Yêu cầu (Instructor)  
 **Path Parameters:**
@@ -1635,7 +1946,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 11.4. Lấy Questions Theo Test
+### 12.4. Lấy Questions Theo Test
 **Endpoint:** `GET /api/tests/{TestId}/questions`  
 **Authentication:** Yêu cầu (Instructor)  
 **Path Parameters:**
@@ -1664,7 +1975,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 11.5. Lấy Questions Để Làm Test (Không có đáp án)
+### 12.5. Lấy Questions Để Làm Test (Không có đáp án)
 **Endpoint:** `GET /api/tests/{TestId}/attempt/questions`  
 **Authentication:** Yêu cầu (Student)  
 **Path Parameters:**
@@ -1695,7 +2006,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 11.6. Cập Nhật Question
+### 12.6. Cập Nhật Question
 **Endpoint:** `PUT /api/tests/questions`  
 **Authentication:** Yêu cầu (Instructor)  
 **Request Body:**
@@ -1733,7 +2044,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 11.7. Xóa Question
+### 12.7. Xóa Question
 **Endpoint:** `DELETE /api/tests/questions/{QuestionId}`  
 **Authentication:** Yêu cầu (Instructor)  
 **Path Parameters:**
@@ -1749,9 +2060,9 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-## 12. Test Scores APIs
+## 13. Test Scores APIs
 
-### 12.1. Nộp Bài Test (Tạo Test Score)
+### 13.1. Nộp Bài Test (Tạo Test Score)
 **Endpoint:** `POST /api/tests/scores`  
 **Authentication:** Yêu cầu (Student)  
 **Request Body:**
@@ -1805,7 +2116,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 12.2. Lấy Test Score Theo ID
+### 13.2. Lấy Test Score Theo ID
 **Endpoint:** `GET /api/tests/scores/{TestScoreId}`  
 **Authentication:** Yêu cầu (Student, Instructor, Admin)  
 **Path Parameters:**
@@ -1849,7 +2160,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 12.3. Lấy Test Scores Theo User
+### 13.3. Lấy Test Scores Theo User
 **Endpoint:** `GET /api/tests/scores`  
 **Authentication:** Yêu cầu (Student)  
 **Query Parameters:**
@@ -1904,7 +2215,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 12.4. Lấy Test Scores Theo Test (Tất cả học sinh)
+### 13.4. Lấy Test Scores Theo Test (Tất cả học sinh)
 **Endpoint:** `GET /api/tests/{TestId}/scores`  
 **Authentication:** Yêu cầu (Instructor, Admin)  
 **Path Parameters:**
@@ -1918,7 +2229,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 12.5. Kiểm Tra Đã Pass Test Chưa
+### 13.5. Kiểm Tra Đã Pass Test Chưa
 **Endpoint:** `GET /api/tests/{TestId}/is-passed`  
 **Authentication:** Yêu cầu (Student)  
 **Path Parameters:**
@@ -1939,7 +2250,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 12.6. Xóa Test Score
+### 13.6. Xóa Test Score
 **Endpoint:** `DELETE /api/tests/scores/{TestScoreId}`  
 **Authentication:** Yêu cầu (Instructor, Admin)  
 **Path Parameters:**
@@ -1955,9 +2266,9 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-## 13. Student Courses APIs
+## 14. Student Courses APIs
 
-### 13.1. Tạo Student Course (Đăng Ký Khóa Học)
+### 14.1. Tạo Student Course (Đăng Ký Khóa Học)
 **Endpoint:** `POST /api/student-courses`  
 **Authentication:** Yêu cầu (Admin)  
 **Request Body:**
@@ -2006,7 +2317,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 13.2. Lấy Student Course Theo ID
+### 14.2. Lấy Student Course Theo ID
 **Endpoint:** `GET /api/student-courses/{studentCourseId}`  
 **Authentication:** Yêu cầu (Admin, Instructor, Student)  
 **Path Parameters:**
@@ -2050,7 +2361,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 13.3. Lấy Courses Theo Student (Lọc)
+### 14.3. Lấy Courses Theo Student (Lọc)
 **Endpoint:** `GET /api/student-courses/courses`  
 **Authentication:** Yêu cầu (Student)  
 **Query Parameters:**
@@ -2106,7 +2417,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 13.4. Lấy Students Theo Course (Lọc)
+### 14.4. Lấy Students Theo Course (Lọc)
 **Endpoint:** `GET /api/student-courses/students`  
 **Authentication:** Yêu cầu (Instructor, Admin)  
 **Query Parameters:**
@@ -2119,7 +2430,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 13.5. Kiểm Tra Student Đã Đăng Ký Course Chưa
+### 14.5. Kiểm Tra Student Đã Đăng Ký Course Chưa
 **Endpoint:** `GET /api/student-courses/check-exist`  
 **Authentication:** Yêu cầu (Student)  
 **Query Parameters:**
@@ -2135,7 +2446,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 13.6. Cập Nhật Student Course
+### 14.6. Cập Nhật Student Course
 **Endpoint:** `PUT /api/student-courses`  
 **Authentication:** Yêu cầu (Admin, Instructor)  
 **Request Body:**
@@ -2187,7 +2498,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 13.7. Xóa Student Course
+### 14.7. Xóa Student Course
 **Endpoint:** `DELETE /api/student-courses/{studentCourseId}`  
 **Authentication:** Yêu cầu (Admin)  
 **Path Parameters:**
@@ -2203,9 +2514,9 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-## 14. Payment APIs
+## 15. Payment APIs
 
-### 14.1. Tạo Payment
+### 15.1. Tạo Payment
 **Endpoint:** `POST /api/payments/create`  
 **Authentication:** Yêu cầu (Student)  
 **Request Body:**
@@ -2238,7 +2549,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 14.2. Lấy Payments Theo Student
+### 15.2. Lấy Payments Theo Student
 **Endpoint:** `GET /api/payments/{StudentId}`  
 **Authentication:** Không yêu cầu  
 **Path Parameters:**
@@ -2275,7 +2586,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 14.3. Payment Success Callback
+### 15.3. Payment Success Callback
 **Endpoint:** `GET /api/payments/success`  
 **Authentication:** Không yêu cầu  
 **Query Parameters:**
@@ -2287,7 +2598,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 14.4. Payment Cancel Callback
+### 15.4. Payment Cancel Callback
 **Endpoint:** `GET /api/payments/cancel`  
 **Authentication:** Không yêu cầu  
 **Query Parameters:**
@@ -2299,9 +2610,9 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-## 15. Course Materials APIs
+## 16. Course Materials APIs
 
-### 15.1. Tạo Course Material
+### 16.1. Tạo Course Material
 **Endpoint:** `POST /api/course-materials`  
 **Authentication:** Yêu cầu (Admin, Instructor)  
 **Request Body:**
@@ -2334,7 +2645,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 15.2. Lấy Course Material Theo ID
+### 16.2. Lấy Course Material Theo ID
 **Endpoint:** `GET /api/course-materials/{materialId}`  
 **Authentication:** Yêu cầu (Admin, Instructor)  
 **Path Parameters:**
@@ -2359,7 +2670,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 15.3. Lấy Tất Cả Course Materials Theo Course
+### 16.3. Lấy Tất Cả Course Materials Theo Course
 **Endpoint:** `GET /api/course-materials/course/{courseId}`  
 **Authentication:** Yêu cầu (Admin, Instructor)  
 **Path Parameters:**
@@ -2386,7 +2697,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 15.4. Cập Nhật Course Material
+### 16.4. Cập Nhật Course Material
 **Endpoint:** `PATCH /api/course-materials`  
 **Authentication:** Yêu cầu (Admin, Instructor)  
 **Request Body:**
@@ -2420,7 +2731,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 15.5. Xóa Course Material
+### 16.5. Xóa Course Material
 **Endpoint:** `DELETE /api/course-materials/{materialId}`  
 **Authentication:** Yêu cầu (Admin, Instructor)  
 **Path Parameters:**
@@ -2436,9 +2747,9 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-## 16. Certificates APIs
+## 17. Certificates APIs
 
-### 16.1. Tạo Certificate
+### 17.1. Tạo Certificate
 **Endpoint:** `POST /api/certificates`  
 **Authentication:** Yêu cầu (Admin, Instructor)  
 **Request Body:**
@@ -2465,7 +2776,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 16.2. Xóa Certificate
+### 17.2. Xóa Certificate
 **Endpoint:** `DELETE /api/certificates/{courseId}`  
 **Authentication:** Yêu cầu (Admin, Instructor)  
 **Path Parameters:**
@@ -2475,9 +2786,9 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-## 17. Storage APIs
+## 18. Storage APIs
 
-### 17.1. Upload File
+### 18.1. Upload File
 **Endpoint:** `POST /api/storage/upload`  
 **Authentication:** Không yêu cầu (có thể bật)  
 **Request:** Multipart form data
@@ -2498,7 +2809,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 17.2. Lấy Signed Read URL
+### 18.2. Lấy Signed Read URL
 **Endpoint:** `GET /api/storage/signed-read`  
 **Authentication:** Không yêu cầu (có thể bật)  
 **Query Parameters:**
@@ -2515,7 +2826,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 17.3. Lấy Signed Write URL
+### 18.3. Lấy Signed Write URL
 **Endpoint:** `GET /api/storage/signed-write`  
 **Authentication:** Không yêu cầu (có thể bật)  
 **Query Parameters:**
@@ -2533,7 +2844,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 17.4. Lấy Signed Resumable URL
+### 18.4. Lấy Signed Resumable URL
 **Endpoint:** `GET /api/storage/signed-resumable`  
 **Authentication:** Không yêu cầu (có thể bật)  
 **Query Parameters:**
@@ -2553,7 +2864,7 @@ Refresh token được lưu trong HTTP-only cookie.
 
 ---
 
-### 17.5. Xóa Object
+### 18.5. Xóa Object
 **Endpoint:** `DELETE /api/storage/delete-object`  
 **Authentication:** Yêu cầu (Admin)  
 **Request Body:**

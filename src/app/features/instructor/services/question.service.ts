@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { GenericServices } from '../../../core/services/GenericServices';
 import { Observable } from 'rxjs';
-import { ApiResponse } from '../../../core/models/generic-response-class';
+import { ApiResponse, PaginatedResponse } from '../../../core/models/generic-response-class';
 import { QuestionDTO, CreateQuestionDto, UpdateQuestionDto, CreateQuestionsListDto } from '../models/instructor.models';
 import { HttpParams } from '@angular/common/http';
 
@@ -12,8 +12,8 @@ export class QuestionService {
   private genericService = inject(GenericServices);
 
   // Question APIs
-  getQuestionsByTest(testId: number): Observable<ApiResponse<QuestionDTO[]>> {
-    return this.genericService.get<ApiResponse<QuestionDTO[]>>(`api/tests/${testId}/questions`);
+  getQuestionsByTest(testId: number, pageIndex: number = 1, pageSize: number = 20): Observable<ApiResponse<PaginatedResponse<QuestionDTO>>> {
+    return this.genericService.get<ApiResponse<PaginatedResponse<QuestionDTO>>>(`api/tests/${testId}/questions?pageIndex=${pageIndex}&pageSize=${pageSize}`);
   }
 
   getQuestionById(questionId: number): Observable<ApiResponse<QuestionDTO>> {

@@ -14,7 +14,7 @@
             @for (material of materials(); track material.materialId) {
                 <div class="position-relative mb-2 px-4 mb-3">
                     <i [class]="getIconClass(material.fileExtension) + ' me-2 ms-2 fs-3'"></i>
-                    <a [href]="material.materialsLink" class="btn-link" target="_blank">{{ material.fileName }}</a>
+                    <a [href]="material.materialsLink" class="btn-link" target="_blank">{{ material.fIleName }}</a>
                 </div>
             }
         } @else {

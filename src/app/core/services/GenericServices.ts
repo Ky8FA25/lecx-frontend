@@ -33,6 +33,10 @@ export class GenericServices {
     return this.http.put<T>(`${this.baseUrl}/${url}`, body);
   }
 
+  patch<T>(url: string, body: any): Observable<T> {
+    return this.http.patch<T>(`${this.baseUrl}/${url}`, body);
+  }
+
   delete<T>(url: string): Observable<T> {
     return this.http.delete<T>(`${this.baseUrl}/${url}`);
   }

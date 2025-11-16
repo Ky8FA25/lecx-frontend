@@ -1,0 +1,446 @@
+<div class="container-fluid">
+  <!-- Page Header -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Questions</h1>
+    <div>
+      <button class="btn btn-primary me-2" (click)="openCreateModal()">
+        <i class="fas fa-plus me-2"></i>Add Question
+      </button>
+      <button class="btn btn-success" (click)="openCreateMultipleModal()">
+        <i class="fas fa-plus-circle me-2"></i>Add Multiple Questions
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else if (questions().length > 0) {
+    <!-- Questions List -->
+    <div class="row">
+      @for (question of questions(); track question.questionId; let i = $index) {
+        <div class="col-md-12 mb-4">
+          <div class="card shadow">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="flex-grow-1">
+                  <h5 class="mb-2">
+                    Question {{ i + 1 }}: {{ question.questionContent }}
+                  </h5>
+                  @if (question.imagePath) {
+                    <div class="mb-3">
+                      <img [src]="question.imagePath" alt="Question Image" class="img-fluid" style="max-height: 200px;">
+                    </div>
+                  }
+                  <div class="row">
+                    <div class="col-md-6 mb-2">
+                      <div [class]="getCorrectAnswerClass('A', question.correctAnswer)">
+                        <strong>A:</strong> {{ question.answerA }}
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                      <div [class]="getCorrectAnswerClass('B', question.correctAnswer)">
+                        <strong>B:</strong> {{ question.answerB }}
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                      <div [class]="getCorrectAnswerClass('C', question.correctAnswer)">
+                        <strong>C:</strong> {{ question.answerC }}
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                      <div [class]="getCorrectAnswerClass('D', question.correctAnswer)">
+                        <strong>D:</strong> {{ question.answerD }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <span class="badge bg-success">Correct Answer: {{ question.correctAnswer }}</span>
+                  </div>
+                </div>
+                <div class="ms-3">
+                  <button class="btn btn-sm btn-warning me-2" (click)="openEditModal(question)">
+                    <i class="fas fa-edit me-1"></i>Edit
+                  </button>
+                  <button class="btn btn-sm btn-danger" (click)="openDeleteModal(question)">
+                    <i class="fas fa-trash me-1"></i>Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="card shadow">
+      <div class="card-body text-center py-5">
+        <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
+        <p class="text-muted">No questions available</p>
+        <button class="btn btn-primary" (click)="openCreateModal()">
+          <i class="fas fa-plus me-2"></i>Add First Question
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Create Single Question Modal -->
+  @if (showCreateModal()) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Question</h5>
+            <button type="button" class="btn-close" (click)="closeCreateModal()"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="questionContent" class="form-label">Question Content <span class="text-danger">*</span></label>
+                <textarea 
+                  class="form-control" 
+                  id="questionContent" 
+                  rows="3"
+                  [(ngModel)]="newQuestionContent"
+                  name="questionContent"
+                  placeholder="Enter question content"
+                  required></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="questionImage" class="form-label">Question Image (Optional)</label>
+                <input 
+                  type="file" 
+                  class="form-control" 
+                  id="questionImage" 
+                  accept="image/*"
+                  (change)="onQuestionImageSelected($event)">
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="answerA" class="form-label">Answer A <span class="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="answerA" 
+                    [(ngModel)]="newAnswerA"
+                    name="answerA"
+                    required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="answerB" class="form-label">Answer B <span class="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="answerB" 
+                    [(ngModel)]="newAnswerB"
+                    name="answerB"
+                    required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="answerC" class="form-label">Answer C <span class="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="answerC" 
+                    [(ngModel)]="newAnswerC"
+                    name="answerC"
+                    required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="answerD" class="form-label">Answer D <span class="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="answerD" 
+                    [(ngModel)]="newAnswerD"
+                    name="answerD"
+                    required>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="correctAnswer" class="form-label">Correct Answer <span class="text-danger">*</span></label>
+                <select 
+                  class="form-select" 
+                  id="correctAnswer" 
+                  [(ngModel)]="newCorrectAnswer"
+                  name="correctAnswer"
+                  required>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeCreateModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="createQuestion()" [disabled]="creatingQuestion() || !newQuestionContent().trim() || !newAnswerA().trim() || !newAnswerB().trim() || !newAnswerC().trim() || !newAnswerD().trim()">
+              @if (creatingQuestion()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              Create Question
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Create Multiple Questions Modal -->
+  @if (showCreateMultipleModal()) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Multiple Questions</h5>
+            <button type="button" class="btn-close" (click)="closeCreateMultipleModal()"></button>
+          </div>
+          <div class="modal-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <span class="badge bg-info">Total Questions: {{ multipleQuestions().length }}</span>
+              </div>
+              <button class="btn btn-sm btn-success" (click)="addQuestionToMultiple()">
+                <i class="fas fa-plus me-1"></i>Add Another Question
+              </button>
+            </div>
+            
+            <div class="questions-container" style="max-height: 500px; overflow-y: auto;">
+              @for (question of multipleQuestions(); track $index; let i = $index) {
+                <div class="card mb-3">
+                  <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Question {{ i + 1 }}</h6>
+                    @if (multipleQuestions().length > 1) {
+                      <button class="btn btn-sm btn-danger" (click)="removeQuestionFromMultiple(i)">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    }
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <label class="form-label">Question Content <span class="text-danger">*</span></label>
+                      <textarea 
+                        class="form-control" 
+                        rows="2"
+                        [value]="question.questionContent"
+                        (input)="updateMultipleQuestion(i, 'questionContent', $any($event.target).value)"
+                        placeholder="Enter question content"
+                        required></textarea>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6 mb-2">
+                        <label class="form-label">Answer A <span class="text-danger">*</span></label>
+                        <input 
+                          type="text" 
+                          class="form-control" 
+                          [value]="question.answerA"
+                          (input)="updateMultipleQuestion(i, 'answerA', $any($event.target).value)"
+                          required>
+                      </div>
+                      <div class="col-md-6 mb-2">
+                        <label class="form-label">Answer B <span class="text-danger">*</span></label>
+                        <input 
+                          type="text" 
+                          class="form-control" 
+                          [value]="question.answerB"
+                          (input)="updateMultipleQuestion(i, 'answerB', $any($event.target).value)"
+                          required>
+                      </div>
+                      <div class="col-md-6 mb-2">
+                        <label class="form-label">Answer C <span class="text-danger">*</span></label>
+                        <input 
+                          type="text" 
+                          class="form-control" 
+                          [value]="question.answerC"
+                          (input)="updateMultipleQuestion(i, 'answerC', $any($event.target).value)"
+                          required>
+                      </div>
+                      <div class="col-md-6 mb-2">
+                        <label class="form-label">Answer D <span class="text-danger">*</span></label>
+                        <input 
+                          type="text" 
+                          class="form-control" 
+                          [value]="question.answerD"
+                          (input)="updateMultipleQuestion(i, 'answerD', $any($event.target).value)"
+                          required>
+                      </div>
+                    </div>
+                    <div class="mb-2">
+                      <label class="form-label">Correct Answer <span class="text-danger">*</span></label>
+                      <select 
+                        class="form-select" 
+                        [value]="question.correctAnswer"
+                        (change)="updateMultipleQuestion(i, 'correctAnswer', $any($event.target).value)"
+                        required>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeCreateMultipleModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="createMultipleQuestions()" [disabled]="creatingMultipleQuestions() || multipleQuestions().length === 0">
+              @if (creatingMultipleQuestions()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              Create {{ multipleQuestions().length }} Question(s)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Edit Question Modal -->
+  @if (showEditModal()) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Question</h5>
+            <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="editQuestionContent" class="form-label">Question Content <span class="text-danger">*</span></label>
+                <textarea 
+                  class="form-control" 
+                  id="editQuestionContent" 
+                  rows="3"
+                  [(ngModel)]="editQuestionContent"
+                  name="editQuestionContent"
+                  required></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="editQuestionImage" class="form-label">Question Image</label>
+                <input 
+                  type="file" 
+                  class="form-control" 
+                  id="editQuestionImage" 
+                  accept="image/*"
+                  (change)="onEditQuestionImageSelected($event)">
+                @if (existingImagePath()) {
+                  <div class="mt-2">
+                    <small class="text-info">
+                      <i class="fas fa-image me-1"></i>Current image will be kept if no new image is selected
+                    </small>
+                    <div class="mt-2">
+                      <img [src]="existingImagePath()" alt="Current Image" class="img-fluid" style="max-height: 150px;">
+                    </div>
+                  </div>
+                }
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="editAnswerA" class="form-label">Answer A <span class="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="editAnswerA" 
+                    [(ngModel)]="editAnswerA"
+                    name="editAnswerA"
+                    required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="editAnswerB" class="form-label">Answer B <span class="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="editAnswerB" 
+                    [(ngModel)]="editAnswerB"
+                    name="editAnswerB"
+                    required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="editAnswerC" class="form-label">Answer C <span class="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="editAnswerC" 
+                    [(ngModel)]="editAnswerC"
+                    name="editAnswerC"
+                    required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="editAnswerD" class="form-label">Answer D <span class="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="editAnswerD" 
+                    [(ngModel)]="editAnswerD"
+                    name="editAnswerD"
+                    required>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="editCorrectAnswer" class="form-label">Correct Answer <span class="text-danger">*</span></label>
+                <select 
+                  class="form-select" 
+                  id="editCorrectAnswer" 
+                  [(ngModel)]="editCorrectAnswer"
+                  name="editCorrectAnswer"
+                  required>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="updateQuestion()" [disabled]="editingQuestion() || !editQuestionContent().trim() || !editAnswerA().trim() || !editAnswerB().trim() || !editAnswerC().trim() || !editAnswerD().trim()">
+              @if (editingQuestion()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              Update Question
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Delete Question Modal -->
+  @if (showDeleteModal()) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Delete Question</h5>
+            <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete this question?</p>
+            <p class="text-danger mb-0">
+              <i class="fas fa-exclamation-triangle me-1"></i>
+              This action cannot be undone.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()" [disabled]="deletingQuestion()">Cancel</button>
+            <button type="button" class="btn btn-danger" (click)="deleteQuestion()" [disabled]="deletingQuestion()">
+              @if (deletingQuestion()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              Delete Question
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+

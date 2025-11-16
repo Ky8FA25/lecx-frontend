@@ -24,7 +24,7 @@ export class InstructorLectureService {
   }
 
   updateLecture(lecture: UpdateLectureDto): Observable<ApiResponse<LectureDTO>> {
-    return this.genericService.post<ApiResponse<LectureDTO>>('api/lectures', lecture);
+    return this.genericService.patch<ApiResponse<LectureDTO>>('api/lectures', lecture);
   }
 
   deleteLecture(lectureId: number): Observable<ApiResponse<any>> {
@@ -37,7 +37,7 @@ export class InstructorLectureService {
   }
 
   updateLectureFile(fileId: number, fileName?: string | null, filePath?: string | null): Observable<ApiResponse<LectureFileDTO>> {
-    return this.genericService.post<ApiResponse<LectureFileDTO>>('api/lectures/file', {
+    return this.genericService.patch<ApiResponse<LectureFileDTO>>('api/lectures/file', {
       fileId,
       fileName,
       filePath

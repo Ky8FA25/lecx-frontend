@@ -1,0 +1,39 @@
+.material-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.modal {
+  .modal-content {
+    border-radius: 0.5rem;
+  }
+  
+  .modal-header {
+    border-bottom: 1px solid #dee2e5;
+  }
+  
+  .modal-footer {
+    border-top: 1px solid #dee2e5;
+  }
+}
+

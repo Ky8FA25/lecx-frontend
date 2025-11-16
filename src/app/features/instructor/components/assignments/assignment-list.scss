@@ -1,0 +1,32 @@
+.card {
+  transition: all 0.3s ease;
+  border: none;
+  border-radius: 0.35rem;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  }
+  
+  .card-header {
+    border-bottom: 1px solid #e3e6f0;
+    background-color: #f8f9fc;
+  }
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35em 0.65em;
+}
+
+.btn {
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+  }
+}
+
+
