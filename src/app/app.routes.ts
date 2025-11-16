@@ -131,7 +131,7 @@ export const routes: Routes = [
     },
     {
       path: 'courses/:courseId/tests',
-      component: TestList
+      component: TestLists
     },
     {
       path: 'courses/:courseId/tests/:testId',
