@@ -31,7 +31,7 @@ import { InstructorMyCourses } from './features/instructor/components/my-courses
 import { InstructorLectureDetail } from './features/instructor/components/lectures/lecture-detail';
 import { AssignmentList } from './features/instructor/components/assignments/assignment-list';
 import { AssignmentDetail } from './features/instructor/components/assignments/assignment-detail';
-import { TestList } from './features/instructor/components/tests/test-list';
+import { TestLists } from './features/instructor/components/tests/test-list';
 import { TestDetail } from './features/instructor/components/tests/test-detail';
 import { Role } from './core/enums/enums';
 import { TestList } from './features/student/components/test-list/test-list';
