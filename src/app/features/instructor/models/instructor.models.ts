@@ -332,3 +332,20 @@ export interface CreateLiveStreamDto {
   scheduleLiveDuration: string; // "HH:mm"
 }
 
+// Payment Models
+export interface PaymentDTO {
+  paymentId: number;
+  courseId: number;
+  courseTitle: string;
+  amount: number;
+  status: string; // "Completed", "Pending", "Failed", "Refunded"
+  paymentDate: Date | string;
+  orderCode: number;
+  checkoutUrl: string | null;
+  description: string | null;
+}
+
+export interface PaymentResponse {
+  payments: PaymentDTO[];
+}
+

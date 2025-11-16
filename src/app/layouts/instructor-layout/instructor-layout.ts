@@ -10,6 +10,7 @@ import { filter, Subscription } from 'rxjs';
 import { InstructorLectureService } from '../../features/instructor/services/lecture.service';
 import { AssignmentService } from '../../features/instructor/services/assignment.service';
 import { TestService } from '../../features/instructor/services/test.service';
+import { LectureSharedService } from '../../features/instructor/services/lecture-shared.service';
 import { LectureDTO, CreateLectureDto, AssignmentDTO, TestDTO } from '../../features/instructor/models/instructor.models';
 
 @Component({
@@ -27,6 +28,7 @@ export class InstructorLayout implements OnInit, OnDestroy {
   private lectureService = inject(InstructorLectureService);
   private assignmentService = inject(AssignmentService);
   private testService = inject(TestService);
+  private lectureSharedService = inject(LectureSharedService);
   isAuthenticated = signal(false);
   user = signal<userDto | any>(null);
   courseId = signal<number | null>(null);
@@ -240,6 +242,8 @@ export class InstructorLayout implements OnInit, OnDestroy {
         
         console.log('Setting lectures (final):', lectures);
         this.lectures.set([...lectures]); // Use spread to ensure change detection
+        // Share lectures với các child components thông qua service
+        this.lectureSharedService.setLectures(courseId, lectures);
         this.lastLoadedCourseId = courseId;
         console.log('Lectures after set:', this.lectures());
         console.log('Lectures count:', this.lectures().length);
