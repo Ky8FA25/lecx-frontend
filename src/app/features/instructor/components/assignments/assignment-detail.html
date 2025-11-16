@@ -8,14 +8,22 @@
   } @else if (assignment()) {
     <!-- Page Header -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-      <div>
-        <h1 class="h3 mb-0 text-gray-800">{{ assignment()!.title }}</h1>
-        <p class="text-muted mb-0">
-          Start: {{ formatDateShort(assignment()!.startDate) }} | 
-          Due: {{ formatDateShort(assignment()!.dueDate) }}
-        </p>
+      <div class="flex-grow-1">
+        <h1 class="h3 mb-0 text-gray-800">
+          <i class="fas fa-tasks me-2 text-primary"></i>{{ assignment()!.title }}
+        </h1>
+        <div class="d-flex flex-wrap gap-3 mt-2">
+          <span class="text-gray-600">
+            <i class="fas fa-calendar-alt me-1 text-primary"></i>
+            <strong>Start:</strong> {{ formatDateShort(assignment()!.startDate) }}
+          </span>
+          <span class="text-gray-600">
+            <i class="fas fa-calendar-check me-1 text-primary"></i>
+            <strong>Due:</strong> {{ formatDateShort(assignment()!.dueDate) }}
+          </span>
+        </div>
       </div>
-      <button class="btn btn-secondary" (click)="navigateBack()">
+      <button class="btn btn-secondary shadow-sm" (click)="navigateBack()">
         <i class="fas fa-arrow-left me-2"></i>Back to Assignments
       </button>
     </div>

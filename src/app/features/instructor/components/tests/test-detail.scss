@@ -1,0 +1,72 @@
+.nav-tabs {
+  border-bottom: 2px solid #e3e6f0;
+  
+  .nav-link {
+    cursor: pointer;
+    color: #858796;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      color: #4e73df;
+      border-bottom-color: rgba(78, 115, 223, 0.3);
+    }
+    
+    &.active {
+      color: #4e73df;
+      background-color: transparent;
+      border-bottom-color: #4e73df;
+      font-weight: 600;
+    }
+  }
+}
+
+.table {
+  th {
+    background-color: #f8f9fc;
+    font-weight: 600;
+    color: #5a5c69;
+    border-bottom: 2px solid #e3e6f0;
+    padding: 1rem;
+  }
+  
+  td {
+    padding: 1rem;
+    vertical-align: middle;
+  }
+  
+  tbody tr {
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: #f8f9fc;
+    }
+  }
+}
+
+.page-item {
+  &.active .page-link {
+    background-color: #4e73df;
+    border-color: #4e73df;
+    color: #fff;
+  }
+  
+  &.disabled .page-link {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  .page-link {
+    color: #4e73df;
+    border-color: #d1d3e2;
+    
+    &:hover {
+      background-color: #f8f9fc;
+      border-color: #d1d3e2;
+      color: #2e59d9;
+    }
+  }
+}
+

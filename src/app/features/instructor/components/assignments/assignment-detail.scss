@@ -1,8 +1,29 @@
 .table {
   th {
-    background-color: #f8f9fa;
+    background-color: #f8f9fc;
     font-weight: 600;
+    color: #5a5c69;
+    border-bottom: 2px solid #e3e6f0;
+    padding: 1rem;
   }
+  
+  td {
+    padding: 1rem;
+    vertical-align: middle;
+  }
+  
+  tbody tr {
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: #f8f9fc;
+    }
+  }
+}
+
+.card-header {
+  border-bottom: 1px solid #e3e6f0;
+  background-color: #f8f9fc;
 }
 
 .page-item {

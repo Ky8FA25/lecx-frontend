@@ -11,6 +11,18 @@
   .card-header {
     border-bottom: 1px solid #e3e6f0;
     background-color: #f8f9fc;
+    
+    &.bg-primary {
+      background-color: #4e73df !important;
+    }
+    
+    &.bg-warning {
+      background-color: #f6c23e !important;
+    }
+    
+    &.bg-danger {
+      background-color: #e74a3b !important;
+    }
   }
 }
 
@@ -29,4 +41,7 @@
   }
 }
 
+.text-primary {
+  color: #4e73df !important;
+}
 

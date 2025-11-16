@@ -129,14 +129,54 @@
                     </div>
                 </li>
 
-                <!-- Nav Item - Tests -->
+                <!-- Nav Item - Tests Collapse -->
                 <li class="nav-item">
                     <a class="nav-link" 
-                       [routerLink]="['/instructor/courses', courseId(), 'tests']" 
-                       routerLinkActive="active">
+                       [class.collapsed]="!showTestsDropdown()"
+                       href="#" 
+                       (click)="toggleTestsDropdown(); $event.preventDefault()"
+                       [class.active]="router.url.includes('/tests')"
+                       data-bs-toggle="collapse" 
+                       data-bs-target="#testsCollapse"
+                       [attr.aria-expanded]="showTestsDropdown()"
+                       aria-controls="testsCollapse">
                         <i class="fas fa-clipboard-list"></i>
                         <span>Tests</span>
+                        <i class="fas fa-chevron-down ms-auto" [class.rotate]="showTestsDropdown()"></i>
                     </a>
+                    <div class="collapse" 
+                         id="testsCollapse"
+                         [class.show]="showTestsDropdown()"
+                         data-bs-parent="#accordionSidebar">
+                        <div class="collapse-inner">
+                            <!-- View All Tests -->
+                            <div class="collapse-header">
+                                <a class="collapse-item" 
+                                   href="#"
+                                   (click)="navigateToTestsList(); $event.preventDefault()"
+                                   [class.active]="router.url === '/instructor/courses/' + courseId() + '/tests'">
+                                    <i class="fas fa-list me-2"></i>View All Tests
+                                </a>
+                            </div>
+                            
+                            <!-- Tests List -->
+                            @if (tests().length > 0) {
+                                @for (test of tests(); track test.testId) {
+                                    <a class="collapse-item" 
+                                       href="#"
+                                       (click)="navigateToTest(test.testId); $event.preventDefault()"
+                                       [class.active]="router.url.includes('/tests/' + test.testId)">
+                                        <i class="fas fa-file-alt me-2"></i>
+                                        {{ test.title }}
+                                    </a>
+                                }
+                            } @else {
+                                <div class="collapse-item text-muted text-center py-2">
+                                    <small>No tests yet</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </li>
 
                 <!-- Nav Item - Assignments Collapse -->

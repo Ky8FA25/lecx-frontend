@@ -1,0 +1,445 @@
+<div class="container-fluid">
+  <!-- Page Header -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="h3 mb-0 text-gray-800">
+        <i class="fas fa-clipboard-list me-2 text-primary"></i>Tests
+      </h1>
+      <p class="text-gray-600 mb-0">Manage and organize your course tests</p>
+    </div>
+    <button class="btn btn-primary shadow-sm" (click)="openCreateModal()">
+      <i class="fas fa-plus me-2"></i>Create Test
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else if (tests().length > 0) {
+    <!-- Tests List -->
+    <div class="row">
+      @for (test of tests(); track test.testId) {
+        <div class="col-lg-6 col-xl-4 mb-4">
+          <div class="card shadow h-100">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+              <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-clipboard-list me-2"></i>{{ test.title }}
+              </h6>
+              <span class="badge" [ngClass]="getStatusClass(test.status)">
+                {{ getStatusText(test.status) }}
+              </span>
+            </div>
+            <div class="card-body">
+              @if (test.description) {
+                <p class="text-gray-600 mb-3">{{ test.description }}</p>
+              }
+              <div class="row mb-2">
+                <div class="col-6">
+                  <small class="text-muted d-block">Start Time</small>
+                  <strong class="text-gray-800">{{ formatDate(test.startTime) }}</strong>
+                </div>
+                <div class="col-6">
+                  <small class="text-muted d-block">End Time</small>
+                  <strong class="text-gray-800">{{ formatDate(test.endTime) }}</strong>
+                </div>
+              </div>
+              <div class="row mb-3">
+                @if (test.testTime) {
+                  <div class="col-6">
+                    <small class="text-muted d-block">Duration</small>
+                    <strong class="text-gray-800">{{ test.testTime }}</strong>
+                  </div>
+                }
+                <div class="col-6">
+                  <small class="text-muted d-block">Questions</small>
+                  <strong class="text-primary">{{ test.numberOfQuestion }}</strong>
+                </div>
+                @if (test.passingScore) {
+                  <div class="col-12 mt-2">
+                    <small class="text-muted d-block">Passing Score</small>
+                    <strong class="text-gray-800">{{ test.passingScore }}</strong>
+                  </div>
+                }
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-sm btn-primary flex-fill" (click)="navigateToTest(test.testId)">
+                  <i class="fas fa-eye me-1"></i>View
+                </button>
+                <button class="btn btn-sm btn-warning" (click)="openEditModal(test)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="openDeleteModal(test)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="card shadow">
+      <div class="card-body text-center py-5">
+        <i class="fas fa-clipboard-list fa-4x text-gray-300 mb-3"></i>
+        <h5 class="text-gray-600 mb-2">No Tests Available</h5>
+        <p class="text-gray-500 mb-4">Get started by creating your first test</p>
+        <button class="btn btn-primary" (click)="openCreateModal()">
+          <i class="fas fa-plus me-2"></i>Create First Test
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Create Test Modal -->
+  @if (showCreateModal()) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">
+              <i class="fas fa-plus-circle me-2"></i>Create New Test
+            </h5>
+            <button type="button" class="btn-close btn-close-white" (click)="closeCreateModal()"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="testTitle" class="form-label">Title <span class="text-danger">*</span></label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="testTitle" 
+                  [(ngModel)]="newTestTitle"
+                  name="testTitle"
+                  placeholder="Enter test title"
+                  required>
+              </div>
+              <div class="mb-3">
+                <label for="testDescription" class="form-label">Description</label>
+                <textarea 
+                  class="form-control" 
+                  id="testDescription" 
+                  rows="3"
+                  [(ngModel)]="newTestDescription"
+                  name="testDescription"
+                  placeholder="Enter test description"></textarea>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="startTime" class="form-label">Start Time <span class="text-danger">*</span></label>
+                  <input 
+                    type="datetime-local" 
+                    class="form-control" 
+                    id="startTime" 
+                    [(ngModel)]="newTestStartTime"
+                    name="startTime"
+                    required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="endTime" class="form-label">End Time <span class="text-danger">*</span></label>
+                  <input 
+                    type="datetime-local" 
+                    class="form-control" 
+                    id="endTime" 
+                    [(ngModel)]="newTestEndTime"
+                    name="endTime"
+                    required>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="testHours" class="form-label">Duration - Hours</label>
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    id="testHours" 
+                    [(ngModel)]="newTestHours"
+                    name="testHours"
+                    min="0" 
+                    max="24" 
+                    step="1">
+                </div>
+                <div class="col-md-6">
+                  <label for="testMinutes" class="form-label">Duration - Minutes</label>
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    id="testMinutes" 
+                    [(ngModel)]="newTestMinutes"
+                    name="testMinutes"
+                    min="0" 
+                    max="60" 
+                    step="1">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="passingScore" class="form-label">Passing Score</label>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  id="passingScore" 
+                  [(ngModel)]="newTestPassingScore"
+                  name="passingScore"
+                  step="0.01" 
+                  min="0"
+                  placeholder="Default is 5">
+              </div>
+              <div class="mb-3">
+                <label for="allowRedo" class="form-label">Allow Redo <span class="text-danger">*</span></label>
+                <select 
+                  class="form-select" 
+                  id="allowRedo" 
+                  [(ngModel)]="newTestAllowRedo"
+                  name="allowRedo"
+                  required>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+              @if (newTestAllowRedo() === 'Yes') {
+                <div class="mb-3">
+                  <label for="maxAttempt" class="form-label">Number Of Max Attempt</label>
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    id="maxAttempt" 
+                    [(ngModel)]="newTestMaxAttempt"
+                    name="maxAttempt"
+                    min="1"
+                    placeholder="Default is 1">
+                </div>
+              }
+              <div class="mb-3">
+                <label for="numberOfQuestion" class="form-label">Number Of Questions</label>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  id="numberOfQuestion" 
+                  [(ngModel)]="newTestNumberOfQuestion"
+                  name="numberOfQuestion"
+                  min="0"
+                  step="1"
+                  placeholder="Enter number of questions">
+                <small class="form-text text-muted">This can be updated later when you add questions</small>
+              </div>
+              <div class="mb-3">
+                <label for="testStatus" class="form-label">Status <span class="text-danger">*</span></label>
+                <select 
+                  class="form-select" 
+                  id="testStatus" 
+                  [(ngModel)]="newTestStatus"
+                  name="testStatus"
+                  required>
+                  <option [value]="0">Active</option>
+                  <option [value]="1">Inactive</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeCreateModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="createTest()" [disabled]="creatingTest() || !newTestTitle().trim() || !newTestStartTime() || !newTestEndTime()">
+              @if (creatingTest()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              Create Test
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Edit Test Modal -->
+  @if (showEditModal()) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-warning text-white">
+            <h5 class="modal-title">
+              <i class="fas fa-edit me-2"></i>Edit Test
+            </h5>
+            <button type="button" class="btn-close btn-close-white" (click)="closeEditModal()"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="editTestTitle" class="form-label">Title <span class="text-danger">*</span></label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="editTestTitle" 
+                  [(ngModel)]="editTestTitle"
+                  name="editTestTitle"
+                  required>
+              </div>
+              <div class="mb-3">
+                <label for="editTestDescription" class="form-label">Description</label>
+                <textarea 
+                  class="form-control" 
+                  id="editTestDescription" 
+                  rows="3"
+                  [(ngModel)]="editTestDescription"
+                  name="editTestDescription"></textarea>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="editStartTime" class="form-label">Start Time <span class="text-danger">*</span></label>
+                  <input 
+                    type="datetime-local" 
+                    class="form-control" 
+                    id="editStartTime" 
+                    [(ngModel)]="editTestStartTime"
+                    name="editStartTime"
+                    required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="editEndTime" class="form-label">End Time <span class="text-danger">*</span></label>
+                  <input 
+                    type="datetime-local" 
+                    class="form-control" 
+                    id="editEndTime" 
+                    [(ngModel)]="editTestEndTime"
+                    name="editEndTime"
+                    required>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="editTestHours" class="form-label">Duration - Hours</label>
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    id="editTestHours" 
+                    [(ngModel)]="editTestHours"
+                    name="editTestHours"
+                    min="0" 
+                    max="24" 
+                    step="1">
+                </div>
+                <div class="col-md-6">
+                  <label for="editTestMinutes" class="form-label">Duration - Minutes</label>
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    id="editTestMinutes" 
+                    [(ngModel)]="editTestMinutes"
+                    name="editTestMinutes"
+                    min="0" 
+                    max="60" 
+                    step="1">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="editPassingScore" class="form-label">Passing Score</label>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  id="editPassingScore" 
+                  [(ngModel)]="editTestPassingScore"
+                  name="editPassingScore"
+                  step="0.01" 
+                  min="0">
+              </div>
+              <div class="mb-3">
+                <label for="editAllowRedo" class="form-label">Allow Redo <span class="text-danger">*</span></label>
+                <select 
+                  class="form-select" 
+                  id="editAllowRedo" 
+                  [(ngModel)]="editTestAllowRedo"
+                  name="editAllowRedo"
+                  required>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+              @if (editTestAllowRedo() === 'Yes') {
+                <div class="mb-3">
+                  <label for="editMaxAttempt" class="form-label">Number Of Max Attempt</label>
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    id="editMaxAttempt" 
+                    [(ngModel)]="editTestMaxAttempt"
+                    name="editMaxAttempt"
+                    min="1">
+                </div>
+              }
+              <div class="mb-3">
+                <label for="editNumberOfQuestion" class="form-label">Number Of Questions</label>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  id="editNumberOfQuestion" 
+                  [(ngModel)]="editTestNumberOfQuestion"
+                  name="editNumberOfQuestion"
+                  min="0"
+                  step="1"
+                  placeholder="Enter number of questions">
+                <small class="form-text text-muted">Update this when you add or remove questions</small>
+              </div>
+              <div class="mb-3">
+                <label for="editTestStatus" class="form-label">Status <span class="text-danger">*</span></label>
+                <select 
+                  class="form-select" 
+                  id="editTestStatus" 
+                  [(ngModel)]="editTestStatus"
+                  name="editTestStatus"
+                  required>
+                  <option [value]="0">Active</option>
+                  <option [value]="1">Inactive</option>
+                  <option [value]="2">Completed</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="updateTest()" [disabled]="editingTest() || !editTestTitle().trim() || !editTestStartTime() || !editTestEndTime()">
+              @if (editingTest()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              Update Test
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Delete Test Modal -->
+  @if (showDeleteModal()) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title">
+              <i class="fas fa-exclamation-triangle me-2"></i>Delete Test
+            </h5>
+            <button type="button" class="btn-close btn-close-white" (click)="closeDeleteModal()"></button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete the test <strong>"{{ deletingTestTitle() }}"</strong>?</p>
+            <p class="text-danger mb-0">
+              <i class="fas fa-exclamation-triangle me-1"></i>
+              This action cannot be undone. All questions and scores related to this test will also be deleted.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()" [disabled]="deletingTest()">Cancel</button>
+            <button type="button" class="btn btn-danger" (click)="deleteTest()" [disabled]="deletingTest()">
+              @if (deletingTest()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              Delete Test
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+

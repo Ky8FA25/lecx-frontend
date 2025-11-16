@@ -9,7 +9,8 @@ import { FormsModule } from '@angular/forms';
 import { filter, Subscription } from 'rxjs';
 import { InstructorLectureService } from '../../features/instructor/services/lecture.service';
 import { AssignmentService } from '../../features/instructor/services/assignment.service';
-import { LectureDTO, CreateLectureDto, AssignmentDTO } from '../../features/instructor/models/instructor.models';
+import { TestService } from '../../features/instructor/services/test.service';
+import { LectureDTO, CreateLectureDto, AssignmentDTO, TestDTO } from '../../features/instructor/models/instructor.models';
 
 @Component({
   selector: 'app-instructor-layout',
@@ -25,6 +26,7 @@ export class InstructorLayout implements OnInit, OnDestroy {
   private genericservice = inject(GenericServices);
   private lectureService = inject(InstructorLectureService);
   private assignmentService = inject(AssignmentService);
+  private testService = inject(TestService);
   isAuthenticated = signal(false);
   user = signal<userDto | any>(null);
   courseId = signal<number | null>(null);
@@ -46,6 +48,11 @@ export class InstructorLayout implements OnInit, OnDestroy {
   assignments = signal<AssignmentDTO[]>([]);
   showAssignmentsDropdown = signal<boolean>(false);
   loadingAssignments = signal<boolean>(false);
+
+  // Tests dropdown
+  tests = signal<TestDTO[]>([]);
+  showTestsDropdown = signal<boolean>(false);
+  loadingTests = signal<boolean>(false);
 
   constructor() { }
 
@@ -76,6 +83,17 @@ export class InstructorLayout implements OnInit, OnDestroy {
       setTimeout(() => {
         this.showAssignmentsDropdown.set(true);
         const collapseElement = document.getElementById('assignmentsCollapse');
+        if (collapseElement) {
+          collapseElement.classList.add('show');
+        }
+      }, 100);
+    }
+
+    // Auto-expand tests dropdown if on test page (initial load)
+    if (this.router.url.includes('/tests')) {
+      setTimeout(() => {
+        this.showTestsDropdown.set(true);
+        const collapseElement = document.getElementById('testsCollapse');
         if (collapseElement) {
           collapseElement.classList.add('show');
         }
@@ -114,6 +132,20 @@ export class InstructorLayout implements OnInit, OnDestroy {
           // Close if navigating away from assignment page
           this.showAssignmentsDropdown.set(false);
         }
+
+        // Auto-expand tests dropdown if on test page
+        if (this.router.url.includes('/tests')) {
+          setTimeout(() => {
+            this.showTestsDropdown.set(true);
+            const collapseElement = document.getElementById('testsCollapse');
+            if (collapseElement) {
+              collapseElement.classList.add('show');
+            }
+          }, 100);
+        } else {
+          // Close if navigating away from test page
+          this.showTestsDropdown.set(false);
+        }
       });
   }
 
@@ -151,6 +183,7 @@ export class InstructorLayout implements OnInit, OnDestroy {
       if (previousCourseId !== newCourseId && this.lastLoadedCourseId !== newCourseId) {
         this.loadLectures();
         this.loadAssignments();
+        this.loadTests();
       }
     }
   }
@@ -362,6 +395,72 @@ export class InstructorLayout implements OnInit, OnDestroy {
     if (courseId) {
       this.showAssignmentsDropdown.set(false);
       this.router.navigate(['/instructor/courses', courseId, 'assignments']);
+    }
+  }
+
+  loadTests(): void {
+    const courseId = this.courseId();
+    if (!courseId) return;
+    
+    this.loadingTests.set(true);
+    this.testService.getTestsByCourse(courseId).subscribe({
+      next: (response) => {
+        let tests: TestDTO[] = [];
+        
+        if (response.success && response.data) {
+          if (Array.isArray(response.data)) {
+            tests = response.data;
+          } else if (typeof response.data === 'object' && response.data !== null) {
+            if (Array.isArray((response.data as any).items)) {
+              tests = (response.data as any).items;
+            }
+          }
+        }
+        
+        this.tests.set(tests);
+        this.loadingTests.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading tests:', error);
+        this.tests.set([]);
+        this.loadingTests.set(false);
+      }
+    });
+  }
+
+  toggleTestsDropdown(): void {
+    const newState = !this.showTestsDropdown();
+    this.showTestsDropdown.set(newState);
+    
+    // Sync with Bootstrap collapse
+    const collapseElement = document.getElementById('testsCollapse');
+    if (collapseElement) {
+      if (newState) {
+        collapseElement.classList.add('show');
+        // Load tests if not already loaded or if courseId changed
+        const courseId = this.courseId();
+        if (courseId && (this.tests().length === 0 || this.lastLoadedCourseId !== courseId)) {
+          this.loadTests();
+        }
+      } else {
+        collapseElement.classList.remove('show');
+      }
+    }
+  }
+
+  navigateToTest(testId: number): void {
+    const courseId = this.courseId();
+    if (courseId) {
+      this.showTestsDropdown.set(false);
+      this.router.navigate(['/instructor/courses', courseId, 'tests', testId]);
+    }
+  }
+
+  navigateToTestsList(): void {
+    const courseId = this.courseId();
+    if (courseId) {
+      this.showTestsDropdown.set(false);
+      this.router.navigate(['/instructor/courses', courseId, 'tests']);
     }
   }
 
