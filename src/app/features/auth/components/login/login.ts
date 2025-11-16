@@ -1,5 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { SharedModule } from '../../../../core/shared/sharedModule';
 import { environment } from '../../../../../environments/environment.development';
@@ -12,79 +17,93 @@ import { ToastrService } from 'ngx-toastr';
   standalone: true,
   imports: [SharedModule, RouterLink],
   templateUrl: './login.html',
-  styleUrls: ['./login.scss'
-  ]
+  styleUrls: ['./login.scss'],
 })
 export class Login {
-
   private router = inject(Router);
   private genericService = inject(GenericServices);
 
-
   loginform: FormGroup = new FormGroup({
     EmailOrUserName: new FormControl('', [Validators.required]),
-    password: new FormControl('', [Validators.required, Validators.minLength(6)])
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(6),
+    ]),
   });
 
-
   onLoginSubmit() {
-    if (!this.loginform.valid) {
-      console.warn('❌ Form invalid!');
-      this.loginform.markAllAsTouched();
-      return;
-    }
-
-    const formData = this.loginform.value;
-
-    this.genericService.post<any>('api/auth/login', formData)
-      .subscribe({
-        next: (response: any) => {
-          console.log('✅ Login successful:', response);
-          this.genericService.showSuccess('Login successful');
-
-          localStorage.setItem('access_token', response.accessToken);
-          localStorage.setItem('refresh_token', response.refreshToken);
-          
-          // Lưu user data với roles
-          if (response.user) {
-            // Lấy role đầu tiên từ roles array (hoặc có thể có nhiều roles)
-            const userRole = response.user.roles && response.user.roles.length > 0 
-              ? response.user.roles[0] 
-              : null;
-            
-            const userData = {
-              id: response.user.id,
-              email: response.user.email,
-              firstName: response.user.firstName,
-              lastName: response.user.lastName,
-              avatarUrl: response.user.avatarUrl,
-              role: userRole // Lưu role string (cần convert sang number nếu cần)
-            };
-            
-            localStorage.setItem('user', JSON.stringify(userData));
-            console.log('✅ User data saved:', userData);
-          }
-
-          this.router.navigate(['/home/main']);
-
-
-        },
-        error: (err) => {
-          console.error('❌ Login failed:', err);
-          this.genericService.showError('Login failed! Please try again.');
-        }
-      });
+  if (!this.loginform.valid) {
+    console.warn('❌ Form invalid!');
+    this.loginform.markAllAsTouched();
+    return;
   }
+
+  const formData = this.loginform.value;
+
+  this.genericService.post<any>('api/auth/login', formData)
+    .subscribe({
+      next: (response: any) => {
+        console.log('✅ Login successful:', response);
+        this.genericService.showSuccess('Login successful');
+
+        const accessToken = response.accessToken;
+        const refreshToken = response.refreshToken;
+
+        let userRole = null;
+        let userData = null;
+
+        if (response.user) {
+          userRole = response.user.roles && response.user.roles.length > 0 
+            ? response.user.roles[0] 
+            : null;
+          
+          userData = {
+            id: response.user.id,
+            email: response.user.email,
+            firstName: response.user.firstName,
+            lastName: response.user.lastName,
+            avatarUrl: response.user.avatarUrl,
+            role: userRole
+          };
+        }
+
+        // Nếu là admin → redirect sang FE Admin Vite từ env
+        if (userRole === 'Admin') {
+          const viteAdminUrl = environment.adminFEUrl + '/login-direct'; // lấy từ env
+          // const redirectUrl = `${viteAdminUrl}?access=${encodeURIComponent(accessToken)}&refresh=${encodeURIComponent(refreshToken)}&user=${encodeURIComponent(JSON.stringify(userData))}`;
+          window.location.href = viteAdminUrl;
+          return;
+        }
+
+        // Nếu không phải admin → lưu localStorage và redirect bình thường
+        localStorage.setItem('access_token', accessToken);
+        localStorage.setItem('refresh_token', refreshToken);
+        if (userData) localStorage.setItem('user', JSON.stringify(userData));
+
+        this.router.navigate(['/home/main']);
+      },
+      error: (err) => {
+        console.error('❌ Login failed:', err);
+        this.genericService.showError('Login failed! Please try again.');
+      }
+    });
+}
 
   onGoogleLogin() {
     console.log('🚀 Opening Google login popup...');
     const backendUrl = `${environment.apiBEUrl}/api/auth/google-login`;
     const returnUrl = window.location.origin + '/home/main';
 
-    const googleLoginUrl = `${backendUrl}?returnUrl=${encodeURIComponent(returnUrl)}&opener=${encodeURIComponent(window.location.origin)}`;
+    const googleLoginUrl = `${backendUrl}?returnUrl=${encodeURIComponent(
+      returnUrl
+    )}&opener=${encodeURIComponent(window.location.origin)}`;
     console.log('🌐 Google login URL:', googleLoginUrl);
     // Mở popup Google login
-    const popup = window.open(googleLoginUrl, 'GoogleLogin', 'width=500,height=600');
+    const popup = window.open(
+      googleLoginUrl,
+      'GoogleLogin',
+      'width=500,height=600'
+    );
 
     // Nhận thông tin trả về từ callback
     window.addEventListener('message', (event) => {
@@ -110,5 +129,4 @@ export class Login {
       popup?.close();
     });
   }
-
 }
