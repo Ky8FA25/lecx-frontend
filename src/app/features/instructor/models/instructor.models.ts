@@ -263,6 +263,23 @@ export interface ScoreAssignmentDto {
   score: number;
 }
 
+export interface AssignmentScoreDTO {
+  assignmentScoreId: number;
+  studentId: string;
+  assignmentId: number;
+  score: number;
+}
+
+export interface CreateAssignmentScoreDto {
+  studentId: string;
+  assignmentId: number;
+  score: number;
+}
+
+export interface UpdateAssignmentScoreDto {
+  score: number;
+}
+
 // Comment Models
 export interface CommentDTO {
   commentId: number;

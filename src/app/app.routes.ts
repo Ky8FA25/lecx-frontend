@@ -29,6 +29,8 @@ import { AsignmentList } from './features/student/components/asignment-list/asig
 import { InstructorDashboard } from './features/instructor/components/dashboard/dashboard';
 import { InstructorMyCourses } from './features/instructor/components/my-courses/my-courses';
 import { InstructorLectureDetail } from './features/instructor/components/lectures/lecture-detail';
+import { AssignmentList } from './features/instructor/components/assignments/assignment-list';
+import { AssignmentDetail } from './features/instructor/components/assignments/assignment-detail';
 import { Role } from './core/enums/enums';
 import { InstructorLayout } from './layouts/instructor-layout/instructor-layout';
 
@@ -115,9 +117,17 @@ export const routes: Routes = [
     {
       path: 'courses/:courseId/lectures/:lectureId',
       component: InstructorLectureDetail
+    },
+    {
+      path: 'courses/:courseId/assignments',
+      component: AssignmentList
+    },
+    {
+      path: 'courses/:courseId/assignments/:assignmentId',
+      component: AssignmentDetail
     }
     // Instructor course-specific routes will be added here
-    // e.g., materials, tests, assignments, etc.
+    // e.g., materials, tests, etc.
   ]
 },
 {

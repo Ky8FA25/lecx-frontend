@@ -139,14 +139,54 @@
                     </a>
                 </li>
 
-                <!-- Nav Item - Assignments -->
+                <!-- Nav Item - Assignments Collapse -->
                 <li class="nav-item">
                     <a class="nav-link" 
-                       [routerLink]="['/instructor/courses', courseId(), 'assignments']" 
-                       routerLinkActive="active">
+                       [class.collapsed]="!showAssignmentsDropdown()"
+                       href="#" 
+                       (click)="toggleAssignmentsDropdown(); $event.preventDefault()"
+                       [class.active]="router.url.includes('/assignments')"
+                       data-bs-toggle="collapse" 
+                       data-bs-target="#assignmentsCollapse"
+                       [attr.aria-expanded]="showAssignmentsDropdown()"
+                       aria-controls="assignmentsCollapse">
                         <i class="fas fa-tasks"></i>
                         <span>Assignments</span>
+                        <i class="fas fa-chevron-down ms-auto" [class.rotate]="showAssignmentsDropdown()"></i>
                     </a>
+                    <div class="collapse" 
+                         id="assignmentsCollapse"
+                         [class.show]="showAssignmentsDropdown()"
+                         data-bs-parent="#accordionSidebar">
+                        <div class="collapse-inner">
+                            <!-- View All Assignments -->
+                            <div class="collapse-header">
+                                <a class="collapse-item" 
+                                   href="#"
+                                   (click)="navigateToAssignmentsList(); $event.preventDefault()"
+                                   [class.active]="router.url === '/instructor/courses/' + courseId() + '/assignments'">
+                                    <i class="fas fa-list me-2"></i>View All Assignments
+                                </a>
+                            </div>
+                            
+                            <!-- Assignments List -->
+                            @if (assignments().length > 0) {
+                                @for (assignment of assignments(); track assignment.assignmentId) {
+                                    <a class="collapse-item" 
+                                       href="#"
+                                       (click)="navigateToAssignment(assignment.assignmentId); $event.preventDefault()"
+                                       [class.active]="router.url.includes('/assignments/' + assignment.assignmentId)">
+                                        <i class="fas fa-file-alt me-2"></i>
+                                        {{ assignment.title }}
+                                    </a>
+                                }
+                            } @else {
+                                <div class="collapse-item text-muted text-center py-2">
+                                    <small>No assignments yet</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </li>
 
                 <!-- Nav Item - Live Stream -->

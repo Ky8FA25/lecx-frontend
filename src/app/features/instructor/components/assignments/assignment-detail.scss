@@ -1,0 +1,23 @@
+.table {
+  th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+  }
+}
+
+.page-item {
+  &.active .page-link {
+    background-color: #4e73df;
+    border-color: #4e73df;
+  }
+  
+  &.disabled .page-link {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.form-control-sm {
+  font-weight: 600;
+}
+

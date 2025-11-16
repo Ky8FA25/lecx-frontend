@@ -8,7 +8,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { filter, Subscription } from 'rxjs';
 import { InstructorLectureService } from '../../features/instructor/services/lecture.service';
-import { LectureDTO, CreateLectureDto } from '../../features/instructor/models/instructor.models';
+import { AssignmentService } from '../../features/instructor/services/assignment.service';
+import { LectureDTO, CreateLectureDto, AssignmentDTO } from '../../features/instructor/models/instructor.models';
 
 @Component({
   selector: 'app-instructor-layout',
@@ -23,6 +24,7 @@ export class InstructorLayout implements OnInit, OnDestroy {
   private toastr = inject(ToastrService);
   private genericservice = inject(GenericServices);
   private lectureService = inject(InstructorLectureService);
+  private assignmentService = inject(AssignmentService);
   isAuthenticated = signal(false);
   user = signal<userDto | any>(null);
   courseId = signal<number | null>(null);
@@ -39,6 +41,11 @@ export class InstructorLayout implements OnInit, OnDestroy {
   newLectureTitle = signal<string>('');
   newLectureDescription = signal<string>('');
   creatingLecture = signal<boolean>(false);
+
+  // Assignments dropdown
+  assignments = signal<AssignmentDTO[]>([]);
+  showAssignmentsDropdown = signal<boolean>(false);
+  loadingAssignments = signal<boolean>(false);
 
   constructor() { }
 
@@ -63,6 +70,17 @@ export class InstructorLayout implements OnInit, OnDestroy {
         }
       }, 100);
     }
+
+    // Auto-expand assignments dropdown if on assignment page (initial load)
+    if (this.router.url.includes('/assignments')) {
+      setTimeout(() => {
+        this.showAssignmentsDropdown.set(true);
+        const collapseElement = document.getElementById('assignmentsCollapse');
+        if (collapseElement) {
+          collapseElement.classList.add('show');
+        }
+      }, 100);
+    }
     
     // Subscribe để cập nhật courseId khi route thay đổi
     this.routerSubscription = this.router.events
@@ -81,6 +99,20 @@ export class InstructorLayout implements OnInit, OnDestroy {
         } else {
           // Close if navigating away from lecture page
           this.showLecturesDropdown.set(false);
+        }
+
+        // Auto-expand assignments dropdown if on assignment page
+        if (this.router.url.includes('/assignments')) {
+          setTimeout(() => {
+            this.showAssignmentsDropdown.set(true);
+            const collapseElement = document.getElementById('assignmentsCollapse');
+            if (collapseElement) {
+              collapseElement.classList.add('show');
+            }
+          }, 100);
+        } else {
+          // Close if navigating away from assignment page
+          this.showAssignmentsDropdown.set(false);
         }
       });
   }
@@ -118,6 +150,7 @@ export class InstructorLayout implements OnInit, OnDestroy {
       // Only reload if courseId changed and hasn't been loaded yet
       if (previousCourseId !== newCourseId && this.lastLoadedCourseId !== newCourseId) {
         this.loadLectures();
+        this.loadAssignments();
       }
     }
   }
@@ -263,6 +296,72 @@ export class InstructorLayout implements OnInit, OnDestroy {
     if (courseId) {
       this.showLecturesDropdown.set(false);
       this.router.navigate(['/instructor/courses', courseId, 'lectures', lectureId]);
+    }
+  }
+
+  loadAssignments(): void {
+    const courseId = this.courseId();
+    if (!courseId) return;
+    
+    this.loadingAssignments.set(true);
+    this.assignmentService.getAssignmentsByCourse(courseId).subscribe({
+      next: (response) => {
+        let assignments: AssignmentDTO[] = [];
+        
+        if (response.success && response.data) {
+          if (Array.isArray(response.data)) {
+            assignments = response.data;
+          } else if (typeof response.data === 'object' && response.data !== null) {
+            if (Array.isArray((response.data as any).items)) {
+              assignments = (response.data as any).items;
+            }
+          }
+        }
+        
+        this.assignments.set(assignments);
+        this.loadingAssignments.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading assignments:', error);
+        this.assignments.set([]);
+        this.loadingAssignments.set(false);
+      }
+    });
+  }
+
+  toggleAssignmentsDropdown(): void {
+    const newState = !this.showAssignmentsDropdown();
+    this.showAssignmentsDropdown.set(newState);
+    
+    // Sync with Bootstrap collapse
+    const collapseElement = document.getElementById('assignmentsCollapse');
+    if (collapseElement) {
+      if (newState) {
+        collapseElement.classList.add('show');
+        // Load assignments if not already loaded or if courseId changed
+        const courseId = this.courseId();
+        if (courseId && (this.assignments().length === 0 || this.lastLoadedCourseId !== courseId)) {
+          this.loadAssignments();
+        }
+      } else {
+        collapseElement.classList.remove('show');
+      }
+    }
+  }
+
+  navigateToAssignment(assignmentId: number): void {
+    const courseId = this.courseId();
+    if (courseId) {
+      this.showAssignmentsDropdown.set(false);
+      this.router.navigate(['/instructor/courses', courseId, 'assignments', assignmentId]);
+    }
+  }
+
+  navigateToAssignmentsList(): void {
+    const courseId = this.courseId();
+    if (courseId) {
+      this.showAssignmentsDropdown.set(false);
+      this.router.navigate(['/instructor/courses', courseId, 'assignments']);
     }
   }
 

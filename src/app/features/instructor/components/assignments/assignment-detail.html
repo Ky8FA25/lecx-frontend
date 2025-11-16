@@ -1,0 +1,144 @@
+<div class="container-fluid">
+  @if (loading() && !assignment()) {
+    <div class="text-center py-5">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else if (assignment()) {
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h1 class="h3 mb-0 text-gray-800">{{ assignment()!.title }}</h1>
+        <p class="text-muted mb-0">
+          Start: {{ formatDateShort(assignment()!.startDate) }} | 
+          Due: {{ formatDateShort(assignment()!.dueDate) }}
+        </p>
+      </div>
+      <button class="btn btn-secondary" (click)="navigateBack()">
+        <i class="fas fa-arrow-left me-2"></i>Back to Assignments
+      </button>
+    </div>
+
+    <!-- Submissions Table -->
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Submissions</h6>
+      </div>
+      <div class="card-body">
+        @if (submissions().length > 0) {
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Submit Date</th>
+                  <th>Submissions</th>
+                  <th>Score</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (submission of submissions(); track submission.submissionId) {
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        @if (submission.student.profileImagePath) {
+                          <img 
+                            [src]="submission.student.profileImagePath" 
+                            class="rounded-circle me-2" 
+                            width="50" 
+                            height="50" 
+                            alt="Avatar"
+                            style="object-fit: cover;">
+                        } @else {
+                          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" 
+                               style="width: 50px; height: 50px;">
+                            {{ (submission.student.firstName || 'U')[0] }}
+                          </div>
+                        }
+                        <div>
+                          <div class="font-weight-bold">
+                            {{ submission.student.firstName }} {{ submission.student.lastName }}
+                          </div>
+                          <small class="text-muted">{{ submission.student.email || submission.student.userName }}</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span [class]="isLate(submission) ? 'text-danger' : 'text-success'">
+                        {{ formatDate(submission.submissionDate) }}
+                      </span>
+                      @if (isLate(submission)) {
+                        <br><small class="text-danger">Late</small>
+                      }
+                    </td>
+                    <td>
+                      <a [href]="submission.submissionLink" target="_blank" class="text-decoration-none">
+                        <i class="fas fa-file-pdf text-danger me-1"></i>
+                        {{ truncateFileName(submission.fileName) }}
+                      </a>
+                    </td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <input 
+                          type="number" 
+                          class="form-control form-control-sm" 
+                          style="width: 80px;"
+                          min="0" 
+                          max="10" 
+                          step="0.1"
+                          [value]="getScore(submission.studentId)"
+                          (input)="updateScore(submission.studentId, +$any($event.target).value)"
+                          [class]="getScoreColor(getScore(submission.studentId))">
+                        <span class="ms-2">/ 10</span>
+                      </div>
+                    </td>
+                    <td>
+                      <button 
+                        class="btn btn-sm btn-primary" 
+                        (click)="saveScore(submission)"
+                        [disabled]="isSaving(submission.studentId)">
+                        @if (isSaving(submission.studentId)) {
+                          <span class="spinner-border spinner-border-sm me-1"></span>
+                        } @else {
+                          <i class="fas fa-save me-1"></i>
+                        }
+                        Save
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          @if (totalPages() > 1) {
+            <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" [class.disabled]="currentPage() === 1">
+                  <a class="page-link" href="#" (click)="goToPage(currentPage() - 1); $event.preventDefault()">Previous</a>
+                </li>
+                @for (page of getPageNumbers(); track page) {
+                  <li class="page-item" [class.active]="currentPage() === page">
+                    <a class="page-link" href="#" (click)="goToPage(page); $event.preventDefault()">{{ page }}</a>
+                  </li>
+                }
+                <li class="page-item" [class.disabled]="currentPage() === totalPages()">
+                  <a class="page-link" href="#" (click)="goToPage(currentPage() + 1); $event.preventDefault()">Next</a>
+                </li>
+              </ul>
+            </nav>
+          }
+        } @else {
+          <div class="text-center py-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No submissions yet</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
+
