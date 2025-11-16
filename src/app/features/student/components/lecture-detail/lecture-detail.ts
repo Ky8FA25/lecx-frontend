@@ -8,6 +8,7 @@ import { SharedModule } from '../../../../core/shared/sharedModule';
 import { LectureDTO, LectureFileDto } from '../../models/lecture';
 import { ApiResponse, PaginatedResponse } from '../../../../core/models/generic-response-class';
 import { CommentDto } from '../../models/comment';
+import { StudentService } from '../../services/student-service';
 
 @Component({
   selector: 'app-lecture-detail',
@@ -23,7 +24,8 @@ export class LectureDetail implements OnInit, OnDestroy {
   markingCompleted = signal<boolean>(false);
   isCompleted = signal<boolean>(false);
   showReportModal = signal<boolean>(false);
-  courseID: string | undefined;
+  studentCourseID: number | undefined;
+  courseID: number | undefined;
   comments = signal<CommentDto[]>([]);
   loadingComments = signal<boolean>(false);
   commentsPageIndex = signal<number>(1);
@@ -58,43 +60,115 @@ export class LectureDetail implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private genericService = inject(GenericServices);
+  private studentService = inject(StudentService);
   private subscriptions = new Subscription();
 
   ngOnInit(): void {
     // Load current user profile
     this.loadCurrentUser();
     
-    // Get courseID from parent route
+    // Lấy studentcourseID từ route params (từ course-layout)
     const parentRoute = this.route.parent;
-    this.courseID = parentRoute?.snapshot.paramMap.get('courseID') ?? undefined;
+    const studentCourseIDParam = parentRoute?.snapshot.paramMap.get('studentcourseID');
     
-    // Load all lectures first if we have courseID
-    if (this.courseID) {
-      this.loadAllLectures();
+    if (studentCourseIDParam) {
+      this.studentCourseID = Number(studentCourseIDParam);
+      
+      if (this.studentCourseID) {
+        // Bước 1: Load student course detail để lấy courseID
+        this.loadStudentCourseDetail(this.studentCourseID);
+      }
+    } else {
+      console.error('❌ StudentCourseID not found in route params');
+      this.genericService.showError('Course not found');
+      this.navigateBack();
     }
     
-    // Get lectureId from query params
-    this.route.queryParams.subscribe(params => {
+    // Subscribe query params để load lecture khi navigate
+    const queryParamsSub = this.route.queryParams.subscribe(params => {
       const lectureId = params['lectureId'];
       if (lectureId) {
-        this.loadLectureDetail(Number(lectureId));
-        this.checkCompletedStatus(Number(lectureId));
-        this.loadComments(Number(lectureId));
+        // Nếu đã có courseID, load ngay
+        if (this.courseID) {
+          // Reset state khi lectureId thay đổi
+          const currentLectureId = this.lecture()?.lectureId;
+          if (currentLectureId !== Number(lectureId)) {
+            // Đang chuyển sang lecture khác, reset state
+            this.isCompleted.set(false);
+            this.markingCompleted.set(false);
+          }
+          
+          this.loadLectureDetail(Number(lectureId));
+          // checkCompletedStatus sẽ được gọi trong loadLectureDetail
+          this.loadComments(Number(lectureId));
+        }
+        // Nếu chưa có courseID, sẽ được load trong loadStudentCourseDetail callback
       } else {
         this.genericService.showError('Lecture ID is required');
         this.navigateBack();
       }
     });
+
+    this.subscriptions.add(queryParamsSub);
+  }
+
+  /**
+   * Load student course detail để lấy courseID
+   * Sau đó dùng courseID để load lectures
+   */
+  loadStudentCourseDetail(studentCourseID: number): void {
+    const studentcourseSub = this.studentService
+      .getStudentCourseDetailById('api/student-courses', studentCourseID)
+      .subscribe({
+        next: (res: any) => {
+          if (res.success && res.data) {
+            // Lấy courseID từ API response
+            const courseId = res.data?.courseId || res.data?.course?.courseId;
+            
+            if (courseId) {
+              this.courseID = courseId;
+              console.log('✅ Course ID loaded:', this.courseID);
+              
+              // Bước 2: Load all lectures sau khi đã có courseID
+              this.loadAllLectures();
+              
+              // Load lecture detail nếu có lectureId trong query params
+              const lectureId = this.route.snapshot.queryParams['lectureId'];
+              if (lectureId) {
+                // Reset state khi load lecture
+                this.isCompleted.set(false);
+                this.markingCompleted.set(false);
+                
+                this.loadLectureDetail(Number(lectureId));
+                // checkCompletedStatus sẽ được gọi trong loadLectureDetail
+                this.loadComments(Number(lectureId));
+              }
+            } else {
+              console.warn('⚠️ CourseID not found in response');
+            }
+          }
+        },
+        error: (err) => {
+          console.error('❌ Failed to load student course detail:', err);
+          this.genericService.showError('Failed to load course information');
+          this.navigateBack();
+        }
+      });
+
+    this.subscriptions.add(studentcourseSub);
   }
 
   loadAllLectures(): void {
-    if (!this.courseID) return;
+    if (!this.courseID) {
+      console.warn('⚠️ CourseID not available, cannot load lectures');
+      return;
+    }
     
     const courseIdValue = Number(this.courseID);
     const filters = {
-      CourseId: courseIdValue,
-      PageIndex: 1,
-      PageSize: 100
+      courseId: courseIdValue,  // Sử dụng courseId (chữ thường) thay vì CourseId
+      pageIndex: 1,
+      pageSize: 100
     };
 
     const lecturesSub = this.genericService.getWithFilter('/api/lectures/course', filters).subscribe({
@@ -110,6 +184,7 @@ export class LectureDetail implements OnInit, OnDestroy {
           }
           
           this.allLectures.set(lectureList);
+          console.log('✅ Lectures loaded:', lectureList.length);
           
           // Find current lecture index after lectures are loaded
           const currentLecture = this.lecture();
@@ -117,12 +192,14 @@ export class LectureDetail implements OnInit, OnDestroy {
             const index = lectureList.findIndex(l => l.lectureId === currentLecture.lectureId);
             if (index !== -1) {
               this.currentLectureIndex.set(index);
+              console.log('✅ Current lecture index:', index);
             }
           }
         }
       },
       error: (err) => {
-        console.error('Error loading lectures:', err);
+        console.error('❌ Error loading lectures:', err);
+        this.allLectures.set([]);
       }
     });
 
@@ -130,6 +207,9 @@ export class LectureDetail implements OnInit, OnDestroy {
   }
 
   loadLectureDetail(lectureId: number): void {
+    // Reset completion state khi load lecture mới
+    this.isCompleted.set(false);
+    this.markingCompleted.set(false);
     this.loading.set(true);
     
     const lectureSub = this.genericService.get<ApiResponse<LectureDTO>>(`api/lectures/${lectureId}`).subscribe({
@@ -137,12 +217,16 @@ export class LectureDetail implements OnInit, OnDestroy {
         if (res.success && res.data) {
           this.lecture.set(res.data);
           
+          // Check completion status sau khi lecture đã được load
+          this.checkCompletedStatus(lectureId);
+          
           // Update current lecture index after a short delay to ensure allLectures is loaded
           setTimeout(() => {
             const allLectures = this.allLectures();
             const index = allLectures.findIndex(l => l.lectureId === res.data?.lectureId);
             if (index !== -1) {
               this.currentLectureIndex.set(index);
+              console.log('✅ Current lecture index updated:', index);
             } else if (allLectures.length === 0 && this.courseID) {
               // Reload lectures if not loaded yet
               this.loadAllLectures();
@@ -168,7 +252,10 @@ export class LectureDetail implements OnInit, OnDestroy {
 
   checkCompletedStatus(lectureId: number): void {
     // Load completed lectures for this course
-    if (!this.courseID) return;
+    if (!this.courseID) {
+      console.warn('⚠️ CourseID not available, cannot check completion status');
+      return;
+    }
     
     const courseIdValue = Number(this.courseID);
     const completedSub = this.genericService.getWithFilter('/api/lectures/course/completed', {
@@ -271,7 +358,11 @@ export class LectureDetail implements OnInit, OnDestroy {
     
     if (currentIndex > 0 && allLectures.length > 0) {
       const previousLecture = allLectures[currentIndex - 1];
-      this.navigateToLecture(previousLecture.lectureId!);
+      if (previousLecture?.lectureId) {
+        this.navigateToLecture(previousLecture.lectureId);
+      }
+    } else {
+      console.warn('⚠️ No previous lecture available');
     }
   }
 
@@ -279,21 +370,40 @@ export class LectureDetail implements OnInit, OnDestroy {
     const allLectures = this.allLectures();
     const currentIndex = this.currentLectureIndex();
     
-    if (currentIndex < allLectures.length - 1 && allLectures.length > 0) {
+    if (currentIndex >= 0 && currentIndex < allLectures.length - 1) {
       const nextLecture = allLectures[currentIndex + 1];
-      this.navigateToLecture(nextLecture.lectureId!);
+      if (nextLecture?.lectureId) {
+        this.navigateToLecture(nextLecture.lectureId);
+      }
+    } else {
+      console.warn('⚠️ No next lecture available');
     }
   }
 
   navigateToLecture(lectureId: number): void {
-    if (!this.courseID) return;
-    this.router.navigate(['/student/course', this.courseID, 'lecture-detail'], { 
+    if (!lectureId || !this.studentCourseID) {
+      console.error('❌ Cannot navigate: lectureId or studentCourseID is missing');
+      return;
+    }
+    
+    // Reset completion state trước khi navigate sang lecture mới
+    const currentLectureId = this.lecture()?.lectureId;
+    if (currentLectureId !== lectureId) {
+      this.isCompleted.set(false);
+      this.markingCompleted.set(false);
+      // Clear lecture data để tránh hiển thị lecture cũ
+      this.lecture.set(null);
+    }
+    
+    // Navigate với studentCourseID từ route params
+    this.router.navigate(['/student/course', this.studentCourseID, 'lecture-detail'], { 
       queryParams: { lectureId } 
     });
   }
 
   hasPreviousLecture(): boolean {
-    return this.currentLectureIndex() > 0;
+    const currentIndex = this.currentLectureIndex();
+    return currentIndex > 0;
   }
 
   hasNextLecture(): boolean {
@@ -311,8 +421,9 @@ export class LectureDetail implements OnInit, OnDestroy {
   }
 
   navigateBack(): void {
-    if (this.courseID) {
-      this.router.navigate(['/student/course', this.courseID]);
+    if (this.studentCourseID) {
+      // Navigate về course-info với studentCourseID
+      this.router.navigate(['/student/course', this.studentCourseID]);
     } else {
       this.router.navigate(['/student/my-courses']);
     }

@@ -34,6 +34,7 @@ export class DoTest implements OnInit, OnDestroy {
   submitting = signal<boolean>(false);
   timeLeft = signal<number>(0); // seconds
   showConfirmModal = signal<boolean>(false);
+  studentCourseID: number | null = null; // Lưu studentcourseID để navigate về test-list
   
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -44,8 +45,16 @@ export class DoTest implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       const testIdParam = params['testId'];
+      const studentCourseIDParam = params['studentcourseID'];
+      
       if (testIdParam) {
         this.testId = Number(testIdParam);
+        
+        // Lưu studentcourseID để navigate về test-list sau khi submit
+        if (studentCourseIDParam) {
+          this.studentCourseID = Number(studentCourseIDParam);
+        }
+        
         this.loadTestInfo();
         this.loadQuestions();
       } else {
@@ -200,16 +209,12 @@ export class DoTest implements OnInit, OnDestroy {
   }
 
   openConfirmModal(): void {
-    const answeredCount = Array.from(this.answers().values()).filter(a => a !== '').length;
-    const totalQuestions = this.questions().length;
-    
-    if (answeredCount < totalQuestions) {
-      if (confirm(`You have answered ${answeredCount} out of ${totalQuestions} questions. Do you want to submit anyway?`)) {
-        this.showConfirmModal.set(true);
-      }
-    } else {
-      this.showConfirmModal.set(true);
-    }
+    // Chỉ mở custom modal, không dùng browser confirm dialog
+    this.showConfirmModal.set(true);
+  }
+
+  getAnsweredCount(): number {
+    return Array.from(this.answers().values()).filter(a => a !== '').length;
   }
 
   closeConfirmModal(): void {
@@ -240,15 +245,24 @@ export class DoTest implements OnInit, OnDestroy {
 
     const submitSub = this.genericService.post<ApiResponse<any>>('api/tests/scores', submitRequest).subscribe({
       next: (res: ApiResponse<any>) => {
+        console.log('✅ Test submit response:', res);
         if (res.success) {
           this.genericService.showSuccess('Test submitted successfully!');
-          // Navigate to test list
-          const courseId = this.test()?.courseId;
-          if (courseId) {
-            this.router.navigate(['/student/course', courseId, 'test-list']);
-          } else {
-            this.router.navigate(['/student/my-courses']);
+          // Navigate to test result
+          const queryParams: any = { testId: this.testId };
+          if (this.studentCourseID) {
+            queryParams.studentcourseID = this.studentCourseID;
           }
+          console.log('🚀 Navigating to test-result with params:', queryParams);
+          this.router.navigate(['/student/test-result'], { queryParams }).then(
+            (success) => {
+              if (success) {
+                console.log('✅ Navigation successful');
+              } else {
+                console.error('❌ Navigation failed');
+              }
+            }
+          );
         } else {
           this.genericService.showError(res.message || 'Failed to submit test');
           this.submitting.set(false);
@@ -265,6 +279,8 @@ export class DoTest implements OnInit, OnDestroy {
   }
 
   confirmSubmit(): void {
+    // Đóng modal và submit
+    this.closeConfirmModal();
     this.submitTest();
   }
 

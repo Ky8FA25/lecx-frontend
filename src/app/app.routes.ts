@@ -16,6 +16,7 @@ import { MaterialList } from './features/student/components/material-list/materi
 import { GradeList } from './features/student/components/grade-list/grade-list';
 import { InstructorRegistration } from './features/student/components/instructor-registration/instructor-registration';
 import { DoTest } from './features/student/components/do-test/do-test';
+import { TestResult } from './features/student/components/test-result/test-result';
 import { UserProfile } from './features/user/components/user-profile/user-profile';
 import { Mainlayout } from './layouts/main-layout/main-layout';
 import { CourseLayout } from './layouts/course-layout/course-layout';
@@ -171,7 +172,7 @@ export const routes: Routes = [
   ]
 },
 {
-  path: 'student/course/:courseID',
+  path: 'student/course/:studentcourseID',
   component: CourseLayout,
   children: [
     {
@@ -226,10 +227,15 @@ export const routes: Routes = [
 },
 {
   path: 'student',
+  canActivate: [authGuard],
   children:[
     {
       path: 'test',
       component:DoTest
+    },
+    {
+      path: 'test-result',
+      component: TestResult
     }
   ]
 },

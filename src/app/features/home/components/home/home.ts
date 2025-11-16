@@ -2,19 +2,23 @@ import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { GenericServices } from '../../../../core/services/GenericServices';
 import { CategoryDto } from '../../models/categoryDto';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CourseDto } from '../../../courses/models/course-dto.model';
 import { Subscription } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
 export class Home implements OnInit, OnDestroy{
   private genericService = inject(GenericServices);
+  private router = inject(Router);
+  
+  searchKeyword: string = '';
 
   category = signal<CategoryDto[] | null>(null);
   courses = signal<CourseDto[]>([]);
@@ -62,6 +66,15 @@ loadCourses(categoryId: number) {
 
     this.subscriptions.add(getAllCourseById);;
   }
+  onSearch(event: Event): void {
+    event.preventDefault();
+    if (this.searchKeyword.trim()) {
+      this.router.navigate(['/courses/all'], {
+        queryParams: { keyword: this.searchKeyword.trim() }
+      });
+    }
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }

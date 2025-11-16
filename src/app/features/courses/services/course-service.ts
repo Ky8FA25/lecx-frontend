@@ -11,13 +11,20 @@ export class CourseService {
   constructor(private genericService: GenericServices) { }
 
   payloads: any;
+
   /**
-   * Write code on Method
-   *
-   * @return response()
+   * Get filtered courses with pagination (single API for all cases)
+   * All params are optional - works with or without filters
    */
-  getAll(pageIndex: number, pageSize: number): Observable<any> {
-    return this.genericService.get(`api/courses/all?pageIndex=${pageIndex}&pageSize=${pageSize}`)
+  getFiltered(filters: {
+    keyword?: string;
+    categoryId?: number;
+    level?: number;
+    status?: number;
+    pageIndex?: number;
+    pageSize?: number;
+  }): Observable<any> {
+    return this.genericService.getWithFilter('/api/courses/filter', filters)
       .pipe(catchError(this.errorHandler));
   }
 

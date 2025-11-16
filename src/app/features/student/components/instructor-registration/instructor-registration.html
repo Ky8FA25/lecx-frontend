@@ -5,8 +5,7 @@
             <div class="col-lg-5 col-12">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Homepage</a></li>
-
+                        <li class="breadcrumb-item"><a routerLink="/">Homepage</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Teaching</li>
                     </ol>
                 </nav>
@@ -31,7 +30,7 @@
                     <li>Join the education community</li>
                 </ul>
                     <div>
-                    <button type="button" class="btn custom-btn mt-3" data-bs-toggle="modal" data-bs-target="#joinNowModal" style="background-color: #80d0c7; border-radius: 50px;">JOIN NOW!</button>
+                    <button type="button" class="btn custom-btn mt-3" (click)="openModal()" style="background-color: #80d0c7; border-radius: 50px;">JOIN NOW!</button>
                     </div>
             </div>
 
@@ -44,30 +43,87 @@
     </div>
 </section>
 
-<div class="modal fade" id="joinNowModal" tabindex="-1" aria-labelledby="joinNowModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="joinNowModalLabel">Join as Instructor</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-action="InstructorRegistration" asp-controller="Student" asp-area="Student" method="post" enctype="multipart/form-data">
-            <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="fileUpload" class="form-label">Upload your CV (PDF)</label>
-                        <input type="file" class="form-control" id="fileUpload" name="Filepdf" accept=".pdf" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="message" class="form-label">Message</label>
-                        <textarea class="form-control" id="message" name="Description" placeholder="Tell us about yourself" minlength="20" rows="3" required></textarea>
-                    </div>
-              
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn custom-btn active" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn custom-btn">Submit</button>
-            </div>
-              </form>
+<!-- Modal -->
+@if (showModal()) {
+  <div class="modal" style="display: block;" (click)="closeModal()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="joinNowModalLabel">Join as Instructor</h5>
+          <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
         </div>
+        <form (ngSubmit)="onSubmit(); $event.preventDefault()">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="fileUpload" class="form-label">Upload your CV (PDF)</label>
+              <input 
+                type="file" 
+                class="form-control" 
+                id="fileUpload" 
+                accept=".pdf" 
+                (change)="onFileSelected($event)"
+                [disabled]="submitting() || uploading()"
+                required>
+              @if (selectedFile) {
+                <div class="mt-2 d-flex align-items-center gap-2">
+                  <i class="fas fa-file-pdf text-danger"></i>
+                  <span>{{ selectedFile.name }}</span>
+                  <button 
+                    type="button" 
+                    class="btn btn-sm btn-link text-danger" 
+                    (click)="removeSelectedFile()"
+                    [disabled]="submitting() || uploading()">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              }
+              @if (uploading()) {
+                <div class="mt-2">
+                  <div class="spinner-border spinner-border-sm text-primary" role="status">
+                    <span class="visually-hidden">Uploading...</span>
+                  </div>
+                  <span class="ms-2">Uploading file...</span>
+                </div>
+              }
+            </div>
+            <div class="mb-3">
+              <label for="message" class="form-label">Message</label>
+              <textarea 
+                class="form-control" 
+                id="message" 
+                [(ngModel)]="description"
+                name="description"
+                placeholder="Tell us about yourself" 
+                minlength="20" 
+                rows="3" 
+                [disabled]="submitting() || uploading()"
+                required></textarea>
+              <small class="form-text text-muted">Minimum 20 characters</small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button 
+              type="button" 
+              class="btn custom-btn active" 
+              (click)="closeModal()"
+              [disabled]="submitting() || uploading()">
+              Close
+            </button>
+            <button 
+              type="submit" 
+              class="btn custom-btn"
+              [disabled]="submitting() || uploading() || !selectedFile || !description || description.trim().length < 20">
+              @if (submitting()) {
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Submitting...
+              } @else {
+                Submit
+              }
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-</div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+}
