@@ -113,7 +113,7 @@ export interface CourseMaterialDTO {
   materialId: number;
   courseId: number;
   fileType: number;
-  fileName: string;
+  fIleName: string;
   fileExtension: string;
   materialsLink: string;
   uploadDate: Date;
@@ -122,9 +122,18 @@ export interface CourseMaterialDTO {
 export interface CreateCourseMaterialDto {
   courseId: number;
   fileType: number;
-  fileName: string;
+  fIleName: string;
   fileExtension: string;
   materialsLink: string;
+}
+
+export interface UpdateCourseMaterialDto {
+  materialId: number;
+  courseId: number | null;
+  fileType: number | null;
+  fIleName: string | null;
+  fileExtension: string | null;
+  materialsLink: string | null;
 }
 
 // Test Models

@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { GenericServices } from '../../../core/services/GenericServices';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../../../core/models/generic-response-class';
-import { CourseMaterialDTO, CreateCourseMaterialDto } from '../models/instructor.models';
+import { CourseMaterialDTO, CreateCourseMaterialDto, UpdateCourseMaterialDto } from '../models/instructor.models';
 
 @Injectable({
   providedIn: 'root'
@@ -23,8 +23,9 @@ export class MaterialService {
     return this.genericService.post<ApiResponse<CourseMaterialDTO>>('api/course-materials', material);
   }
 
-  updateMaterial(material: Partial<CreateCourseMaterialDto> & { materialId: number }): Observable<ApiResponse<CourseMaterialDTO>> {
-    return this.genericService.post<ApiResponse<CourseMaterialDTO>>('api/course-materials', material);
+  updateMaterial(material: UpdateCourseMaterialDto): Observable<ApiResponse<CourseMaterialDTO>> {
+    // API uses PATCH method according to readme_be.md
+    return this.genericService.patch<ApiResponse<CourseMaterialDTO>>('api/course-materials', material);
   }
 
   deleteMaterial(materialId: number): Observable<ApiResponse<any>> {
