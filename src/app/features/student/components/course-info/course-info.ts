@@ -31,103 +31,153 @@ export class CourseInfo implements OnInit, OnDestroy{
   private genericService = inject(GenericServices);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  courseID: string | undefined;
+  
+  studentCourseID: number | undefined;
+  courseID: number | undefined;
 
   ngOnInit(): void {
-    this.courseID = this.route.snapshot.paramMap.get('courseID') ?? undefined;
-    const courseId = Number(this.courseID);
+    // Lấy studentCourseID từ route params (từ my-course.ts)
+    const studentCourseIDParam = this.route.snapshot.paramMap.get('studentcourseID');
     
-    if (courseId) {
-      console.log('Loading course detail for ID:', courseId);
-      this.loadStudentCourseDetail(courseId);
-      this.loadLectures(courseId);
+    if (studentCourseIDParam) {
+      this.studentCourseID = Number(studentCourseIDParam);
+      
+      if (this.studentCourseID) {
+        console.log('Loading student course detail for ID:', this.studentCourseID);
+        // Bước 1: Load student course detail để lấy courseID
+        this.loadStudentCourseDetail(this.studentCourseID);
+      }
+    } else {
+      console.error('❌ StudentCourseID not found in route params');
     }
   }
   
-  loadStudentCourseDetail(courseId: number) {
-    const studentcourse = this.studentservice.getStudentCourseDetailById('api/student-courses',courseId).subscribe({
-      next: (res : any) => {
-        this.courses.set(res.data);
-        const categoryId = res.data?.course?.categoryId;
-        if (categoryId) {
-          this.loadCategoryDetail(categoryId);
+  /**
+   * Bước 1: Load student course detail từ API
+   * Sau khi có response, sẽ lấy courseID và gọi loadLectures
+   */
+  loadStudentCourseDetail(studentCourseID: number): void {
+    this.loading.set(true);
+    
+    const studentcourseSub = this.studentservice
+      .getStudentCourseDetailById('api/student-courses', studentCourseID)
+      .subscribe({
+        next: (res: any) => {
+          if (res.success && res.data) {
+            this.courses.set(res.data);
+
+            // Lấy courseID từ API response (có thể từ data.courseId hoặc data.course.courseId)
+            this.courseID = res.data?.courseId || res.data?.course?.courseId;
+            
+            console.log('✅ Student course loaded. Course ID:', this.courseID);
+
+            // Bước 2: Load lectures sau khi đã có courseID từ API response
+            if (this.courseID) {
+              this.loadLectures(this.courseID);
+            } else {
+              console.warn('⚠️ CourseID not found in response');
+            }
+
+            // Load category nếu có
+            const categoryId = res.data?.course?.categoryId;
+            if (categoryId) {
+              this.loadCategoryDetail(categoryId);
+            }
+          } else {
+            console.error('❌ Invalid response format:', res);
+          }
+        },
+        error: (err) => {
+          console.error('❌ Failed to load student course detail:', err);
+          this.loading.set(false);
+        },
+        complete: () => {
+          this.loading.set(false);
         }
-      },
-      error: (err) => {
-        console.error('❌ Failed to load course detail:', err);
-      }
-    });
-    this.subscriptions.add(studentcourse);
+      });
+
+    this.subscriptions.add(studentcourseSub);
   }
+
   
-  loadCategoryDetail(id: number) {
-    const categories = this.studentservice.getCategoryDetailById('api/categories',id).subscribe({
-      next: (res : any) => {
+  loadCategoryDetail(id: number): void {
+    const categoriesSub = this.studentservice.getCategoryDetailById('api/categories', id).subscribe({
+      next: (res: any) => {
         this.category.set(res);
       },
       error: (err) => {
-        console.error('❌ Failed to load course detail:', err);
+        console.error('❌ Failed to load category detail:', err);
       }
     });
-    this.subscriptions.add(categories);
+    this.subscriptions.add(categoriesSub);
   }
 
+  /**
+   * Bước 2: Load lectures sử dụng courseID đã lấy từ API student-course
+   * @param courseId - Course ID lấy từ API loadStudentCourseDetail
+   */
   loadLectures(courseId: number): void {
-    this.loadingLectures.set(true);
-    
-    const filters = {
-      CourseId: courseId,
-      PageIndex: 1,
-      PageSize: 100
-    };
+  this.loadingLectures.set(true);
 
-    // Load lectures and completed lectures in parallel
-    const lecturesSub = this.genericService.getWithFilter('/api/lectures/course', filters);
-    const completedSub = this.genericService.getWithFilter('/api/lectures/course/completed', { courseId });
+  const filters = {
+    courseId: courseId,   // 🔥 quan trọng: phải là courseId (chứ không phải CourseId)
+    pageIndex: 1,
+    pageSize: 100
+  };
 
-    const combinedSub = forkJoin({
-      lectures: lecturesSub,
-      completed: completedSub
-    }).subscribe({
-      next: (results) => {
-        // Process lectures
-        if (results.lectures.success) {
-          let lectureList: LectureDTO[] = [];
-          const lectureData = results.lectures.data as any;
-          
-          if ('items' in lectureData) {
-            const paginatedData = lectureData as PaginatedResponse<LectureDTO>;
-            lectureList = paginatedData.items || [];
-          } else if (Array.isArray(lectureData)) {
-            lectureList = lectureData;
-          }
-          
-          this.lectures.set(lectureList);
-        } else {
-          this.lectures.set([]);
+  const lecturesRequest = this.genericService.getWithFilter('/api/lectures/course', filters);
+  const completedRequest = this.genericService.getWithFilter('/api/lectures/course/completed', { courseId });
+
+  const combinedSub = forkJoin({
+    lectures: lecturesRequest,
+    completed: completedRequest
+  }).subscribe({
+    next: (results) => {
+
+      /** -------------------------
+       *  Lectures
+       * ------------------------- */
+      if (results.lectures.success) {
+        let lectureList: LectureDTO[] = [];
+        const data = results.lectures.data;
+
+        if (data?.items) {
+          // Nếu backend trả về dạng Pagination
+          lectureList = data.items;
+        } else if (Array.isArray(data)) {
+          lectureList = data;
         }
 
-        // Process completed lectures
-        if (results.completed.success && results.completed.data) {
-          const completedData = results.completed.data as any[];
-          const completedIds = completedData.map((c: any) => c.lectureId);
-          this.completedLectures.set(completedIds);
-        } else {
-          this.completedLectures.set([]);
-        }
-      },
-      error: (err) => {
-        console.error('Error loading lectures:', err);
+        this.lectures.set(lectureList);
+      } else {
         this.lectures.set([]);
-        this.completedLectures.set([]);
-      },
-      complete: () => {
-        this.loadingLectures.set(false);
       }
-    });
 
-    this.subscriptions.add(combinedSub);
-  }
+      /** -------------------------
+       *  Completed Lectures
+       * ------------------------- */
+      if (results.completed.success && Array.isArray(results.completed.data)) {
+        const completedIds = results.completed.data.map((c: any) => c.lectureId);
+        this.completedLectures.set(completedIds);
+      } else {
+        this.completedLectures.set([]);
+      }
+    },
+
+    error: (err) => {
+      console.error('❌ Error loading lectures:', err);
+      this.lectures.set([]);
+      this.completedLectures.set([]);
+    },
+
+    complete: () => {
+      this.loadingLectures.set(false);
+    }
+  });
+
+  this.subscriptions.add(combinedSub);
+}
+
 
   isLectureCompleted(lectureId: number | undefined): boolean {
     if (!lectureId) return false;

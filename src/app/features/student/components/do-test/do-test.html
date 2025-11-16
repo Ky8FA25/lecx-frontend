@@ -159,26 +159,42 @@
 
   <!-- Confirmation Modal -->
   @if (showConfirmModal()) {
+    @let answeredCount = getAnsweredCount();
+    @let totalQuestions = questions().length;
+    
     <div class="modal" style="display: block;" (click)="closeConfirmModal()">
       <div class="modal-content" (click)="$event.stopPropagation()">
-        <p>Submit the test?</p>
-        <button 
-          id="confirmSubmit" 
-          class="btn btn-danger" 
-          (click)="confirmSubmit()"
-          [disabled]="submitting()">
-          @if (submitting()) {
-            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-          }
-          Yes
-        </button>
-        <button 
-          id="cancelSubmit" 
-          class="btn btn-secondary" 
-          (click)="closeConfirmModal()"
-          [disabled]="submitting()">
-          No
-        </button>
+        <h5 class="mb-3">Confirm Submission</h5>
+        
+        @if (answeredCount < totalQuestions) {
+          <p class="mb-3">
+            You have answered <strong>{{ answeredCount }} out of {{ totalQuestions }}</strong> questions.
+            <br>
+            Do you want to submit anyway?
+          </p>
+        } @else {
+          <p class="mb-3">Are you sure you want to submit the test?</p>
+        }
+        
+        <div class="d-flex gap-2 justify-content-end">
+          <button 
+            id="cancelSubmit" 
+            class="btn btn-secondary" 
+            (click)="closeConfirmModal()"
+            [disabled]="submitting()">
+            Cancel
+          </button>
+          <button 
+            id="confirmSubmit" 
+            class="btn btn-danger" 
+            (click)="confirmSubmit()"
+            [disabled]="submitting()">
+            @if (submitting()) {
+              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            }
+            Yes, Submit
+          </button>
+        </div>
       </div>
     </div>
   }

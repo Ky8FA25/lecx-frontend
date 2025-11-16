@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-instructor-dashboard',
   standalone: true,
-  imports: [SharedModule, RouterLink, CommonModule],
+  imports: [SharedModule, CommonModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })

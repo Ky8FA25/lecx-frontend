@@ -50,7 +50,7 @@
 
             <!-- Nav Item - Course Info -->
             <li title="Course Info" class="nav-item">
-                <a class="nav-link" [routerLink]="['/student/course', courseID]">
+                <a class="nav-link" [routerLink]="['/student/course', studentCourseID]">
                     <i class="bi bi-info-circle"></i>
                     <a>Course Info</a>
                 </a>
@@ -59,7 +59,7 @@
 
             <!-- Nav Item - Material -->
             <li title="Materials" class="nav-item">
-                <a class="nav-link" [routerLink]="['/student/course', courseID, 'material-list']">
+                <a class="nav-link" [routerLink]="['/student/course', studentCourseID, 'material-list']">
                     <i class="fas fa-file-alt"></i>
                     <a> Materials</a>
                 </a>
@@ -115,7 +115,7 @@
 
 
             <li title="Grades" class="nav-item">
-                <a class="nav-link" [routerLink]="['/student/course', courseID, 'grade-list']">
+                <a class="nav-link" [routerLink]="['/student/course', studentCourseID, 'grade-list']">
                     <i class="fas fa-clipboard"></i>
                     <a>Grades</a>
                 </a>
@@ -123,14 +123,14 @@
 
 
             <li title="Tests" class="nav-item">
-                <a class="nav-link" [routerLink]="['/student/course', courseID, 'test-list']">
+                <a class="nav-link" [routerLink]="['/student/course', studentCourseID, 'test-list']">
                     <i class="fas fa-clipboard-list"></i>
                     <a>Tests</a>
                 </a>
             </li>
 
             <li title="Assignments" class="nav-item">
-                <a class="nav-link" [routerLink]="['/student/course', courseID, 'assignments']">
+                <a class="nav-link" [routerLink]="['/student/course', studentCourseID, 'assignments']">
                     <i class="fas fa-tasks"></i>
                     Assignments
                 </a>

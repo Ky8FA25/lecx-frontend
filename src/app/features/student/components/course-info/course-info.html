@@ -18,11 +18,6 @@
         Welcome to {{ courses()?.course?.title}}
         <button class="btn btn-light text-black ml-2 px-2 py-0 fs-6 border border-dark fw-bold">{{
             courses()?.certificateStatus === 0 ? 'Pending' : 'Completed'}}</button>
-        <div *ngIf="courses()?.certificateStatus === 1">
-            <a href="@certificate.CertificateLink" target="_blank" class="fs-5 ml-1 d-flex align-items-center mt-1">View
-                Certificate <i class="bi bi-caret-right-fill"></i> </a>
-        </div>
-
 
     </h1>
     <div class="row">

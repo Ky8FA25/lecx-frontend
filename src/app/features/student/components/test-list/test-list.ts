@@ -5,6 +5,7 @@ import { GenericServices } from '../../../../core/services/GenericServices';
 import { SharedModule } from '../../../../core/shared/sharedModule';
 import { TestDTO, TestScoreDTO } from '../../../instructor/models/instructor.models';
 import { ApiResponse, PaginatedResponse } from '../../../../core/models/generic-response-class';
+import { StudentService } from '../../services/student-service';
 
 interface TestWithScore extends TestDTO {
   score?: TestScoreDTO;
@@ -26,9 +27,11 @@ export class TestList implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private genericService = inject(GenericServices);
+  private studentService = inject(StudentService);
   private subscriptions = new Subscription();
   
-  courseID: string | undefined;
+  studentCourseID: number | undefined;
+  courseID: number | undefined;
 
   // Pagination
   currentPage = 1;
@@ -37,13 +40,55 @@ export class TestList implements OnInit, OnDestroy {
   pages: number[] = [];
 
   ngOnInit(): void {
+    // Lấy studentcourseID từ route params (từ course-layout)
     const parentRoute = this.route.parent;
-    const id = parentRoute?.snapshot.paramMap.get('courseID') ?? undefined;
-    this.courseID = id;
-    if (this.courseID) {
-      // Load user first, then tests
-      this.loadUserProfile();
+    const studentCourseIDParam = parentRoute?.snapshot.paramMap.get('studentcourseID');
+    
+    if (studentCourseIDParam) {
+      this.studentCourseID = Number(studentCourseIDParam);
+      
+      if (this.studentCourseID) {
+        // Bước 1: Load student course detail để lấy courseID
+        this.loadStudentCourseDetail(this.studentCourseID);
+      }
+    } else {
+      console.error('❌ StudentCourseID not found in route params');
+      this.genericService.showError('Course not found');
     }
+  }
+
+  /**
+   * Load student course detail để lấy courseID
+   * Sau đó dùng courseID để load tests
+   */
+  loadStudentCourseDetail(studentCourseID: number): void {
+    const studentcourseSub = this.studentService
+      .getStudentCourseDetailById('api/student-courses', studentCourseID)
+      .subscribe({
+        next: (res: any) => {
+          if (res.success && res.data) {
+            // Lấy courseID từ API response
+            const courseId = res.data?.courseId || res.data?.course?.courseId;
+            
+            if (courseId) {
+              this.courseID = courseId;
+              console.log('✅ Course ID loaded:', this.courseID);
+              
+              // Bước 2: Load user profile và tests sau khi đã có courseID
+              this.loadUserProfile();
+            } else {
+              console.warn('⚠️ CourseID not found in response');
+              this.genericService.showError('Failed to load course information');
+            }
+          }
+        },
+        error: (err) => {
+          console.error('❌ Failed to load student course detail:', err);
+          this.genericService.showError('Failed to load course information');
+        }
+      });
+
+    this.subscriptions.add(studentcourseSub);
   }
 
   loadUserProfile(): void {
@@ -63,11 +108,16 @@ export class TestList implements OnInit, OnDestroy {
   }
 
   loadTests(): void {
+    if (!this.courseID) {
+      console.warn('⚠️ CourseID not available, cannot load tests');
+      return;
+    }
+    
     this.loading.set(true);
     const courseIdValue = Number(this.courseID);
     
     const filters = {
-      CourseId: courseIdValue,
+      CourseId: courseIdValue,  // Giữ nguyên CourseId nếu API yêu cầu
       PageNumber: this.currentPage,
       PageSize: this.pageSize
     };
@@ -224,7 +274,12 @@ export class TestList implements OnInit, OnDestroy {
   }
 
   navigateToDoTest(testId: number): void {
-    this.router.navigate(['/student/test'], { queryParams: { testId } });
+    // Truyền studentcourseID qua query params để có thể navigate về test-list sau khi submit
+    const queryParams: any = { testId };
+    if (this.studentCourseID) {
+      queryParams.studentcourseID = this.studentCourseID;
+    }
+    this.router.navigate(['/student/test'], { queryParams });
   }
 
   ngOnDestroy(): void {

@@ -6,6 +6,7 @@ import { GenericServices } from '../../../../core/services/GenericServices';
 import { SharedModule } from '../../../../core/shared/sharedModule';
 import { TestScoreDTO, AssignmentDTO } from '../../../instructor/models/instructor.models';
 import { ApiResponse, PaginatedResponse } from '../../../../core/models/generic-response-class';
+import { StudentService } from '../../services/student-service';
 
 interface AssignmentScoreItem {
   assignmentId: number;
@@ -29,23 +30,72 @@ export class GradeList implements OnInit, OnDestroy {
   assignmentScores = signal<AssignmentScoreItem[]>([]);
   testScores = signal<TestScoreDTO[]>([]);
   loading = signal<boolean>(false);
-  courseID: string | undefined;
+  studentCourseID: number | undefined;
+  courseID: number | undefined;
   
   private route = inject(ActivatedRoute);
   private genericService = inject(GenericServices);
+  private studentService = inject(StudentService);
   private subscriptions = new Subscription();
 
   ngOnInit(): void {
+    // Lấy studentcourseID từ route params (từ course-layout)
     const parentRoute = this.route.parent;
-    const id = parentRoute?.snapshot.paramMap.get('courseID') ?? undefined;
-    this.courseID = id;
+    const studentCourseIDParam = parentRoute?.snapshot.paramMap.get('studentcourseID');
     
-    if (this.courseID) {
-      this.loadGrades();
+    if (studentCourseIDParam) {
+      this.studentCourseID = Number(studentCourseIDParam);
+      
+      if (this.studentCourseID) {
+        // Load student course detail để lấy courseID
+        this.loadStudentCourseDetail(this.studentCourseID);
+      }
+    } else {
+      console.error('❌ StudentCourseID not found in route params');
+      this.genericService.showError('Course not found');
     }
   }
 
+  /**
+   * Load student course detail để lấy courseID
+   * Sau đó dùng courseID để load grades
+   */
+  loadStudentCourseDetail(studentCourseID: number): void {
+    const studentcourseSub = this.studentService
+      .getStudentCourseDetailById('api/student-courses', studentCourseID)
+      .subscribe({
+        next: (res: any) => {
+          if (res.success && res.data) {
+            // Lấy courseID từ API response
+            const courseId = res.data?.courseId || res.data?.course?.courseId;
+            
+            if (courseId) {
+              this.courseID = courseId;
+              console.log('✅ Course ID loaded:', this.courseID);
+              
+              // Sau khi có courseID, load grades
+              this.loadGrades();
+            } else {
+              console.warn('⚠️ CourseID not found in response');
+              this.genericService.showError('Failed to load course information');
+            }
+          }
+        },
+        error: (err) => {
+          console.error('❌ Failed to load student course detail:', err);
+          this.genericService.showError('Failed to load course information');
+        }
+      });
+
+    this.subscriptions.add(studentcourseSub);
+  }
+
   loadGrades(): void {
+    if (!this.courseID) {
+      console.warn('⚠️ CourseID not available, cannot load grades');
+      return;
+    }
+    
     this.loading.set(true);
     const courseIdValue = Number(this.courseID);
 
@@ -54,11 +104,15 @@ export class GradeList implements OnInit, OnDestroy {
       `api/assignmentscores/by-course/${courseIdValue}`
     );
 
-    const testScoresSub = this.genericService.getWithFilter('/api/tests/scores', {
-      CourseId: courseIdValue,
-      PageIndex: 1,
-      PageSize: 100
-    });
+    // Build filter for test scores
+    // Lưu ý: API tự động lấy StudentId từ JWT token, nhưng vẫn truyền CourseId để filter theo course
+    const testScoresFilter: any = {
+      CourseId: courseIdValue,  // CourseId (chữ C hoa) theo API request
+      PageIndex: 1,             // PageIndex (chữ P hoa) theo API request
+      PageSize: 100             // PageSize (chữ P hoa) theo API request
+    };
+
+    const testScoresSub = this.genericService.getWithFilter('/api/tests/scores', testScoresFilter);
 
     const combinedSub = forkJoin({
       assignments: assignmentScoresSub,
