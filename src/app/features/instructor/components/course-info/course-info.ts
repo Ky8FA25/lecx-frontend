@@ -1,7 +1,9 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, effect, computed } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { SharedModule } from '../../../../core/shared/sharedModule';
 import { InstructorService } from '../../services/instructor.service';
+import { InstructorLectureService } from '../../services/lecture.service';
+import { LectureSharedService } from '../../services/lecture-shared.service';
 import { GenericServices } from '../../../../core/services/GenericServices';
 import { CourseModel } from '../../models/instructor.models';
 import { CategoryDto } from '../../../home/models/categoryDto';
@@ -18,18 +20,41 @@ import { ApiResponse } from '../../../../core/models/generic-response-class';
 export class InstructorCourseInfo implements OnInit {
   private route = inject(ActivatedRoute);
   private instructorService = inject(InstructorService);
+  private lectureService = inject(InstructorLectureService);
+  private lectureSharedService = inject(LectureSharedService);
   private genericService = inject(GenericServices);
 
   course = signal<CourseModel | null>(null);
   category = signal<CategoryDto | null>(null);
   loading = signal<boolean>(false);
   lectureCount = signal<number>(0);
+  studentCount = signal<number>(0);
+  currentCourseId = signal<number | null>(null);
+
+  // Reactive lecture count từ shared service
+  private lectureCountSignal = computed(() => {
+    const courseId = this.currentCourseId();
+    if (!courseId) return 0;
+    return this.lectureSharedService.getLectureCountSignal(courseId)();
+  });
+
+  constructor() {
+    // Effect để tự động cập nhật lectureCount khi shared service thay đổi
+    effect(() => {
+      const count = this.lectureCountSignal();
+      if (count > 0) {
+        this.lectureCount.set(count);
+        console.log('✅ Lecture count updated from shared service:', count);
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       const courseId = params['courseId'];
       if (courseId) {
         const id = Number(courseId);
+        this.currentCourseId.set(id);
         console.log('📚 Loading course detail for ID:', id);
         this.loadCourseDetail(id);
       }
@@ -112,8 +137,11 @@ export class InstructorCourseInfo implements OnInit {
             this.loadCategoryDetail(courseData.categoryId);
           }
           
-          // Load lecture count
+          // Load lecture count (from sidebar API)
           this.loadLectureCount(courseId);
+          
+          // Load student count (from dashboard API)
+          this.loadStudentCount(courseId);
         } else {
           console.error('❌ Invalid course data format - courseId missing');
           console.error('Course data received:', courseData);
@@ -174,34 +202,94 @@ export class InstructorCourseInfo implements OnInit {
   }
 
   loadLectureCount(courseId: number) {
-    this.genericService.get<any>(`api/lectures/course?courseId=${courseId}`).subscribe({
+    // Kiểm tra xem lectures đã có trong shared service chưa (từ instructor-layout)
+    const sharedLectures = this.lectureSharedService.getLectures(courseId);
+    
+    if (sharedLectures.length > 0) {
+      // Đã có trong shared service, effect sẽ tự động cập nhật
+      console.log('✅ Lectures found in shared service, count will be updated automatically');
+      // Effect đã tự động cập nhật, không cần set thủ công
+    } else {
+      // Chưa có trong shared service, thử load từ API (fallback)
+      // Nhưng đợi một chút để instructor-layout có thể load xong
+      setTimeout(() => {
+        const retryLectures = this.lectureSharedService.getLectures(courseId);
+        if (retryLectures.length > 0) {
+          console.log('✅ Lectures loaded by instructor-layout after delay');
+          // Effect sẽ tự động cập nhật
+        } else {
+          // Nếu vẫn chưa có, load từ API
+          console.log('⚠️ Lectures not found in shared service, loading from API (fallback)...');
+          this.lectureService.getLecturesByCourse(courseId).subscribe({
+            next: (response: any) => {
+              console.log('✅ Lectures API Response (fallback):', response);
+              
+              let lectures: any[] = [];
+              
+              // Handle different response formats
+              if (response) {
+                // Format 1: { success: true, data: [...] }
+                if (response.success && response.data) {
+                  lectures = Array.isArray(response.data) ? response.data : [];
+                }
+                // Format 2: Direct array
+                else if (Array.isArray(response)) {
+                  lectures = response;
+                }
+                // Format 3: { data: [...] } without success
+                else if (response.data && Array.isArray(response.data)) {
+                  lectures = response.data;
+                }
+              }
+              
+              // Update shared service và effect sẽ tự động cập nhật
+              if (lectures.length > 0) {
+                this.lectureSharedService.setLectures(courseId, lectures);
+                // Effect sẽ tự động cập nhật lectureCount
+              } else {
+                this.lectureCount.set(0);
+              }
+            },
+            error: (err) => {
+              console.error('❌ Failed to load lecture count:', err);
+              this.lectureCount.set(0);
+            }
+          });
+        }
+      }, 500); // Đợi 500ms để instructor-layout có thể load xong
+    }
+  }
+
+  loadStudentCount(courseId: number) {
+    // Use Dashboard API to get numStudent (same as dashboard page)
+    this.instructorService.getDashboard(courseId).subscribe({
       next: (response: any) => {
-        console.log('✅ Lectures API Response:', response);
+        console.log('✅ Dashboard API Response (for student count):', response);
         
         let count = 0;
         
         // Handle different response formats
         if (response) {
-          // Format 1: { success: true, data: [...] }
-          if (response.success && response.data && Array.isArray(response.data)) {
-            count = response.data.length;
+          // Format 1: { success: true, data: { numStudent: number, ... } }
+          if (response.success && response.data) {
+            count = response.data.numStudent || 0;
           }
-          // Format 2: Direct array
-          else if (Array.isArray(response)) {
-            count = response.length;
+          // Format 2: { data: { numStudent: number, ... } } without success
+          else if (response.data && response.data.numStudent !== undefined) {
+            count = response.data.numStudent;
           }
-          // Format 3: { data: [...] } without success
-          else if (response.data && Array.isArray(response.data)) {
-            count = response.data.length;
+          // Format 3: Direct DashboardViewModel
+          else if (response.numStudent !== undefined) {
+            count = response.numStudent;
           }
         }
         
-        this.lectureCount.set(count);
-        console.log('✅ Lecture count:', count);
+        this.studentCount.set(count);
+        console.log('✅ Student count (from dashboard API):', count);
       },
       error: (err) => {
-        console.error('❌ Failed to load lecture count:', err);
-        this.lectureCount.set(0);
+        console.error('❌ Failed to load student count from dashboard:', err);
+        this.studentCount.set(0);
       }
     });
   }
