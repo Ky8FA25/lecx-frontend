@@ -29,10 +29,10 @@ import { AsignmentList } from './features/student/components/asignment-list/asig
 import { InstructorDashboard } from './features/instructor/components/dashboard/dashboard';
 import { InstructorMyCourses } from './features/instructor/components/my-courses/my-courses';
 import { InstructorLectureDetail } from './features/instructor/components/lectures/lecture-detail';
-import { AssignmentList } from './features/instructor/components/assignments/assignment-list';
-import { AssignmentDetail } from './features/instructor/components/assignments/assignment-detail';
-import { TestLists } from './features/instructor/components/tests/test-list';
-import { TestDetail } from './features/instructor/components/tests/test-detail';
+import {  InstructorAssignmentList } from './features/instructor/components/assignments/assignment-list';
+import {  InstructorAssignmentDetail } from './features/instructor/components/assignments/assignment-detail';
+import { InstructorTestList } from './features/instructor/components/tests/test-list';
+import { InstructorTestDetail } from './features/instructor/components/tests/test-detail';
 import { InstructorCourseInfo } from './features/instructor/components/course-info/course-info';
 import { InstructorMaterialList } from './features/instructor/components/material-list/material-list';
 import { Role } from './core/enums/enums';
@@ -125,19 +125,19 @@ export const routes: Routes = [
     },
     {
       path: 'courses/:courseId/assignments',
-      component: AssignmentList
+      component: InstructorAssignmentList
     },
     {
       path: 'courses/:courseId/assignments/:assignmentId',
-      component: AssignmentDetail
+      component: InstructorAssignmentDetail
     },
     {
       path: 'courses/:courseId/tests',
-      component: TestLists
+      component: InstructorTestList
     },
     {
       path: 'courses/:courseId/tests/:testId',
-      component: TestDetail
+      component: InstructorTestDetail
     },
     {
       path: 'courses/:courseId/course-info',

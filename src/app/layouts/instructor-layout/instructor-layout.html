@@ -44,7 +44,7 @@
                 <a class="sidebar-brand d-flex align-items-center justify-content-center" routerLink="/home/main">
                     <div class="sidebar-brand-text mx-3">
                         <i class="bi-back"></i>
-                        <span>LearnOn</span>
+                        <span>LecX</span>
                     </div>
                 </a>
 
@@ -229,23 +229,8 @@
                     </div>
                 </li>
 
-                <!-- Nav Item - Live Stream -->
-                <li class="nav-item">
-                    <a class="nav-link" 
-                       [routerLink]="['/instructor/courses', courseId(), 'livestream']" 
-                       routerLinkActive="active">
-                        <i class="bi bi-broadcast"></i>
-                        <span>Live Stream</span>
-                    </a>
-                </li>
-
                 <!-- Divider -->
                 <hr class="sidebar-divider d-none d-md-block">
-
-                <!-- Sidebar Toggler (Sidebar) -->
-                <div class="text-center d-none d-md-inline">
-                    <button class="rounded-circle border-0" id="sidebarToggle"></button>
-                </div>
             </ul>
         }
         <!-- End of Sidebar -->
@@ -277,55 +262,8 @@
                                 </li>
                             </ol>
 
-                            <!-- Topbar Search -->
-                            <div class="d-none d-lg-block me-3">
-                                <form class="d-flex">
-                                    <div class="input-group search-box">
-                                        <input type="search" 
-                                               name="keyword" 
-                                               placeholder="Search..." 
-                                               class="form-control border-end-0"
-                                               style="border-radius: 25px 0 0 25px; border: 1px solid #ccc;">
-                                        <button type="button" class="btn btn-white border-start-0" 
-                                                style="border-radius: 0 25px 25px 0; border: 1px solid #ccc;">
-                                            <i class="bi bi-search"></i>
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-
                             <!-- Topbar Navbar -->
-                            <ul class="navbar-nav d-flex flex-row align-items-center">
-
-                                <!-- Nav Item - Alerts -->
-                                <li class="nav-item dropdown no-arrow me-2">
-                                    <a class="nav-link dropdown-toggle position-relative" 
-                                       href="#" 
-                                       id="alertsDropdown" 
-                                       role="button"
-                                       data-bs-toggle="dropdown" 
-                                       aria-haspopup="true" 
-                                       aria-expanded="false">
-                                        <i class="fas fa-bell fa-fw"></i>
-                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
-                                            3
-                                        </span>
-                                    </a>
-                                </li>
-
-                                <!-- Nav Item - Messages -->
-                                <li class="nav-item dropdown no-arrow me-2">
-                                    <a class="nav-link dropdown-toggle position-relative" 
-                                       href="#" 
-                                       id="messagesDropdown" 
-                                       role="button"
-                                       data-bs-toggle="dropdown">
-                                        <i class="fas fa-envelope fa-fw"></i>
-                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
-                                            7
-                                        </span>
-                                    </a>
-                                </li>
+                            <ul class="navbar-nav d-flex flex-row align-items-center ms-auto">
 
                                 <!-- Nav Item - User Information -->
                                 <li class="nav-item dropdown no-arrow">
@@ -349,9 +287,6 @@
                                         <a class="dropdown-item" routerLink="/user/profile">
                                             <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>Your Profile
                                         </a>
-                                        <a class="dropdown-item">
-                                            <i class="fas fa-exchange-alt fa-sm fa-fw me-2 text-gray-400"></i>Request A Transfer
-                                        </a>
                                         <div class="dropdown-divider"></div>
                                         <button type="button" class="dropdown-item" (click)="logout()">
                                             <i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>Logout
@@ -369,57 +304,6 @@
 
             </div>
             <!-- End of Main Content -->
-            <!-- Footer -->
-
-            <footer class="sticky-footer site-footer section-padding bg-white">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-3 col-12 mb-4 pb-2">
-                            <a class="navbar-brand mb-2" href="#">
-                                <i class="bi-back"></i>
-                                <span>Learn0n</span>
-                            </a>
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-6">
-                            <h6 class="site-footer-title mb-3">Resources</h6>
-                            <ul class="site-footer-links">
-                                <li class="site-footer-link-item">
-                                    <a routerLink="/home/main" class="site-footer-link">Home</a>
-                                </li>
-                                <li class="site-footer-link-item">
-                                    <a routerLink="/home/main" fragment="section_3" class="site-footer-link">How it works</a>
-                                </li>
-                                <li class="site-footer-link-item">
-                                    <a routerLink="/home/main" fragment="section_4" class="site-footer-link">FAQs</a>
-                                </li>
-                                <li class="site-footer-link-item">
-                                    <a routerLink="/home/main" class="site-footer-link">Contact</a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-6 mb-4 mb-lg-0">
-                            <h6 class="site-footer-title mb-3">Information</h6>
-                            <p class="text-white d-flex mb-1">
-                                <a href="tel:110-220-8386" class="site-footer-link">110-220-8386</a>
-                            </p>
-                            <p class="text-white d-flex">
-                                <a href="https://mail.google.com" target="_blank" class="site-footer-link">info@company.com</a>
-                            </p>
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-12 mt-4 mt-lg-0 ms-auto">
-                            <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    English
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
 
         </div>
 

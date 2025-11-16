@@ -15,7 +15,7 @@ import { QuestionList } from './questions/question-list';
   templateUrl: './test-detail.html',
   styleUrl: './test-detail.scss'
 })
-export class TestDetail implements OnInit {
+export class InstructorTestDetail implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private testService = inject(TestService);

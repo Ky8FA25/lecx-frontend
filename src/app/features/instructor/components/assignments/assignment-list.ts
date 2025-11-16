@@ -15,7 +15,7 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './assignment-list.html',
   styleUrl: './assignment-list.scss'
 })
-export class AssignmentList implements OnInit {
+export class InstructorAssignmentList implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private assignmentService = inject(AssignmentService);

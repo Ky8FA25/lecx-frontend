@@ -14,7 +14,7 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './test-list.html',
   styleUrl: './test-list.scss'
 })
-export class TestLists implements OnInit {
+export class InstructorTestList implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private testService = inject(TestService);

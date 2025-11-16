@@ -16,7 +16,7 @@ import { catchError, map } from 'rxjs/operators';
   templateUrl: './assignment-detail.html',
   styleUrl: './assignment-detail.scss'
 })
-export class AssignmentDetail implements OnInit {
+export class InstructorAssignmentDetail implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private assignmentService = inject(AssignmentService);
