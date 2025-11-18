@@ -10,6 +10,7 @@ import { environment } from '../../../../../environments/environment.development
 import { map, Observable, forkJoin, of, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
+import { StudentService } from '../../services/student-service';
 
 @Component({
   selector: 'app-asignment-list',
@@ -24,7 +25,8 @@ export class AsignmentList implements  OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private http = inject(HttpClient);
   private baseUrl = environment.apiBEUrl;
-  courseID: string | undefined;
+  courseID: number | undefined;
+  studentCourseID: number | undefined;
   // Pagination
   currentPage = 1;
   totalPage = 1;
@@ -33,15 +35,50 @@ export class AsignmentList implements  OnInit, OnDestroy {
    userId  = this.getUserId();
    private toastr = inject(ToastrService);
    private subscriptions = new Subscription();
+   private studentService = inject(StudentService);
 
   constructor(private assignmentService: AssignmentService) { }
   
 
   ngOnInit(): void {
     const parentRoute = this.route.parent;
-    const id = parentRoute?.snapshot.paramMap.get('courseID') ?? undefined;
-    this.courseID = id;
-    this.loadAssignments();
+    const studentCourseIDParam = parentRoute?.snapshot.paramMap.get('studentcourseID');
+
+    if (studentCourseIDParam) {
+      this.studentCourseID = Number(studentCourseIDParam);
+      if (this.studentCourseID) {
+        this.loadStudentCourseDetail(this.studentCourseID);
+      }
+    } else {
+      console.error('❌ StudentCourseID not found in route params');
+      this.toastr.error('Course not found');
+    }
+  }
+
+  loadStudentCourseDetail(studentCourseID: number): void {
+    const studentcourseSub = this.studentService
+      .getStudentCourseDetailById('api/student-courses', studentCourseID)
+      .subscribe({
+        next: (res: any) => {
+          if (res.success && res.data) {
+            const courseId = res.data?.courseId || res.data?.course?.courseId;
+
+            if (courseId) {
+              this.courseID = Number(courseId);
+              this.loadAssignments();
+            } else {
+              console.warn('⚠️ CourseID not found in response');
+              this.toastr.error('Failed to load course information');
+            }
+          }
+        },
+        error: (err) => {
+          console.error('❌ Failed to load student course detail:', err);
+          this.toastr.error('Failed to load course information');
+        }
+      });
+
+    this.subscriptions.add(studentcourseSub);
   }
   isAvailable(item: AssignmentDto): boolean {
     if (!item.dueDate) return false; // nếu không có dueDate => hết hạn
@@ -59,6 +96,10 @@ export class AsignmentList implements  OnInit, OnDestroy {
   }
 
   loadAssignments() {
+    if (!this.courseID) {
+      console.warn('⚠️ CourseID not available, cannot load assignments');
+      return;
+    }
     const courseIdValue = Number(this.courseID);
     const req: GetAssignmentsByCourseRequest = {
       searchWord: '',

@@ -57,6 +57,10 @@ export class LectureDetail implements OnInit, OnDestroy {
   deletingComment = signal<number | null>(null);
   openDropdownId = signal<number | null>(null); // Track which dropdown is open
   
+  // Lecture files (video + documents) - giống instructor
+  videoFile = signal<LectureFileDto | null>(null);
+  documentFiles = signal<LectureFileDto[]>([]);
+  
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private genericService = inject(GenericServices);
@@ -211,11 +215,29 @@ export class LectureDetail implements OnInit, OnDestroy {
     this.isCompleted.set(false);
     this.markingCompleted.set(false);
     this.loading.set(true);
-    
     const lectureSub = this.genericService.get<ApiResponse<LectureDTO>>(`api/lectures/${lectureId}`).subscribe({
       next: (res: ApiResponse<LectureDTO>) => {
         if (res.success && res.data) {
           this.lecture.set(res.data);
+          
+          
+          if (res.data?.lectureFiles && res.data.lectureFiles.length > 0) {
+            res.data.lectureFiles.forEach((f, idx) => {
+              console.log(`  File ${idx}:`, {
+                name: f.fileName,
+                type: f.fileType,
+                ext: f.fileExtension,
+                path: f.filePath,
+                isVideo: this.isVideoFile(f)
+              });
+            });
+          }
+          
+          // Tổ chức file giống instructor: tách video và documents
+          this.organizeFiles(res.data.lectureFiles || []);
+          
+          console.log("🎥 Video file:", this.videoFile());
+          console.log("📄 Document files:", this.documentFiles());
           
           // Check completion status sau khi lecture đã được load
           this.checkCompletedStatus(lectureId);
@@ -276,22 +298,105 @@ export class LectureDetail implements OnInit, OnDestroy {
     this.subscriptions.add(completedSub);
   }
 
-  getVideoFiles(): LectureFileDto[] {
-    const lecture = this.lecture();
-    if (!lecture?.lectureFiles) return [];
-    return lecture.lectureFiles.filter(f => 
-      f.fileType?.toLowerCase() === 'video' || 
-      ['mp4', 'mov', 'avi', 'webm'].includes(f.fileExtension?.toLowerCase() || '')
-    );
+  /**
+   * Tổ chức file giống instructor: 1 video + list documents
+   * API trả về: fileType = 1 (video), fileType = 2 (document)
+   */
+  organizeFiles(files: LectureFileDto[]): void {
+    if (!files || files.length === 0) {
+      this.videoFile.set(null);
+      this.documentFiles.set([]);
+      return;
+    }
+
+    let video: LectureFileDto | null = null;
+    const documents: LectureFileDto[] = [];
+
+    files.forEach(f => {
+      // Prioritize API fileType field
+      if (f.fileType === 1) {
+        // Video file - chỉ lấy cái đầu tiên
+        if (!video) {
+          video = f;
+        }
+      } else if (f.fileType === 2) {
+        // Document file
+        documents.push(f);
+      } else {
+        // Fallback: nếu fileType không rõ, check bằng extension
+        if (this.isVideoFile(f)) {
+          if (!video) {
+            video = f;
+          }
+        } else {
+          documents.push(f);
+        }
+      }
+    });
+
+    this.videoFile.set(video);
+    this.documentFiles.set(documents);
+    
+    console.log(`✅ Organized files: ${video ? '1 video' : 'no video'}, ${documents.length} documents`);
   }
 
-  getDocumentFiles(): LectureFileDto[] {
-    const lecture = this.lecture();
-    if (!lecture?.lectureFiles) return [];
-    return lecture.lectureFiles.filter(f => 
-      f.fileType?.toLowerCase() !== 'video' && 
-      !['mp4', 'mov', 'avi', 'webm'].includes(f.fileExtension?.toLowerCase() || '')
-    );
+  /**
+   * Check xem file có phải video không (fallback khi fileType không rõ)
+   */
+  isVideoFile(file: LectureFileDto): boolean {
+    const videoExtensions = ['mp4', 'mov', 'avi', 'webm', 'mkv', 'flv', 'wmv'];
+    
+    // Check fileType number (1 = video)
+    if (file.fileType === 1) {
+      return true;
+    }
+    
+    // Check extension
+    if (file.fileExtension) {
+      const ext = file.fileExtension.toLowerCase().replace(/^\./, '');
+      if (videoExtensions.includes(ext)) {
+        return true;
+      }
+    }
+    
+    // Check fileName
+    if (file.fileName) {
+      const ext = file.fileName.toLowerCase().split('.').pop() || '';
+      if (videoExtensions.includes(ext)) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+
+  /**
+   * Các helper giống instructor – sau này dễ chuyển sang signed URL
+   */
+  getVideoUrl(filePath: string): string {
+    return filePath;
+  }
+
+  getFileDownloadUrl(filePath: string): string {
+    return filePath;
+  }
+
+  getMimeType(ext: string | null): string {
+    if (!ext) return 'video/mp4';
+    
+    ext = ext.replace('.', '').toLowerCase();
+
+    const map: any = {
+      mp4: 'video/mp4',
+      mov: 'video/quicktime',
+      webm: 'video/webm',
+      avi: 'video/x-msvideo',
+      mkv: 'video/x-matroska',
+      flv: 'video/x-flv',
+      wmv: 'video/x-ms-wmv'
+    };
+
+    return map[ext] || 'video/mp4';
   }
 
   markAsCompleted(): void {
@@ -393,6 +498,8 @@ export class LectureDetail implements OnInit, OnDestroy {
       this.markingCompleted.set(false);
       // Clear lecture data để tránh hiển thị lecture cũ
       this.lecture.set(null);
+      this.videoFile.set(null);
+      this.documentFiles.set([]);
     }
     
     // Navigate với studentCourseID từ route params
@@ -753,12 +860,24 @@ export class LectureDetail implements OnInit, OnDestroy {
   }
 
   hasValidFile(comment: CommentDto): boolean {
-    return !!(comment.file?.filePath && 
-             comment.file.filePath !== null && 
-             comment.file.filePath !== undefined && 
-             comment.file.filePath !== '' &&
-             comment.file.filePath.trim() !== '' &&
-             comment.file.filePath.toLowerCase() !== 'string');
+    if (!comment.file) return false;
+    
+    const filePath = comment.file.filePath;
+    if (!filePath || typeof filePath !== 'string') return false;
+    
+    const trimmed = filePath.trim();
+    return trimmed.length > 0 && 
+           trimmed.toLowerCase() !== 'string' &&
+           (trimmed.startsWith('http') || trimmed.startsWith('/'));
+  }
+
+  isValidFilePath(filePath: string | undefined): boolean {
+    if (!filePath || typeof filePath !== 'string') return false;
+    
+    const trimmed = filePath.trim();
+    return trimmed.length > 0 && 
+           trimmed.toLowerCase() !== 'string' &&
+           (trimmed.startsWith('http') || trimmed.startsWith('/'));
   }
 
   onFileSelected(event: any): void {
