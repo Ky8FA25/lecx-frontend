@@ -2,7 +2,7 @@ export interface LectureFileDto {
   fileId?: number;
   lectureId: number;
   fileName: string;
-  fileType: string; // Enum dưới dạng string (Video, PDF, DOCX, ...)
+  fileType: number; // Enum dưới dạng string (Video, PDF, DOCX, ...)
   filePath: string;
   fileExtension: string;
   uploadDate: string;

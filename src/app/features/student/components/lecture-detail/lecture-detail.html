@@ -25,21 +25,23 @@
           <i class="fas fa-cog"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-          <li class="mb-2">
-            <button 
-              class="dropdown-item" 
-              (click)="markAsCompleted()"
-              [disabled]="markingCompleted()">
-              @if (markingCompleted()) {
-                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-              }
-              @if (isCompleted()) {
-                Unmark as completed
-              } @else {
-                Mark as completed
-              }
-            </button>
-          </li>
+          @if (!videoFile()) {
+            <li class="mb-2">
+              <button 
+                class="dropdown-item" 
+                (click)="markAsCompleted()"
+                [disabled]="markingCompleted()">
+                @if (markingCompleted()) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                }
+                @if (isCompleted()) {
+                  Unmark as completed
+                } @else {
+                  Mark as completed
+                }
+              </button>
+            </li>
+          }
           <li>
             <a
               class="dropdown-item text-danger"
@@ -60,13 +62,20 @@
       <div class="col-xl-8 col-lg-7">
         <div class="card shadow mb-4">
           <!-- Video Section -->
-          @if (getVideoFiles().length > 0) {
-            @let videoFile = getVideoFiles()[0];
-            <div class="position-relative">
-              <video class="card-img-top" controls style="height: 100%; width: 100%">
-                <source [src]="videoFile.filePath" [type]="'video/' + videoFile.fileExtension" />
-                Your browser does not support the video tag.
-              </video>
+          @if (videoFile()) {
+            <div class="video-container mb-3" style="background: #000; display: flex; align-items: center; justify-content: center; aspect-ratio: 16 / 9;">
+              @let vFile = videoFile();
+              @if (vFile && vFile.filePath) {
+                <video 
+                  class="w-100" controls style="max-height: 500px;">
+                    <source 
+                    [src]="getVideoUrl(vFile.filePath)"
+                    type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+              } @else {
+                <p class="text-muted">Video file path not available</p>
+              }
             </div>
           } @else {
             <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 400px;">
@@ -77,12 +86,12 @@
           <div class="m-3">
             <h5>Documents</h5>
 
-            @if (getDocumentFiles().length > 0) {
-              @for (file of getDocumentFiles(); track file.fileId) {
+            @if (documentFiles().length > 0) {
+              @for (file of documentFiles(); track file.fileId) {
                 <div class="position-relative mb-2">
                   <i class="fas fa-file-alt me-2 ms-2"></i>
                   <a 
-                    [href]="file.filePath" 
+                    [href]="getFileDownloadUrl(file.filePath)" 
                     class="btn-link" 
                     target="_blank"
                     (click)="$event.stopPropagation()">
@@ -97,23 +106,25 @@
             }
 
             <div class="d-flex gap-2 mt-3">
-              <button 
-                class="btn p-3 ml-auto"
-                [class.btn-completed]="isCompleted()"
-                [class.btn-outline-primary]="!isCompleted()"
-                (click)="markAsCompleted()"
-                [disabled]="markingCompleted()">
-                @if (markingCompleted()) {
-                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                } @else {
-                  <i class="fas fa-check-circle mr-1"></i>
-                }
-                @if (isCompleted()) {
-                  Marked as completed
-                } @else {
-                  Mark as completed
-                }
-              </button>
+              
+                <button 
+                  class="btn p-3 ml-auto"
+                  [class.btn-completed]="isCompleted()"
+                  [class.btn-outline-primary]="!isCompleted()"
+                  (click)="markAsCompleted()"
+                  [disabled]="markingCompleted()">
+                  @if (markingCompleted()) {
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  } @else {
+                    <i class="fas fa-check-circle mr-1"></i>
+                  }
+                  @if (isCompleted()) {
+                    Marked as completed
+                  } @else {
+                    Mark as completed
+                  }
+                </button>
+              
 
               @if (hasNextLecture()) {
                 <button 
